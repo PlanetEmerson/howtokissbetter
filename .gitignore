@@ -1,0 +1,5 @@
+# Private book materials - never publish
+_private/
+
+# OS files
+.DS_Store
