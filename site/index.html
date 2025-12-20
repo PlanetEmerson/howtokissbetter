@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>How to Kiss Better | The Book That Changes Everything</title>
+    <meta name="description" content="Learn the secrets Hollywood's Kissing Coach uses to create unforgettable chemistry. The Mirror Technique, the X-Spot, and 16 chapters of transformation. Stop being forgettable.">
+    <meta name="keywords" content="how to kiss, kissing guide, kissing techniques, better kisser, first kiss tips, how to be a good kisser, kissing book, intimacy guide">
+    <meta name="author" content="C.J. McKenna">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://howtokissbetter.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="https://howtokissbetter.com/">
+    <meta property="og:title" content="How to Kiss Better | The Book That Changes Everything">
+    <meta property="og:description" content="Hollywood's Kissing Coach reveals the techniques that create unforgettable chemistry. Your kissing life changes today.">
+    <meta property="og:image" content="https://howtokissbetter.com/assets/og-image.jpg">
+    <meta property="og:site_name" content="How to Kiss Better">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://howtokissbetter.com/">
+    <meta name="twitter:title" content="How to Kiss Better | The Book That Changes Everything">
+    <meta name="twitter:description" content="The book Hollywood's Kissing Coach wrote for everyone who refuses to be forgettable.">
+    <meta name="twitter:image" content="https://howtokissbetter.com/assets/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        burgundy: '#722F37',
+                        wine: '#4A1C23',
+                        cream: '#FDF8F3',
+                        gold: '#D4AF37',
+                        'gold-dark': '#B8860B',
+                        charcoal: '#2D2D2D',
+                        'off-white': '#F5F5F5',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    fontSize: {
+                        'body': ['1.125rem', { lineHeight: '1.6' }],
+                        'body-lg': ['1.25rem', { lineHeight: '1.6' }],
+                        'h1': ['3.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+                        'h1-xl': ['4.5rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+                        'h2': ['2.5rem', { lineHeight: '1.15' }],
+                        'h2-lg': ['3rem', { lineHeight: '1.15' }],
+                        'h3': ['1.75rem', { lineHeight: '1.25' }],
+                        'h3-lg': ['2rem', { lineHeight: '1.25' }],
+                        'cta': ['1.25rem', { lineHeight: '1', letterSpacing: '0.02em' }],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+            font-size: 18px; /* Optimized base: 18px instead of 16px */
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .book-shadow {
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 60px rgba(212, 175, 55, 0.15);
+        }
+
+        .section-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .section-fade {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+
+        /* FAQ Accordion */
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 500px;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Chapter list hover */
+        .chapter-item {
+            transition: all 0.2s ease;
+        }
+
+        .chapter-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            padding-left: 1.5rem;
+        }
+    </style>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Book",
+        "name": "Kiss Perfect Now: A Master Class in Kissology",
+        "author": {
+            "@type": "Person",
+            "name": "C.J. McKenna",
+            "jobTitle": "Hollywood Kissing & Intimacy Consultant"
+        },
+        "description": "A comprehensive guide to becoming an unforgettable kisser, written by a Hollywood Kissing & Intimacy Consultant with over a decade of experience choreographing on-screen chemistry.",
+        "genre": ["Self-Help", "Relationships", "Intimacy"],
+        "inLanguage": "en",
+        "numberOfPages": 200,
+        "offers": {
+            "@type": "Offer",
+            "price": "27.00",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Can you actually learn to be a better kisser?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely. Kissing is a skill, not a talent. The difference between a forgettable kiss and an unforgettable one is technique, awareness, and presence—all of which can be learned and practiced."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the Mirror Technique?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The Mirror Technique is the foundational skill taught in the book. It involves tuning into your partner's rhythm, pressure, and movements, creating instant synchronicity and chemistry. It's the same principle used to choreograph Hollywood kiss scenes."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What makes this different from other kissing advice?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "This book is written by a professional Hollywood Kissing & Intimacy Consultant who has choreographed thousands of on-screen kisses. It's not recycled tips—it's the complete system used to create chemistry between actors who just met."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is this book appropriate for all experience levels?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Whether you're preparing for your first kiss or looking to reignite passion in a long-term relationship, the techniques apply universally. The fundamentals work for everyone."
+                }
+            }
+        ]
+    }
+    </script>
+</head>
+
+<body class="bg-charcoal text-off-white font-sans antialiased">
+
+    <!-- HERO SECTION -->
+    <section class="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden">
+        <!-- Hero background image -->
+        <div class="absolute inset-0">
+            <img src="assets/images/hero-bg.png" alt="" class="w-full h-full object-cover opacity-40" loading="eager">
+            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/80 to-charcoal"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+                <!-- Hero Text -->
+                <div class="text-center lg:text-left order-2 lg:order-1">
+                    <p class="text-gold font-medium tracking-widest uppercase text-base mb-6">
+                        From Hollywood's Kissing Coach
+                    </p>
+
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] mb-8">
+                        Your Kissing Is <span class="gradient-text">Forgettable.</span>
+                        <br>Let's Fix That.
+                    </h1>
+
+                    <p class="text-xl lg:text-2xl text-gray-300 text-lg leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0">
+                        A Hollywood Kissing & Intimacy Consultant reveals the techniques that create the chemistry you've seen on screen—and how anyone can learn them.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#pricing" class="cta-button text-charcoal font-bold py-5 px-12 rounded-lg text-xl inline-block text-center">
+                            I Want to Kiss Better
+                        </a>
+                        <a href="#preview" class="border border-gold/50 text-gold hover:bg-gold/10 font-semibold py-5 px-10 rounded-lg text-xl inline-block text-center transition-colors">
+                            See What's Inside
+                        </a>
+                    </div>
+
+                    <p class="text-gray-500 text-base mt-8">
+                        Instant PDF download. Read on any device.
+                    </p>
+                </div>
+
+                <!-- Book Cover -->
+                <div class="order-1 lg:order-2 flex justify-center">
+                    <div class="relative">
+                        <!-- Real book cover image -->
+                        <div class="book-shadow rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                            <img
+                                src="assets/images/book-cover.png"
+                                alt="Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna"
+                                class="w-64 sm:w-72 md:w-80 h-auto rounded-lg"
+                                loading="eager"
+                            >
+                        </div>
+
+                        <!-- Decorative elements -->
+                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-gold/10 rounded-full blur-2xl"></div>
+                        <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-burgundy/30 rounded-full blur-2xl"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE PROBLEM SECTION -->
+    <section class="py-24 px-6 bg-gradient-to-b from-charcoal to-wine/20 section-fade">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">The Night Everything Changed</h2>
+                <div class="w-16 h-0.5 bg-gold mx-auto"></div>
+            </div>
+
+            <div class="prose prose-lg prose-invert mx-auto space-y-6 text-gray-300 text-lg leading-relaxed">
+                <p>
+                    I was fifteen. She was older. She had a car—and confidence I couldn't comprehend.
+                </p>
+
+                <p>
+                    We drove to a park. Talked about nothing. Came back to her car. The windows started to fog. My heart was pounding so hard I was sure she could hear it.
+                </p>
+
+                <p>
+                    Then it happened. Our lips met.
+                </p>
+
+                <p>
+                    For three seconds, I thought I might be okay. Then I realized I was drowning.
+                </p>
+
+                <p>
+                    She was <em>good</em>. Not just good—<em>confident</em>. Her kisses had variety, rhythm, intention. There were sub-types of kisses I didn't know existed. And I was lost in a language I had never learned.
+                </p>
+
+                <blockquote class="border-l-4 border-gold pl-6 my-10 text-xl lg:text-2xl font-serif italic text-cream">
+                    "I could feel her enthusiasm dimming in real-time, like a light on a dimmer switch being slowly turned down."
+                </blockquote>
+
+                <p>
+                    The drive home was silent. She didn't turn off the engine when we arrived. The door closed behind me with a sound I can still hear—not a slam, just a definitive <em>thunk</em>. A period at the end of a sentence.
+                </p>
+
+                <p>
+                    She never spoke to me again.
+                </p>
+
+                <p>
+                    I stood on my driveway in the dark. It had started to rain. Of course it had started to rain.
+                </p>
+            </div>
+
+            <div class="mt-16 p-8 bg-wine/30 rounded-xl border border-gold/20">
+                <p class="text-xl lg:text-2xl text-center font-serif italic text-cream">
+                    "Here's what nobody tells you: a kiss delivers its verdict in seconds. And once that verdict is delivered, it's almost impossible to appeal."
+                </p>
+            </div>
+
+            <div class="mt-12 text-center">
+                <p class="text-gray-300 text-lg">
+                    That night, I made a decision: <strong class="text-cream">I would never be caught unprepared again.</strong>
+                </p>
+                <p class="text-gray-400 mt-4">
+                    What followed were years of obsessive research, experimentation, and eventually, a career I never expected.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE SOLUTION SECTION -->
+    <section id="preview" class="py-24 px-6 section-fade">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">What You'll Learn</p>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">The Complete System</h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Everything I wish I'd known before that disaster in the car—distilled from a decade of professional experience into actionable techniques.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Technique Card 1 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">01</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">The Mirror Technique</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        Your foundation. The skill that guarantees you'll never be lost in a kiss again. This is how Hollywood makes strangers look like soulmates—and you can learn it in a single chapter.
+                    </p>
+                </div>
+
+                <!-- Technique Card 2 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">02</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">The Art of Discipline</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        Control is sexy. Learn the James Bond approach to building unbearable tension. Why pulling back at the right moment makes everything that follows twice as powerful.
+                    </p>
+                </div>
+
+                <!-- Technique Card 3 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">03</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">The X-Spot</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        A pressure point so powerful, pregnant women are medically advised to avoid deep stimulation. It triggers an oxytocin release that creates instant bonding. You'll know exactly where it is by Chapter 8.
+                    </p>
+                </div>
+
+                <!-- Technique Card 4 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">04</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">The 10 Kissing Commandments</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        What never to do. The mistakes that kill chemistry instantly. From "propeller tongue" to "whale mouth"—the errors that have derailed countless otherwise promising kisses.
+                    </p>
+                </div>
+
+                <!-- Technique Card 5 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">05</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">The Magic Words</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        The exact phrase to initiate a first kiss with confidence. How to transition from conversation to connection without awkwardness. Works even for the chronically nervous.
+                    </p>
+                </div>
+
+                <!-- Technique Card 6 -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
+                    <div class="text-gold text-3xl mb-4">06</div>
+                    <h3 class="font-serif text-2xl lg:text-3xl font-bold leading-snug mb-4">Full-Body Integration</h3>
+                    <p class="text-gray-300 text-lg leading-relaxed">
+                        Kissing isn't a mouth activity—it's a whole-body experience. Learn to use your hands, your movement, your entire presence to create something unforgettable.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AUTHOR SECTION -->
+    <section class="py-24 px-6 bg-gradient-to-b from-wine/20 to-charcoal section-fade">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-12 items-center">
+                <!-- Author Image -->
+                <div class="flex justify-center">
+                    <div class="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gold/30 shadow-2xl">
+                        <img
+                            src="assets/images/author-silhouette.png"
+                            alt="C.J. McKenna - Hollywood Kissing & Intimacy Consultant"
+                            class="w-full h-full object-cover"
+                            loading="lazy"
+                        >
+                    </div>
+                </div>
+
+                <!-- Author Bio -->
+                <div class="md:col-span-2 text-center md:text-left">
+                    <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">About the Author</p>
+                    <h2 class="font-serif text-3xl lg:text-4xl font-bold leading-tight mb-6">C.J. McKenna</h2>
+                    <p class="text-gray-300 text-lg lg:text-xl leading-relaxed mb-4">
+                        I've spent over a decade working on film sets, television productions, and Broadway stages as a Kissing and Intimacy Consultant. Yes, that's a real job.
+                    </p>
+                    <p class="text-gray-300 text-lg lg:text-xl leading-relaxed mb-4">
+                        When directors need two actors—often complete strangers, sometimes actively disliking each other—to generate electric on-screen chemistry, they call me.
+                    </p>
+                    <p class="text-gray-300 text-lg lg:text-xl leading-relaxed">
+                        I've choreographed thousands of kisses. I've catalogued what makes chemistry ignite and what makes it fizzle. And I've distilled everything into this book.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="py-24 px-6 section-fade">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">What Readers Say</p>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Real Results</h2>
+            </div>
+
+            <!-- Main testimonials grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Testimonial 1: The Long-Term Relationship -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "Married 11 years. Thought the spark was just... gone. Last Tuesday my wife pulled back mid-kiss and looked at me like she did when we were dating. Asked me what was different. I just smiled. She doesn't need to know about the book."
+                    </p>
+                    <p class="text-gold font-medium">— Marcus T., 42, Atlanta</p>
+                    <p class="text-gray-500 text-sm mt-2">Together 14 years</p>
+                </div>
+
+                <!-- Testimonial 2: The Skeptic -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "I rolled my eyes at myself for buying a 'kissing book.' Then I read Chapter 2 and realized I'd been doing the propeller tongue thing for YEARS without knowing it. Genuinely horrified. Genuinely grateful. My current girlfriend has no idea how close she came to experiencing that."
+                    </p>
+                    <p class="text-gold font-medium">— Daniel K., 29, Chicago</p>
+                </div>
+
+                <!-- Testimonial 3: The Nervous One -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "I'm 34 and had literally avoided dating because the thought of first kisses gave me panic attacks. The 'Magic Words' chapter gave me something I never had: a script. Had my first real kiss in 6 years last month. Cried in my car after (happy tears). Thank you."
+                    </p>
+                    <p class="text-gold font-medium">— Sam W., 34, Portland</p>
+                </div>
+
+                <!-- Testimonial 4: The Specific Technique -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "The X-spot thing sounded fake. Like something made up for marketing. Tried it anyway. She literally melted into me. I felt her knees buckle slightly. That's never happened before with anyone. I don't understand the science but I don't need to."
+                    </p>
+                    <p class="text-gold font-medium">— Chris L., 27, Austin</p>
+                </div>
+
+                <!-- Testimonial 5: The "Already Good" Revelation -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "I've always gotten compliments on my kissing. Bought this thinking it would just confirm what I already knew. Instead I discovered I had no idea what I was doing with my hands and my 'signature move' was actually on the Commandments list of what NOT to do. Humbling. Necessary."
+                    </p>
+                    <p class="text-gold font-medium">— Jordan M., 31, NYC</p>
+                </div>
+
+                <!-- Testimonial 6: The Rekindled -->
+                <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
+                    <div class="flex gap-1 mb-4">
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                        <span class="text-gold">★</span>
+                    </div>
+                    <p class="text-gray-300 text-lg italic mb-6">
+                        "My boyfriend of 3 years asked if I'd been watching tutorials online. I said no (technically true—I read a book). We made out for an hour like teenagers. We're 38. Didn't know that was still possible for us."
+                    </p>
+                    <p class="text-gold font-medium">— Rachel N., 38, San Diego</p>
+                </div>
+            </div>
+
+            <!-- Featured/longer testimonial -->
+            <div class="bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl p-10 max-w-3xl mx-auto">
+                <div class="flex gap-1 mb-6 justify-center">
+                    <span class="text-gold text-xl">★</span>
+                    <span class="text-gold text-xl">★</span>
+                    <span class="text-gold text-xl">★</span>
+                    <span class="text-gold text-xl">★</span>
+                    <span class="text-gold text-xl">★</span>
+                </div>
+                <p class="text-gray-200 italic text-lg lg:text-xl leading-relaxed mb-6 text-center">
+                    "I was the girl from CJ's story. Not literally—but I was her. I'd ended things with guys after one bad kiss more times than I can count. It felt shallow but I couldn't help it. Bad kissers just... felt like bad matches.
+                    <br><br>
+                    I bought this book to understand what made some kisses so wrong. What I learned changed how I think about intimacy entirely. The Mirror Technique isn't just about kissing—it's about being present. About paying attention. About caring enough to notice.
+                    <br><br>
+                    I sent this to my current partner. We read it together. Best decision we ever made."
+                </p>
+                <p class="text-gold font-medium text-center">— Elena V., 33, Miami</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHAPTER PREVIEW SECTION -->
+    <section class="py-24 px-6 bg-gradient-to-b from-charcoal to-wine/20 section-fade">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">Full Table of Contents</p>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">16 Chapters of Transformation</h2>
+                <p class="text-gray-400">From disaster to mastery—the complete journey.</p>
+            </div>
+
+            <div class="space-y-0">
+                <!-- Preface -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Preface</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Kiss and Burn</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">The disaster that started it all</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 1 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 1</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Much Ado About Kissing</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">What Shakespeare knew</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 2 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 2</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Mirror, Mirror Technique</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Your foundation</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 3 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 3</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Art of Discipline</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Building tension</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 4 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 4</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Shut Up and Dance With Me</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Full-body movement</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 5 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 5</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Kissing in La La Land</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Hollywood secrets</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 6 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 6</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">In Good Hands</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">What to do with them</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 7 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 7</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Body's Secret Playground</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Beyond the lips</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 8 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 8</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">"X" Marks the Spot</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">The discovery</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 9 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 9</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">All Hail the Inhale, Exhale!</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Breathing mastery</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 10 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 10</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Oh For the Love of You</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Self-confidence</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 11 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 11</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Passion Is as Passion Does</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Authentic intensity</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 12 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 12</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Magic Words</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Initiating with confidence</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 13 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 13</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Touch</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">The escalation ladder</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 14 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 14</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Kissing Commandments</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">What never to do</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 15 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 15</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">The Long Kiss Goodbye</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Long-term passion</span>
+                    </div>
+                </div>
+
+                <!-- Chapter 16 -->
+                <div class="chapter-item border-b border-gold/20 py-4 px-4 rounded cursor-default">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-gold/60 text-base">Chapter 16</span>
+                            <h4 class="font-serif text-xl lg:text-2xl text-cream">Your Mission</h4>
+                        </div>
+                        <span class="text-gray-500 text-base">Go change the world</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section class="py-24 px-6 section-fade">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">Questions?</p>
+                <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Frequently Asked</h2>
+            </div>
+
+            <div class="space-y-4" id="faq-container">
+                <!-- FAQ 1 -->
+                <div class="faq-item border border-gold/20 rounded-xl overflow-hidden">
+                    <button class="faq-toggle w-full text-left p-6 flex justify-between items-center hover:bg-wine/10 transition-colors">
+                        <span class="font-serif text-xl lg:text-2xl text-cream">Can you actually learn to be a better kisser?</span>
+                        <span class="faq-icon text-gold text-2xl transition-transform">+</span>
+                    </button>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-300 pb-6">
+                            Absolutely. Kissing is a skill, not a talent. The difference between a forgettable kiss and an unforgettable one is technique, awareness, and presence—all of which can be learned. I've taught actors who had never met to create on-screen chemistry that moved millions. The same principles work for everyone.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item border border-gold/20 rounded-xl overflow-hidden">
+                    <button class="faq-toggle w-full text-left p-6 flex justify-between items-center hover:bg-wine/10 transition-colors">
+                        <span class="font-serif text-xl lg:text-2xl text-cream">I'm in a long-term relationship. Is this still relevant?</span>
+                        <span class="faq-icon text-gold text-2xl transition-transform">+</span>
+                    </button>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-300 pb-6">
+                            Especially relevant. Chapter 15 is specifically about maintaining passion in long-term relationships. Many readers report that learning these techniques reignited something they thought was gone forever. Your partner will notice the difference immediately.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item border border-gold/20 rounded-xl overflow-hidden">
+                    <button class="faq-toggle w-full text-left p-6 flex justify-between items-center hover:bg-wine/10 transition-colors">
+                        <span class="font-serif text-xl lg:text-2xl text-cream">How is this different from random tips online?</span>
+                        <span class="faq-icon text-gold text-2xl transition-transform">+</span>
+                    </button>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-300 pb-6">
+                            This is the complete system, written by someone who does this professionally. It's not recycled "tips"—it's the same framework I use to choreograph kisses on film sets. Each chapter builds on the previous one, creating a foundation that transforms how you approach intimacy.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item border border-gold/20 rounded-xl overflow-hidden">
+                    <button class="faq-toggle w-full text-left p-6 flex justify-between items-center hover:bg-wine/10 transition-colors">
+                        <span class="font-serif text-xl lg:text-2xl text-cream">Is this appropriate for all orientations?</span>
+                        <span class="faq-icon text-gold text-2xl transition-transform">+</span>
+                    </button>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-300 pb-6">
+                            100%. The techniques are universal. Chemistry and connection work the same way regardless of who you're kissing. The principles of mirroring, presence, and physical communication apply to everyone.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item border border-gold/20 rounded-xl overflow-hidden">
+                    <button class="faq-toggle w-full text-left p-6 flex justify-between items-center hover:bg-wine/10 transition-colors">
+                        <span class="font-serif text-xl lg:text-2xl text-cream">What format is the book?</span>
+                        <span class="faq-icon text-gold text-2xl transition-transform">+</span>
+                    </button>
+                    <div class="faq-answer px-6">
+                        <p class="text-gray-300 pb-6">
+                            Instant PDF download. Approximately 200 pages. Read it on your phone, tablet, computer, or e-reader—whatever's convenient. You'll have access immediately after purchase.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-24 px-6 bg-gradient-to-b from-wine/20 to-charcoal section-fade">
+        <div class="max-w-xl mx-auto text-center">
+            <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">Get the Book</p>
+            <h2 class="font-serif text-4xl sm:text-5xl font-bold mb-4">Kiss Perfect Now</h2>
+            <p class="text-gray-400 mb-8">A Master Class in Kissology</p>
+
+            <div class="bg-wine/30 border border-gold/30 rounded-2xl p-10 mb-8">
+                <div class="text-5xl font-bold text-cream mb-6">
+                    $27
+                </div>
+
+                <ul class="text-left space-y-4 mb-8">
+                    <li class="flex items-center gap-3 text-gray-300">
+                        <svg class="w-5 h-5 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Complete 16-chapter guide (instant PDF download)
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-300">
+                        <svg class="w-5 h-5 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        The Mirror Technique breakdown
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-300">
+                        <svg class="w-5 h-5 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        The X-Spot revelation (Chapter 8)
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-300">
+                        <svg class="w-5 h-5 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        The 10 Kissing Commandments
+                    </li>
+                    <li class="flex items-center gap-3 text-gray-300">
+                        <svg class="w-5 h-5 text-gold flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Lifetime access—download anytime
+                    </li>
+                </ul>
+
+                <a href="#" class="cta-button text-charcoal font-bold py-5 px-12 rounded-lg text-xl inline-block w-full">
+                    I'm Ready to Kiss Better
+                </a>
+
+                <p class="text-gray-500 text-sm mt-6">
+                    Not satisfied? Email me. I'll make it right.
+                </p>
+            </div>
+
+            <p class="font-serif text-xl italic text-cream/80">
+                "This book is the difference between being forgotten and being remembered."
+            </p>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="py-24 px-6 section-fade">
+        <div class="max-w-2xl mx-auto text-center">
+            <p class="text-gray-400 text-lg mb-4">Still here?</p>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-8">
+                That means you know mediocre kisses aren't enough.
+            </h2>
+            <a href="#pricing" class="cta-button text-charcoal font-bold py-5 px-12 rounded-lg text-xl inline-block">
+                Get the Book
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-12 px-6 border-t border-gold/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <p class="font-serif text-xl lg:text-2xl text-cream mb-2">howtokissbetter.com</p>
+                    <p class="text-gray-500 text-sm">&copy; 2024 C.J. McKenna. All rights reserved.</p>
+                </div>
+                <div class="flex gap-6 text-sm text-gray-500">
+                    <a href="#" class="hover:text-gold transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-gold transition-colors">Terms of Service</a>
+                    <a href="mailto:hello@howtokissbetter.com" class="hover:text-gold transition-colors">Contact</a>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <p class="font-serif text-lg lg:text-xl italic text-cream/60">
+                    "There are two great joys in life. To be kissed by someone who truly knows what they're doing. And to be that someone."
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-fade').forEach(section => {
+            observer.observe(section);
+        });
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const item = toggle.parentElement;
+                const isOpen = item.classList.contains('open');
+
+                // Close all items
+                document.querySelectorAll('.faq-item').forEach(faq => {
+                    faq.classList.remove('open');
+                });
+
+                // Open clicked item if it wasn't open
+                if (!isOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

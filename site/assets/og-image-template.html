@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Template - Screenshot at 1200x630</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 1200px;
+            height: 630px;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .og-container {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1a0a0c 0%, #2D2D2D 50%, #1a0a0c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 60px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative elements */
+        .glow-1 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(114, 47, 55, 0.4) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
+
+        .glow-2 {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            bottom: -50px;
+            right: 200px;
+            border-radius: 50%;
+        }
+
+        .content {
+            flex: 1;
+            z-index: 10;
+            padding-right: 60px;
+        }
+
+        .tagline {
+            color: #D4AF37;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .headline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 64px;
+            font-weight: 700;
+            color: #F5F5F5;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .headline .highlight {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subheadline {
+            font-size: 22px;
+            color: #9CA3AF;
+            line-height: 1.5;
+            max-width: 500px;
+        }
+
+        .author {
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-line {
+            width: 40px;
+            height: 2px;
+            background: #D4AF37;
+        }
+
+        .author-text {
+            color: #D4AF37;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Book mockup */
+        .book-container {
+            z-index: 10;
+            transform: perspective(1000px) rotateY(-8deg);
+        }
+
+        .book {
+            width: 280px;
+            height: 380px;
+            background: linear-gradient(145deg, #722F37 0%, #4A1C23 50%, #722F37 100%);
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow:
+                25px 25px 60px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(212, 175, 55, 0.1),
+                inset 0 0 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-inner {
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 4px;
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-subtitle {
+            color: rgba(212, 175, 55, 0.7);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .book-title-container {
+            text-align: center;
+        }
+
+        .book-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #FDF8F3;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .book-divider {
+            width: 50px;
+            height: 2px;
+            background: #D4AF37;
+            margin: 16px auto;
+        }
+
+        .book-tagline {
+            color: rgba(253, 248, 243, 0.5);
+            font-size: 12px;
+        }
+
+        .book-author {
+            color: #D4AF37;
+            font-size: 14px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* URL badge */
+        .url-badge {
+            position: absolute;
+            bottom: 40px;
+            left: 80px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 12px 24px;
+            border-radius: 6px;
+            color: #D4AF37;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="og-container">
+        <!-- Decorative glows -->
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+
+        <!-- Main content -->
+        <div class="content">
+            <div class="tagline">From Hollywood's Kissing Coach</div>
+            <h1 class="headline">
+                Your Kissing Is<br>
+                <span class="highlight">Forgettable.</span><br>
+                Let's Fix That.
+            </h1>
+            <p class="subheadline">
+                The complete guide to becoming unforgettable. Techniques used on film sets, now available to everyone.
+            </p>
+            <div class="author">
+                <div class="author-line"></div>
+                <span class="author-text">C.J. McKenna</span>
+            </div>
+        </div>
+
+        <!-- Book mockup -->
+        <div class="book-container">
+            <div class="book">
+                <div class="book-inner">
+                    <div class="book-subtitle">A Master Class in Kissology</div>
+                    <div class="book-title-container">
+                        <div class="book-title">Kiss Perfect Now</div>
+                        <div class="book-divider"></div>
+                        <div class="book-tagline">The complete guide to becoming unforgettable</div>
+                    </div>
+                    <div class="book-author">C.J. McKenna</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL badge -->
+        <div class="url-badge">howtokissbetter.com</div>
+    </div>
+</body>
+</html>
