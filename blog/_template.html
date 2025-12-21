@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>{{TITLE}} | How to Kiss Better</title>
+    <meta name="description" content="{{DESCRIPTION}}">
+    <meta name="keywords" content="{{KEYWORD}}, kissing tips, how to kiss, kissing techniques">
+    <meta name="author" content="C.J. McKenna">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://howtokissbetter.com/blog/{{SLUG}}/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://howtokissbetter.com/blog/{{SLUG}}/">
+    <meta property="og:title" content="{{TITLE}}">
+    <meta property="og:description" content="{{DESCRIPTION}}">
+    <meta property="og:image" content="https://howtokissbetter.com/blog/{{SLUG}}/featured.jpg">
+    <meta property="article:published_time" content="{{DATE}}">
+    <meta property="article:author" content="C.J. McKenna">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{TITLE}}">
+    <meta name="twitter:description" content="{{DESCRIPTION}}">
+    <meta name="twitter:image" content="https://howtokissbetter.com/blog/{{SLUG}}/featured.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        burgundy: '#722F37',
+                        wine: '#4A1C23',
+                        cream: '#FDF8F3',
+                        gold: '#D4AF37',
+                        'gold-dark': '#B8860B',
+                        charcoal: '#2D2D2D',
+                        'off-white': '#F5F5F5',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        .gradient-text {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Article styles */
+        .article-content h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #FDF8F3;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        .article-content h3 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #D4AF37;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        .article-content p {
+            color: #d1d5db;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            margin-bottom: 1.25rem;
+        }
+        .article-content ul, .article-content ol {
+            color: #d1d5db;
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .article-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+        }
+        .article-content ul li {
+            list-style-type: disc;
+        }
+        .article-content ol li {
+            list-style-type: decimal;
+        }
+        .article-content strong {
+            color: #FDF8F3;
+            font-weight: 600;
+        }
+        .article-content em {
+            font-style: italic;
+        }
+        .article-content blockquote {
+            border-left: 4px solid #D4AF37;
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.375rem;
+            font-style: italic;
+            color: #FDF8F3;
+        }
+        .article-content a {
+            color: #D4AF37;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .article-content a:hover {
+            color: #B8860B;
+        }
+    </style>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "{{TITLE}}",
+        "description": "{{DESCRIPTION}}",
+        "image": "https://howtokissbetter.com/blog/{{SLUG}}/featured.jpg",
+        "author": {
+            "@type": "Person",
+            "name": "C.J. McKenna"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "How to Kiss Better",
+            "url": "https://howtokissbetter.com"
+        },
+        "datePublished": "{{DATE}}",
+        "dateModified": "{{DATE}}",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://howtokissbetter.com/blog/{{SLUG}}/"
+        }
+    }
+    </script>
+</head>
+
+<body class="bg-charcoal text-off-white font-sans antialiased">
+
+    <!-- HEADER -->
+    <header class="py-6 px-6 border-b border-gold/10">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="font-serif text-2xl text-cream hover:text-gold transition-colors">
+                howtokissbetter.com
+            </a>
+            <nav class="flex gap-8 items-center">
+                <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors">Blog</a>
+                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors">The Book</a>
+                <a href="https://howtokissbetter.lemonsqueezy.com/checkout/buy/d4735107-9adf-4adc-b59c-c7e36e15dd20?embed=1" class="lemonsqueezy-button bg-gold text-charcoal font-semibold py-2 px-6 rounded-lg hover:bg-gold-dark transition-colors">
+                    Get the Book
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ARTICLE -->
+    <article class="py-12 px-6">
+        <div class="max-w-3xl mx-auto">
+            
+            <!-- Article Header -->
+            <header class="mb-10">
+                <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
+                    <a href="/blog/" class="hover:text-gold transition-colors">← Back to Blog</a>
+                    <span>•</span>
+                    <span class="text-gold uppercase tracking-wider">{{CATEGORY}}</span>
+                    <span>•</span>
+                    <time datetime="{{DATE}}">{{DATE_FORMATTED}}</time>
+                </div>
+                
+                <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-cream mb-6">
+                    {{TITLE}}
+                </h1>
+                
+                <p class="text-xl text-gray-400 leading-relaxed">
+                    {{DESCRIPTION}}
+                </p>
+            </header>
+
+            <!-- Featured Image -->
+            <div class="aspect-video rounded-xl overflow-hidden mb-10 border border-gold/20">
+                <img src="featured.jpg" alt="{{TITLE}}" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Article Content -->
+            <div class="article-content">
+                {{CONTENT}}
+            </div>
+
+            <!-- Author Box -->
+            <div class="mt-16 p-8 bg-wine/20 border border-gold/20 rounded-xl">
+                <div class="flex items-center gap-6">
+                    <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-20 h-20 rounded-full border-2 border-gold/30">
+                    <div>
+                        <p class="text-gold font-medium text-sm uppercase tracking-wider mb-1">Written by</p>
+                        <p class="font-serif text-2xl text-cream">C.J. McKenna</p>
+                        <p class="text-gray-400 mt-2">Author of Kiss Perfect Now: A Master Class in Kissology</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Box -->
+            <div class="mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center">
+                <h3 class="font-serif text-2xl text-cream mb-4">Want More?</h3>
+                <p class="text-gray-400 mb-6">This article is just a preview. The complete system is in the book.</p>
+                <a href="https://howtokissbetter.lemonsqueezy.com/checkout/buy/d4735107-9adf-4adc-b59c-c7e36e15dd20?embed=1" class="lemonsqueezy-button inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-8 rounded-lg hover:opacity-90 transition-opacity">
+                    Get Kiss Perfect Now — $27
+                </a>
+            </div>
+
+        </div>
+    </article>
+
+    <!-- Related Posts -->
+    <section class="py-16 px-6 bg-wine/10">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="font-serif text-2xl text-cream mb-8 text-center">More Articles</h2>
+            <div class="grid md:grid-cols-3 gap-6" id="related-posts">
+                <!-- Dynamically loaded -->
+            </div>
+            <div class="text-center mt-8">
+                <a href="/blog/" class="text-gold hover:text-gold-dark transition-colors">View all articles →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-12 px-6 border-t border-gold/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <a href="/" class="font-serif text-xl text-cream hover:text-gold transition-colors">howtokissbetter.com</a>
+                    <p class="text-gray-500 text-sm mt-2">&copy; 2026 C.J. McKenna. All rights reserved.</p>
+                </div>
+                <div class="flex gap-6 text-sm text-gray-500">
+                    <a href="/" class="hover:text-gold transition-colors">Home</a>
+                    <a href="/blog/" class="hover:text-gold transition-colors">Blog</a>
+                    <a href="mailto:hello@howtokissbetter.com" class="hover:text-gold transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load related posts
+        async function loadRelated() {
+            try {
+                const response = await fetch('/blog/posts.json');
+                const posts = await response.json();
+                const currentSlug = '{{SLUG}}';
+                const related = posts.filter(p => p.slug !== currentSlug).slice(0, 3);
+                
+                if (related.length === 0) return;
+                
+                document.getElementById('related-posts').innerHTML = related.map(post => `
+                    <a href="/blog/${post.slug}/" class="block bg-wine/20 border border-gold/20 rounded-xl overflow-hidden hover:border-gold/40 transition-colors">
+                        <div class="aspect-video overflow-hidden">
+                            <img src="/blog/${post.slug}/featured.jpg" alt="${post.title}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-serif text-lg text-cream leading-tight">${post.title}</h3>
+                        </div>
+                    </a>
+                `).join('');
+            } catch (e) {}
+        }
+        loadRelated();
+    </script>
+    <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+</body>
+</html>
