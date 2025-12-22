@@ -163,16 +163,18 @@
 <body class="bg-charcoal text-off-white font-sans antialiased">
 
     <!-- HEADER -->
-    <header class="py-6 px-6 border-b border-gold/10">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <a href="/" class="font-serif text-2xl text-cream hover:text-gold transition-colors">
-                How to <span class="gradient-text">Kiss Better</span>
+    <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10">
+        <div class="max-w-6xl mx-auto flex justify-between items-center gap-4">
+            <a href="/" class="font-serif text-lg sm:text-2xl text-cream hover:text-gold transition-colors whitespace-nowrap">
+                <span class="sm:hidden">Kiss <span class="gradient-text">Better</span></span>
+                <span class="hidden sm:inline">How to <span class="gradient-text">Kiss Better</span></span>
             </a>
-            <nav class="flex gap-8 items-center">
-                <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors">Blog</a>
-                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors">The Book</a>
-                <a href="https://howtokissbetter.lemonsqueezy.com/checkout/buy/d4735107-9adf-4adc-b59c-c7e36e15dd20?embed=1" class="lemonsqueezy-button bg-gold text-charcoal font-semibold py-2 px-6 rounded-lg hover:bg-gold-dark transition-colors">
-                    Get the Book
+            <nav class="flex gap-4 sm:gap-8 items-center">
+                <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
+                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
+                <a href="https://howtokissbetter.lemonsqueezy.com/checkout/buy/d4735107-9adf-4adc-b59c-c7e36e15dd20?embed=1" class="lemonsqueezy-button bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                    <span class="sm:hidden">Get Book</span>
+                    <span class="hidden sm:inline">Get the Book</span>
                 </a>
             </nav>
         </div>
@@ -212,13 +214,13 @@
             </div>
 
             <!-- Author Box -->
-            <div class="mt-16 p-8 bg-wine/20 border border-gold/20 rounded-xl">
-                <div class="flex items-center gap-6">
-                    <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-20 h-20 rounded-full border-2 border-gold/30">
+            <div class="mt-16 p-6 sm:p-8 bg-wine/20 border border-gold/20 rounded-xl">
+                <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 text-center sm:text-left">
+                    <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-20 h-20 rounded-full border-2 border-gold/30 flex-shrink-0">
                     <div>
                         <p class="text-gold font-medium text-sm uppercase tracking-wider mb-1">Written by</p>
                         <p class="font-serif text-2xl text-cream">C.J. McKenna</p>
-                        <p class="text-gray-400 mt-2">Author of Kiss Perfect Now: A Master Class in Kissology</p>
+                        <p class="text-gray-400 mt-2 text-sm sm:text-base">Author of Kiss Perfect Now: A Master Class in Kissology</p>
                     </div>
                 </div>
             </div>
@@ -249,19 +251,19 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="py-12 px-6 border-t border-gold/10">
+    <footer class="py-12 px-4 sm:px-6 border-t border-gold/10">
         <div class="max-w-4xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="text-center md:text-left">
                     <a href="/" class="font-serif text-xl text-cream hover:text-gold transition-colors">How to <span class="gradient-text">Kiss Better</span></a>
                     <p class="text-gray-500 text-sm mt-2">&copy; 2026 C.J. McKenna. All rights reserved.</p>
                 </div>
-                <div class="flex gap-6 text-sm text-gray-500">
-                    <a href="/" class="hover:text-gold transition-colors">Home</a>
-                    <a href="/blog/" class="hover:text-gold transition-colors">Blog</a>
-                    <a href="/privacy/" class="hover:text-gold transition-colors">Privacy Policy</a>
-                    <a href="/terms/" class="hover:text-gold transition-colors">Terms of Service</a>
-                </div>
+                <nav class="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-sm text-gray-500">
+                    <a href="/" class="hover:text-gold transition-colors whitespace-nowrap">Home</a>
+                    <a href="/blog/" class="hover:text-gold transition-colors whitespace-nowrap">Blog</a>
+                    <a href="/privacy/" class="hover:text-gold transition-colors whitespace-nowrap">Privacy</a>
+                    <a href="/terms/" class="hover:text-gold transition-colors whitespace-nowrap">Terms</a>
+                </nav>
             </div>
         </div>
     </footer>
