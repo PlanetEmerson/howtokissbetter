@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>How to Kiss Better Blog</title>
+    <link>https://howtokissbetter.com/blog/</link>
+    <description>Expert kissing advice, techniques, and tips from C.J. McKenna</description>
+    <language>en-us</language>
+    <atom:link href="https://howtokissbetter.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+
+    <item>
+      <title>Types of Kisses and What They Really Mean</title>
+      <link>https://howtokissbetter.com/blog/types-of-kisses-and-what-they-mean/</link>
+      <description>Discover what different types of kisses reveal about your relationship. From forehead kisses to French kisses, learn the hidden language of intimacy.</description>
+      <pubDate>Sun, 22 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>https://howtokissbetter.com/blog/types-of-kisses-and-what-they-mean/</guid>
+    </item>
+
+    <item>
+      <title>Signs You're a Bad Kisser (And How to Fix It)</title>
+      <link>https://howtokissbetter.com/blog/signs-youre-a-bad-kisser/</link>
+      <description>Worried you might be a bad kisser? Learn the 7 telltale signs and exactly how to fix each one. No judgment, just solutions.</description>
+      <pubDate>Sat, 21 Dec 2025 12:00:00 GMT</pubDate>
+      <guid>https://howtokissbetter.com/blog/signs-youre-a-bad-kisser/</guid>
+    </item>
+
+    <item>
+      <title>First Kiss Nerves Are Normal: Here's What Actually Matters</title>
+      <link>https://howtokissbetter.com/blog/first-kiss-nerves-what-actually-matters/</link>
+      <description>Everyone is nervous before a first kiss. Learn how to read the signals, build the moment, and move through the nerves.</description>
+      <pubDate>Sat, 21 Dec 2025 08:00:00 GMT</pubDate>
+      <guid>https://howtokissbetter.com/blog/first-kiss-nerves-what-actually-matters/</guid>
+    </item>
+
+    <item>
+      <title>How to Be a Better Kisser: 7 Techniques That Actually Work</title>
+      <link>https://howtokissbetter.com/blog/how-to-be-a-better-kisser/</link>
+      <description>Learn how to be a better kisser with 7 expert techniques. Master the Mirror Technique and create chemistry that lingers.</description>
+      <pubDate>Sat, 21 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>https://howtokissbetter.com/blog/how-to-be-a-better-kisser/</guid>
+    </item>
+
+  </channel>
+</rss>
