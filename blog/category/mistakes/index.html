@@ -46,7 +46,7 @@
             <a href="/" class="font-serif text-2xl text-cream hover:text-gold transition-colors">How to <span class="gradient-text">Kiss Better</span></a>
             <nav class="flex gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors">Blog</a>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="payhip-buy-button bg-gold text-charcoal font-semibold py-2 px-6 rounded-lg hover:bg-gold-dark transition-colors">Get the Book</a>
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gold text-charcoal font-semibold py-2 px-6 rounded-lg hover:bg-gold-dark transition-colors">Get the Book</a>
             </nav>
         </div>
     </header>
@@ -68,7 +68,7 @@
         <div class="max-w-2xl mx-auto text-center">
             <h2 class="font-serif text-3xl sm:text-4xl font-bold mb-6">The 10 Commandments of Kissing</h2>
             <p class="text-gray-400 text-lg mb-8">Chapter 14 of the book reveals the complete list of what never to do. Some will surprise you.</p>
-            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="payhip-buy-button" data-product="YyLMc bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">Get Kiss Perfect Now</a>
+            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">Get Kiss Perfect Now</a>
         </div>
     </section>
     <footer class="py-12 px-6 border-t border-gold/10">
@@ -97,5 +97,20 @@
         loadPosts();
     </script>
     <script src="https://payhip.com/payhip.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[data-product]').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var productId = this.getAttribute('data-product');
+                    if (typeof Payhip !== 'undefined' && Payhip.Checkout) {
+                        Payhip.Checkout.open({ product: productId });
+                    } else {
+                        window.open(this.href, '_blank');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

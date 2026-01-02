@@ -214,7 +214,7 @@
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
                 <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="payhip-buy-button bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -386,7 +386,7 @@
             <div class="mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center">
                 <h3 class="font-serif text-2xl text-cream mb-4">Turn Science Into Skill</h3>
                 <p class="text-gray-400 mb-6">Now that you know what happens when you kiss, learn the techniques that make every kiss unforgettable.</p>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="payhip-buy-button inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
                     Get Kiss Perfect Now - $27
                 </a>
             </div>
@@ -451,5 +451,20 @@
         loadRelated();
     </script>
     <script src="https://payhip.com/payhip.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('a[data-product]').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var productId = this.getAttribute('data-product');
+                    if (typeof Payhip !== 'undefined' && Payhip.Checkout) {
+                        Payhip.Checkout.open({ product: productId });
+                    } else {
+                        window.open(this.href, '_blank');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
