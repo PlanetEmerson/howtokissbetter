@@ -255,6 +255,31 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center center;
+        }
+
+        /* Mobile: Reposition backgrounds to show key subjects */
+        @media (max-width: 768px) {
+            .hero-bg-img {
+                object-position: center 30%; /* Show the couple higher */
+            }
+            .problem-bg-img {
+                object-position: center center;
+            }
+            .author-bg-img {
+                object-position: center 40%;
+            }
+            /* Reduce Ken Burns scale on mobile for better framing */
+            .ken-burns {
+                animation-name: heroDriftMobile;
+            }
+            @keyframes heroDriftMobile {
+                0% { transform: scale(1.01) translate(0, 0); }
+                25% { transform: scale(1.03) translate(-0.3%, -0.2%); }
+                50% { transform: scale(1.02) translate(0.2%, 0.1%); }
+                75% { transform: scale(1.04) translate(-0.2%, 0.2%); }
+                100% { transform: scale(1.01) translate(0, 0); }
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -351,9 +376,9 @@
         <!-- Hero background image with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns" loading="eager">
+                <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns hero-bg-img" loading="eager">
             </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/70 to-charcoal"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/55 to-charcoal"></div>
         </div>
 
         <div class="max-w-6xl mx-auto relative z-10">
@@ -415,9 +440,9 @@
         <!-- Section background with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/problem-bg.png" alt="" class="ken-burns ken-burns-slow opacity-30" loading="lazy">
+                <img src="assets/images/problem-bg.png" alt="" class="ken-burns ken-burns-slow opacity-50 problem-bg-img" loading="lazy">
             </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/90 to-wine/30"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/80 via-charcoal/60 to-wine/20"></div>
         </div>
         <div class="max-w-3xl mx-auto relative z-10">
             <div class="text-center mb-12">
@@ -554,9 +579,9 @@
         <!-- Section background with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/author-bg.png" alt="" class="ken-burns ken-burns-reverse opacity-25" loading="lazy">
+                <img src="assets/images/author-bg.png" alt="" class="ken-burns ken-burns-reverse opacity-45 author-bg-img" loading="lazy">
             </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-wine/30 via-charcoal/90 to-charcoal"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-wine/20 via-charcoal/60 to-charcoal/90"></div>
         </div>
         <div class="max-w-4xl mx-auto relative z-10">
             <div class="grid md:grid-cols-3 gap-12 items-center">
