@@ -144,6 +144,135 @@
             background: rgba(212, 175, 55, 0.1);
             padding-left: 1.5rem;
         }
+
+        /* Ken Burns Drift Animation - Living Backgrounds */
+        .ken-burns {
+            animation: heroDrift 25s ease-in-out infinite;
+            will-change: transform;
+        }
+        .ken-burns-slow { animation-duration: 35s; }
+        .ken-burns-reverse { animation-direction: reverse; }
+
+        @keyframes heroDrift {
+            0% { transform: scale(1.02) translate(0, 0); }
+            25% { transform: scale(1.06) translate(-0.5%, -0.3%); }
+            50% { transform: scale(1.04) translate(0.3%, 0.2%); }
+            75% { transform: scale(1.07) translate(-0.3%, 0.4%); }
+            100% { transform: scale(1.02) translate(0, 0); }
+        }
+
+        /* Book Float Animation */
+        .book-float {
+            animation: bookFloat 6s ease-in-out infinite;
+        }
+        @keyframes bookFloat {
+            0%, 100% { transform: translateY(0) rotateY(-5deg); }
+            50% { transform: translateY(-10px) rotateY(-5deg); }
+        }
+        .book-float:hover {
+            animation-play-state: paused;
+        }
+
+        /* Button Shine Effect */
+        .cta-button {
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* Staggered Fade Animations */
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .stagger-children.visible > *:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-children.visible > *:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-children.visible > *:nth-child(3) { transition-delay: 0.3s; }
+        .stagger-children.visible > *:nth-child(4) { transition-delay: 0.4s; }
+        .stagger-children.visible > *:nth-child(5) { transition-delay: 0.5s; }
+        .stagger-children.visible > *:nth-child(6) { transition-delay: 0.6s; }
+        .stagger-children.visible > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            transform-origin: left;
+            transform: scaleX(0);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Pull Quote Slide Animation */
+        .pull-quote {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .pull-quote.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Grain Texture Overlay */
+        .grain-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('assets/images/textures/grain.png');
+            background-size: 200px 200px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Section Background Container */
+        .section-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .section-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ken-burns,
+            .book-float,
+            .cta-button.primary {
+                animation: none;
+            }
+            .stagger-children > * {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+            .pull-quote {
+                opacity: 1;
+                transform: none;
+            }
+        }
     </style>
 
     <!-- JSON-LD Schema -->
@@ -214,12 +343,17 @@
 
 <body class="bg-charcoal text-off-white font-sans antialiased">
 
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+
     <!-- HERO SECTION -->
     <section class="min-h-screen flex items-center justify-center px-6 py-20 relative overflow-hidden">
-        <!-- Hero background image -->
-        <div class="absolute inset-0">
-            <img src="assets/images/hero-bg.png" alt="" class="w-full h-full object-cover opacity-40" loading="eager">
-            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/80 to-charcoal"></div>
+        <!-- Hero background image with Ken Burns -->
+        <div class="absolute inset-0 grain-overlay">
+            <div class="section-bg">
+                <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns" loading="eager">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/70 to-charcoal"></div>
         </div>
 
         <div class="max-w-6xl mx-auto relative z-10">
@@ -256,9 +390,9 @@
 
                 <!-- Book Cover -->
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <div class="relative">
+                    <div class="relative book-float" style="perspective: 1000px;">
                         <!-- Real book cover image -->
-                        <div class="book-shadow rounded-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="book-shadow rounded-lg overflow-hidden" style="transform: rotateY(-5deg);">
                             <img
                                 src="assets/images/book-cover.png"
                                 alt="Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna"
@@ -277,8 +411,15 @@
     </section>
 
     <!-- THE PROBLEM SECTION -->
-    <section class="py-12 sm:py-24 px-6 bg-gradient-to-b from-charcoal to-wine/20 section-fade">
-        <div class="max-w-3xl mx-auto">
+    <section class="py-12 sm:py-24 px-6 relative overflow-hidden section-fade">
+        <!-- Section background with Ken Burns -->
+        <div class="absolute inset-0 grain-overlay">
+            <div class="section-bg">
+                <img src="assets/images/problem-bg.png" alt="" class="ken-burns ken-burns-slow opacity-30" loading="lazy">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-charcoal via-charcoal/90 to-wine/30"></div>
+        </div>
+        <div class="max-w-3xl mx-auto relative z-10">
             <div class="text-center mb-12">
                 <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">The Night Everything Changed</h2>
                 <div class="w-16 h-0.5 bg-gold mx-auto"></div>
@@ -305,7 +446,7 @@
                     She was <em>good</em>. Not just good. <em>Confident</em>. Her kisses had variety, rhythm, intention. There were sub-types of kisses I didn't know existed. And I was lost in a language I had never learned.
                 </p>
 
-                <blockquote class="border-l-4 border-gold pl-6 my-10 text-xl lg:text-2xl font-serif italic text-cream">
+                <blockquote class="border-l-4 border-gold pl-6 my-10 text-xl lg:text-2xl font-serif italic text-cream pull-quote">
                     "I could feel her enthusiasm dimming in real-time, like a light on a dimmer switch being slowly turned down."
                 </blockquote>
 
@@ -350,7 +491,7 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
+            <div class="grid md:grid-cols-2 gap-8 stagger-children">
                 <!-- Technique Card 1 -->
                 <div class="bg-wine/20 border border-gold/20 rounded-xl p-8 hover:border-gold/40 transition-colors">
                     <div class="text-gold text-3xl mb-4">01</div>
@@ -409,8 +550,15 @@
     </section>
 
     <!-- AUTHOR SECTION -->
-    <section class="py-12 sm:py-24 px-6 bg-gradient-to-b from-wine/20 to-charcoal section-fade">
-        <div class="max-w-4xl mx-auto">
+    <section class="py-12 sm:py-24 px-6 relative overflow-hidden section-fade">
+        <!-- Section background with Ken Burns -->
+        <div class="absolute inset-0 grain-overlay">
+            <div class="section-bg">
+                <img src="assets/images/author-bg.png" alt="" class="ken-burns ken-burns-reverse opacity-25" loading="lazy">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-b from-wine/30 via-charcoal/90 to-charcoal"></div>
+        </div>
+        <div class="max-w-4xl mx-auto relative z-10">
             <div class="grid md:grid-cols-3 gap-12 items-center">
                 <!-- Author Image -->
                 <div class="flex justify-center">
@@ -451,7 +599,7 @@
             </div>
 
             <!-- Main testimonials grid -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 stagger-children">
                 <!-- Testimonial 1: The Long-Term Relationship -->
                 <div class="bg-wine/20 border border-gold/20 rounded-xl p-8">
                     <div class="flex gap-1 mb-4">
@@ -982,7 +1130,7 @@
         // Intersection Observer for fade-in animations
         const observerOptions = {
             root: null,
-            rootMargin: '0px',
+            rootMargin: '0px 0px -50px 0px',
             threshold: 0.1
         };
 
@@ -994,9 +1142,21 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.section-fade').forEach(section => {
-            observer.observe(section);
+        // Observe all animated elements
+        document.querySelectorAll('.section-fade, .stagger-children, .pull-quote').forEach(el => {
+            observer.observe(el);
         });
+
+        // Scroll Progress Bar
+        const progressBar = document.getElementById('scroll-progress');
+        if (progressBar) {
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = scrollTop / docHeight;
+                progressBar.style.transform = `scaleX(${progress})`;
+            }, { passive: true });
+        }
 
         // FAQ Accordion
         document.querySelectorAll('.faq-toggle').forEach(toggle => {
