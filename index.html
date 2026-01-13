@@ -163,11 +163,15 @@
 
         /* Book Float Animation */
         .book-float {
-            animation: bookFloat 6s ease-in-out infinite;
+            animation: bookFloat 6s ease-in-out infinite, bookFadeIn 2.5s ease-out forwards;
         }
         @keyframes bookFloat {
             0%, 100% { transform: translateY(0) rotateY(-5deg); }
             50% { transform: translateY(-10px) rotateY(-5deg); }
+        }
+        @keyframes bookFadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         .book-float:hover {
             animation-play-state: paused;
@@ -284,9 +288,12 @@
 
         @media (prefers-reduced-motion: reduce) {
             .ken-burns,
-            .book-float,
             .cta-button.primary {
                 animation: none;
+            }
+            .book-float {
+                animation: none;
+                opacity: 1;
             }
             .stagger-children > * {
                 opacity: 1;
