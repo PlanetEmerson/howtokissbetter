@@ -8,9 +8,15 @@
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/</loc>
-    <lastmod>2026-01-12</lastmod>
+    <lastmod>2026-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://howtokissbetter.com/blog/fresh-breath-before-kissing/</loc>
+    <lastmod>2026-01-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-practice-kissing/</loc>
@@ -123,6 +129,12 @@
   <url>
     <loc>https://howtokissbetter.com/blog/category/science/</loc>
     <lastmod>2025-12-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://howtokissbetter.com/blog/category/preparation/</loc>
+    <lastmod>2026-01-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
