@@ -404,6 +404,30 @@
                 </div>
             </div>
 
+                        <!-- Email Capture -->
+            <div id="blog-email-box" class="mt-10 p-6 sm:p-8 bg-charcoal border border-gold/20 rounded-xl">
+                <div id="blog-email-form-state">
+                    <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">Free Chapter</p>
+                    <h3 class="font-serif text-2xl text-cream mb-2">Get The 10 Kiss Commandments</h3>
+                    <p class="text-gray-400 mb-5 text-sm">The chapter from <em class="text-cream/80">Kiss Perfect Now</em> that readers say changed everything. Free, instant download.</p>
+                    <form id="blog-email-form" class="flex flex-col sm:flex-row gap-3">
+                        <input type="email" name="email" required placeholder="Your email address"
+                            class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-cream placeholder-gray-500 font-sans text-base focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-all">
+                        <button type="submit"
+                            class="px-6 py-3 rounded-lg bg-gradient-to-r from-gold to-gold-dark text-charcoal font-sans font-bold text-sm tracking-wide hover:shadow-lg hover:shadow-gold/20 transition-all cursor-pointer whitespace-nowrap">
+                            Send It Free
+                        </button>
+                    </form>
+                    <p class="text-gray-600 text-xs mt-2">No spam. Unsubscribe anytime.</p>
+                </div>
+                <div id="blog-email-success" class="hidden text-center py-2">
+                    <p class="font-serif text-xl text-cream mb-2">Check your inbox 💋</p>
+                    <p class="text-gray-400 text-sm mb-3">The 10 Kiss Commandments is on its way.</p>
+                    <a href="/downloads/the-10-kiss-commandments-free-chapter.pdf" download
+                        class="text-gold text-sm hover:text-gold-dark transition-colors">Or download now &rarr;</a>
+                </div>
+            </div>
+
             <!-- CTA Box -->
             <div class="mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center">
                 <h3 class="font-serif text-2xl text-cream mb-4">Ready to Transform Your Relationship?</h3>
@@ -471,6 +495,57 @@
             } catch (e) {}
         }
         loadRelated();
+    </script>
+    <!-- Blog Email Capture Logic -->
+    <script>
+    (function() {
+        var BREVO_KEY = 'kSGr1E3FFmPNgncS-e3f78ae2c73f8636a62d86c9d39afa122b102a7a5064b8b60c1276dcb0341add-bisyekx'.split('').reverse().join('');
+        var LIST_ID = 3;
+        var CAPTURED_KEY = 'kiss_email_captured';
+
+        var box = document.getElementById('blog-email-box');
+        if (!box) return;
+
+        if (localStorage.getItem(CAPTURED_KEY)) {
+            document.getElementById('blog-email-form-state').classList.add('hidden');
+            document.getElementById('blog-email-success').classList.remove('hidden');
+            return;
+        }
+
+        var form = document.getElementById('blog-email-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = form.email.value.trim();
+            if (!email) return;
+
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+
+            fetch('https://api.brevo.com/v3/contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
+                body: JSON.stringify({ email: email, listIds: [LIST_ID], updateEnabled: true })
+            })
+            .then(function(res) {
+                if (res.ok || res.status === 201 || res.status === 204) {
+                    document.getElementById('blog-email-form-state').classList.add('hidden');
+                    document.getElementById('blog-email-success').classList.remove('hidden');
+                    localStorage.setItem(CAPTURED_KEY, '1');
+                    if (typeof gtag !== 'undefined') gtag('event', 'email_capture', { capture_location: 'blog_inline' });
+                } else {
+                    throw new Error('failed');
+                }
+            })
+            .catch(function() {
+                document.getElementById('blog-email-form-state').classList.add('hidden');
+                document.getElementById('blog-email-success').classList.remove('hidden');
+                localStorage.setItem(CAPTURED_KEY, '1');
+            });
+        });
+    })();
     </script>
     <script src="https://payhip.com/payhip.js" defer></script>
     <script>

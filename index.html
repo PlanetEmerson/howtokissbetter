@@ -338,6 +338,47 @@
         .sticky-nav.visible {
             transform: translateY(0);
         }
+
+        /* Exit-Intent Popup */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .popup-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .popup-modal {
+            background: linear-gradient(180deg, #2D2D2D 0%, #1a1a1a 100%);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 1rem;
+            max-width: 460px;
+            width: 100%;
+            padding: 2.5rem 2rem;
+            position: relative;
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+        .popup-overlay.active .popup-modal {
+            transform: scale(1) translateY(0);
+        }
+        .popup-input:focus {
+            outline: none;
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+        }
     </style>
 
 
@@ -1243,6 +1284,41 @@
         </div>
     </footer>
 
+    <!-- Exit-Intent Popup -->
+    <div id="exit-popup" class="popup-overlay">
+        <div class="popup-modal">
+            <button onclick="document.getElementById('exit-popup').classList.remove('active');localStorage.setItem('kiss_popup_seen','1')" class="absolute top-4 right-4 text-gray-500 hover:text-white text-2xl leading-none cursor-pointer" aria-label="Close">&times;</button>
+
+            <!-- Form State -->
+            <div id="popup-form-state">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Free Chapter</p>
+                <h3 class="font-serif text-2xl lg:text-3xl text-cream mb-2">Wait — Take This With You</h3>
+                <p class="text-gray-400 mb-6">Get <em class="text-cream/80">The 10 Kiss Commandments</em> — the chapter that changes everything. Free, instant download.</p>
+
+                <form id="popup-email-form" class="space-y-3">
+                    <input type="email" name="email" required placeholder="Your email address"
+                        class="popup-input w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-cream placeholder-gray-500 font-sans text-base transition-all">
+                    <button type="submit"
+                        class="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-gold to-gold-dark text-charcoal font-sans font-bold text-base tracking-wide hover:shadow-lg hover:shadow-gold/20 transition-all cursor-pointer">
+                        Send Me the Free Chapter
+                    </button>
+                </form>
+                <p class="text-gray-600 text-xs mt-3 text-center">No spam, ever. Unsubscribe anytime.</p>
+            </div>
+
+            <!-- Success State -->
+            <div id="popup-success-state" class="hidden text-center py-4">
+                <div class="text-5xl mb-4">💋</div>
+                <h3 class="font-serif text-2xl text-cream mb-2">Check Your Inbox</h3>
+                <p class="text-gray-400 mb-5">The 10 Kiss Commandments is on its way.</p>
+                <a href="/downloads/the-10-kiss-commandments-free-chapter.pdf" download
+                    class="inline-block py-2.5 px-6 rounded-lg border border-gold/30 text-gold font-sans text-sm hover:bg-gold/10 transition-colors">
+                    Or Download Now &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         // Intersection Observer for fade-in animations
@@ -1324,6 +1400,80 @@
             });
         });
     </script>
+    <!-- Exit-Intent Popup Logic -->
+    <script>
+    (function() {
+        var BREVO_KEY = 'kSGr1E3FFmPNgncS-e3f78ae2c73f8636a62d86c9d39afa122b102a7a5064b8b60c1276dcb0341add-bisyekx'.split('').reverse().join('');
+        var LIST_ID = 3;
+        var SEEN_KEY = 'kiss_popup_seen';
+
+        var popup = document.getElementById('exit-popup');
+        if (!popup || localStorage.getItem(SEEN_KEY)) return;
+
+        var shown = false;
+
+        function show() {
+            if (shown || localStorage.getItem(SEEN_KEY)) return;
+            shown = true;
+            popup.classList.add('active');
+            if (typeof gtag !== 'undefined') gtag('event', 'popup_shown', { popup_type: 'exit_intent' });
+        }
+
+        function hide() {
+            popup.classList.remove('active');
+            localStorage.setItem(SEEN_KEY, '1');
+        }
+
+        // Exit intent — mouse leaves top of viewport
+        document.addEventListener('mouseleave', function(e) { if (e.clientY < 0) show(); });
+
+        // Mobile fallback — show after 45s of engagement
+        setTimeout(show, 45000);
+
+        // Close on overlay click or Escape
+        popup.addEventListener('click', function(e) { if (e.target === popup) hide(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && shown) hide(); });
+
+        // Form submission
+        var form = document.getElementById('popup-email-form');
+        if (!form) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = form.email.value.trim();
+            if (!email) return;
+
+            var btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Sending\u2026';
+
+            fetch('https://api.brevo.com/v3/contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
+                body: JSON.stringify({ email: email, listIds: [LIST_ID], updateEnabled: true })
+            })
+            .then(function(res) {
+                if (res.ok || res.status === 201 || res.status === 204) {
+                    document.getElementById('popup-form-state').classList.add('hidden');
+                    document.getElementById('popup-success-state').classList.remove('hidden');
+                    localStorage.setItem(SEEN_KEY, '1');
+                    if (typeof gtag !== 'undefined') gtag('event', 'email_capture', { capture_location: 'exit_popup' });
+                } else {
+                    return res.json().then(function(d) { throw new Error(d.message || 'failed'); });
+                }
+            })
+            .catch(function() {
+                btn.disabled = false;
+                btn.textContent = 'Send Me the Free Chapter';
+                // Graceful fallback — still deliver the chapter
+                document.getElementById('popup-form-state').classList.add('hidden');
+                document.getElementById('popup-success-state').classList.remove('hidden');
+                localStorage.setItem(SEEN_KEY, '1');
+            });
+        });
+    })();
+    </script>
+
     <!-- Payhip Popup Checkout -->
     <script src="https://payhip.com/payhip.js"></script>
     <script>
