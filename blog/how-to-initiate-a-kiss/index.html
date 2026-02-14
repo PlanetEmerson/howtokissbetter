@@ -632,10 +632,15 @@
             fetch('https://api.brevo.com/v3/contacts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                body: JSON.stringify({ email: email, listIds: [LIST_ID], updateEnabled: true })
+                body: JSON.stringify({ email: email, listIds: [LIST_ID], updateEnabled: true, attributes: { NURTURE_SIGNUP: new Date().toISOString().split('T')[0], NURTURE_STEP: 1 } })
             })
             .then(function(res) {
                 if (res.ok || res.status === 201 || res.status === 204) {
+                    fetch('https://api.brevo.com/v3/smtp/email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
+                        body: JSON.stringify({ templateId: 1, to: [{ email: email }] })
+                    });
                     document.getElementById('blog-email-form-state').classList.add('hidden');
                     document.getElementById('blog-email-success').classList.remove('hidden');
                     localStorage.setItem(CAPTURED_KEY, '1');
