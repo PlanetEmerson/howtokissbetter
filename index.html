@@ -306,7 +306,34 @@
                 transform: none;
             }
         }
+
+        /* Valentine's Day Banner */
+        .vday-banner {
+            background: linear-gradient(135deg, #722F37, #4A1C23);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* Sticky Navigation */
+        .sticky-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(45, 45, 45, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        .sticky-nav.visible {
+            transform: translateY(0);
+        }
     </style>
+
+    <!-- Analytics -->
+    <script defer data-domain="howtokissbetter.com" src="https://plausible.io/js/script.js"></script>
 
     <!-- JSON-LD Schema -->
     <script type="application/ld+json">
@@ -325,9 +352,15 @@
         "numberOfPages": 200,
         "offers": {
             "@type": "Offer",
-            "price": "27.00",
+            "price": "9.99",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "bestRating": "5",
+            "ratingCount": "47"
         }
     }
     </script>
@@ -376,6 +409,26 @@
 
 <body class="bg-charcoal text-off-white font-sans antialiased">
 
+    <!-- Valentine's Day Banner -->
+    <div class="vday-banner text-center py-2.5 px-4">
+        <p class="text-cream text-sm sm:text-base font-medium">
+            Happy Valentine's Day — <strong>Kiss Perfect Now</strong> is now just <strong class="text-gold">$9.99</strong>
+        </p>
+    </div>
+
+    <!-- Sticky Navigation (appears after scrolling past hero) -->
+    <nav class="sticky-nav" id="sticky-nav">
+        <div class="max-w-6xl mx-auto flex justify-between items-center py-3 px-6">
+            <a href="/" class="font-serif text-lg text-cream hover:text-gold transition-colors">
+                <span class="sm:hidden">Kiss <span class="gradient-text">Better</span></span>
+                <span class="hidden sm:inline">How to <span class="gradient-text">Kiss Better</span></span>
+            </a>
+            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="sticky-nav" class="cta-button text-charcoal font-bold py-2 px-6 rounded-lg text-sm">
+                Get the Book
+            </a>
+        </div>
+    </nav>
+
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress" id="scroll-progress"></div>
 
@@ -408,7 +461,7 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="cta-button text-charcoal font-bold py-4 sm:py-5 px-8 sm:px-12 rounded-lg text-lg sm:text-xl inline-block text-center whitespace-nowrap">
+                        <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="hero" class="cta-button text-charcoal font-bold py-4 sm:py-5 px-8 sm:px-12 rounded-lg text-lg sm:text-xl inline-block text-center whitespace-nowrap">
                             I Want to Kiss Better
                         </a>
                         <a href="#preview" class="border border-gold/50 text-gold hover:bg-gold/10 font-semibold py-4 sm:py-5 px-8 sm:px-10 rounded-lg text-lg sm:text-xl inline-block text-center transition-colors whitespace-nowrap">
@@ -579,6 +632,14 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Mid-page CTA -->
+            <div class="mt-16 text-center">
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="after-techniques" class="cta-button text-charcoal font-bold py-4 sm:py-5 px-8 sm:px-12 rounded-lg text-lg sm:text-xl inline-block">
+                    Get the Complete System
+                </a>
+                <p class="text-gray-500 text-sm mt-4">Instant PDF download. 16 chapters. Read on any device.</p>
+            </div>
         </div>
     </section>
 
@@ -629,6 +690,16 @@
             <div class="text-center mb-16">
                 <p class="text-gold font-medium tracking-widest uppercase text-base mb-4">What Readers Say</p>
                 <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">Kiss & Tell</h2>
+                <div class="mt-4 flex items-center justify-center gap-2">
+                    <div class="flex gap-0.5">
+                        <span class="text-gold text-lg">★</span>
+                        <span class="text-gold text-lg">★</span>
+                        <span class="text-gold text-lg">★</span>
+                        <span class="text-gold text-lg">★</span>
+                        <span class="text-gold text-lg">★</span>
+                    </div>
+                    <span class="text-gray-400 text-sm">4.9/5 from readers</span>
+                </div>
             </div>
 
             <!-- Main testimonials grid -->
@@ -754,6 +825,13 @@
                     </p>
                     <p class="text-gold font-medium">- Zoe K., 20, college junior</p>
                 </div>
+            </div>
+
+            <!-- Mid-page CTA after testimonials -->
+            <div class="mt-12 text-center">
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="after-testimonials" class="cta-button text-charcoal font-bold py-4 sm:py-5 px-8 sm:px-12 rounded-lg text-lg sm:text-xl inline-block">
+                    Join Them
+                </a>
             </div>
         </div>
     </section>
@@ -1043,8 +1121,9 @@
             <p class="text-gray-400 mb-8">A Master Class in Kissology</p>
 
             <div class="bg-wine/30 border border-gold/30 rounded-2xl p-10 mb-8">
-                <div class="text-5xl font-bold text-cream mb-6">
-                    $27
+                <div class="mb-6">
+                    <span class="text-2xl text-gray-500 line-through">$27</span>
+                    <span class="text-5xl font-bold text-cream ml-3">$9.99</span>
                 </div>
 
                 <ul class="text-left space-y-3 sm:space-y-4 mb-8 text-sm sm:text-base">
@@ -1080,7 +1159,7 @@
                     </li>
                 </ul>
 
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="cta-button text-charcoal font-bold py-3 sm:py-5 px-4 sm:px-12 rounded-lg text-sm sm:text-xl inline-block w-full text-center">
+                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="pricing" class="cta-button text-charcoal font-bold py-3 sm:py-5 px-4 sm:px-12 rounded-lg text-sm sm:text-xl inline-block w-full text-center">
                     I'm Ready to Kiss Better
                 </a>
 
@@ -1129,7 +1208,7 @@
             <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-8">
                 That means you know mediocre kisses aren't enough.
             </h2>
-            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="cta-button text-charcoal font-bold py-5 px-12 rounded-lg text-xl inline-block">
+            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="final-cta" class="cta-button text-charcoal font-bold py-5 px-12 rounded-lg text-xl inline-block">
                 Get the Book
             </a>
         </div>
@@ -1180,6 +1259,22 @@
             observer.observe(el);
         });
 
+        // Sticky Navigation - show after scrolling past hero
+        const stickyNav = document.getElementById('sticky-nav');
+        const heroSection = document.querySelector('section');
+        if (stickyNav && heroSection) {
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        stickyNav.classList.remove('visible');
+                    } else {
+                        stickyNav.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0, rootMargin: '0px' });
+            navObserver.observe(heroSection);
+        }
+
         // Scroll Progress Bar
         const progressBar = document.getElementById('scroll-progress');
         if (progressBar) {
@@ -1226,11 +1321,18 @@
     <!-- Payhip Popup Checkout -->
     <script src="https://payhip.com/payhip.js"></script>
     <script>
-        // Custom trigger for Payhip checkout (preserves our button styling)
+        // Custom trigger for Payhip checkout with Plausible tracking
         document.querySelectorAll('a[data-product]').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
                 const productId = this.getAttribute('data-product');
+                const location = this.getAttribute('data-cta-location') || 'unknown';
+
+                // Track CTA click in Plausible
+                if (typeof plausible !== 'undefined') {
+                    plausible('CTA Click', { props: { location: location } });
+                }
+
                 if (typeof Payhip !== 'undefined' && Payhip.Checkout) {
                     Payhip.Checkout.open({ product: productId });
                 } else {
