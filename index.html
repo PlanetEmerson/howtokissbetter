@@ -251,11 +251,17 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: url('assets/images/textures/grain.png');
+            background: url('assets/images/textures/grain.webp');
             background-size: 200px 200px;
             opacity: 0.12;
             pointer-events: none;
             z-index: 1;
+        }
+        /* Fallback for browsers without WebP */
+        @supports not (background: url('assets/images/textures/grain.webp')) {
+            .grain-overlay::after {
+                background: url('assets/images/textures/grain.png');
+            }
         }
 
         /* Section Background Container */
@@ -484,7 +490,10 @@
         <!-- Hero background image with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns hero-bg-img" loading="eager">
+                <picture>
+                    <source srcset="assets/images/hero-bg-v2.webp" type="image/webp">
+                    <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns hero-bg-img" loading="eager" width="1536" height="1024">
+                </picture>
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/55 to-charcoal"></div>
         </div>
@@ -526,12 +535,16 @@
                     <div class="relative book-float" style="perspective: 1000px;">
                         <!-- Real book cover image -->
                         <div class="book-shadow rounded-lg overflow-hidden" style="transform: rotateY(-5deg);">
-                            <img
-                                src="assets/images/book-cover.png"
-                                alt="Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna"
-                                class="w-64 sm:w-72 md:w-80 h-auto rounded-lg"
-                                loading="eager"
-                            >
+                            <picture>
+                                <source srcset="assets/images/book-cover.webp" type="image/webp">
+                                <img
+                                    src="assets/images/book-cover.png"
+                                    alt="Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna"
+                                    class="w-64 sm:w-72 md:w-80 h-auto rounded-lg"
+                                    loading="eager"
+                                    width="1024" height="1536"
+                                >
+                            </picture>
                         </div>
 
                         <!-- Decorative elements -->
@@ -548,7 +561,10 @@
         <!-- Section background with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/problem-bg.png" alt="" class="ken-burns ken-burns-slow opacity-50 problem-bg-img" loading="lazy">
+                <picture>
+                    <source srcset="assets/images/problem-bg.webp" type="image/webp">
+                    <img src="assets/images/problem-bg.png" alt="" class="ken-burns ken-burns-slow opacity-50 problem-bg-img" loading="lazy" width="1536" height="1024">
+                </picture>
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-charcoal/80 via-charcoal/60 to-wine/20"></div>
         </div>
@@ -695,7 +711,10 @@
         <!-- Section background with Ken Burns -->
         <div class="absolute inset-0 grain-overlay">
             <div class="section-bg">
-                <img src="assets/images/author-bg.png" alt="" class="ken-burns ken-burns-reverse opacity-45 author-bg-img" loading="lazy">
+                <picture>
+                    <source srcset="assets/images/author-bg.webp" type="image/webp">
+                    <img src="assets/images/author-bg.png" alt="" class="ken-burns ken-burns-reverse opacity-45 author-bg-img" loading="lazy" width="1536" height="1024">
+                </picture>
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-wine/20 via-charcoal/60 to-charcoal/90"></div>
         </div>
@@ -704,12 +723,16 @@
                 <!-- Author Image -->
                 <div class="flex justify-center">
                     <div class="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-gold/30 shadow-2xl">
-                        <img
-                            src="assets/images/author-silhouette.png"
-                            alt="C.J. McKenna - Author of Kiss Perfect Now"
-                            class="w-full h-full object-cover"
-                            loading="lazy"
-                        >
+                        <picture>
+                            <source srcset="assets/images/author-silhouette.webp" type="image/webp">
+                            <img
+                                src="assets/images/author-silhouette.png"
+                                alt="C.J. McKenna - Author of Kiss Perfect Now"
+                                class="w-full h-full object-cover"
+                                loading="lazy"
+                                width="1024" height="1024"
+                            >
+                        </picture>
                     </div>
                 </div>
 

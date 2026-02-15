@@ -15,7 +15,7 @@
     <!-- Primary Meta Tags -->
     <title>Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss | How to Kiss Better</title>
     <meta name="description" content="Your lips pack 100 times more nerve endings than your fingertips. Learn how this remarkable anatomy shapes great kissing, and why lighter touch creates stronger sensation.">
-    <meta name="keywords" content="why are lips sensitive, lip nerve endings, lip anatomy kissing, erogenous zone lips, vermilion border, sensory homunculus lips, kissing tips">
+    <meta name="keywords" content="Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss, kissing tips, how to kiss, kissing techniques">
     <meta name="author" content="C.J. McKenna">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://howtokissbetter.com/blog/why-lips-are-so-sensitive/">
@@ -75,7 +75,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+        .toc { position: sticky; top: 100px; }
+        .toc a { transition: color 0.2s; }
+        .toc a:hover { color: #D4AF37; }
+        .toc a.active { color: #D4AF37; font-weight: 600; }
+        @media (max-width: 1024px) { .toc { position: static; } }
+
         /* Article styles */
         .article-content h2 {
             font-family: 'Cormorant Garamond', Georgia, serif;
@@ -166,47 +171,13 @@
         }
     }
     </script>
-
-    <!-- FAQ Schema -->
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "Why are lips so sensitive?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Lips are extremely sensitive because they contain over 1 million nerve endings packed into a small area, making them about 100 times more sensitive than fingertips. The skin on lips is also much thinner (3-5 cell layers vs 16 on regular skin), allowing nerve endings to sit closer to the surface."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "What is the vermilion border and why does it matter for kissing?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "The vermilion border is the sharp edge where colored lip tissue meets regular skin. It has the highest concentration of nerve endings on the entire lip and is exquisitely sensitive to touch. Tracing this edge during kissing creates intense sensation."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Why does light touch feel better than hard pressure when kissing?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "The nerve endings in lips are tuned to detect subtle changes in pressure, temperature, and texture. Light touch activates more of these specialized receptors, while hard pressure can overwhelm them. The brain dedicates enormous processing power to lip sensations, so gentle variation creates richer experience than constant pressure."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "How much of the brain is dedicated to lip sensation?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "On the sensory homunculus (the brain's body map), lips occupy more neural real estate than your entire torso. This disproportionate representation means every subtle touch on your lips gets amplified processing attention, which is why kissing feels like such an intense, all-consuming experience."
-                }
-            }
-        ]
-    }
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://howtokissbetter.com"},
+        {"@type":"ListItem","position":2,"name":"Blog","item":"https://howtokissbetter.com/blog/"},
+        {"@type":"ListItem","position":3,"name":"Anatomy","item":"https://howtokissbetter.com/blog/category/anatomy/"},
+        {"@type":"ListItem","position":4,"name":"Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss"}
+    ]}
     </script>
 </head>
 
@@ -230,24 +201,36 @@
         </div>
     </header>
 
+    <!-- Breadcrumb -->
+    <nav class="py-4 px-4 sm:px-6 text-sm" aria-label="Breadcrumb">
+        <div class="max-w-6xl mx-auto">
+            <ol class="flex flex-wrap items-center gap-x-1 text-gray-500">
+                <li class="flex items-center"><a href="/" class="hover:text-gold transition-colors">Home</a><span class="mx-2">/</span></li>
+                <li class="flex items-center"><a href="/blog/" class="hover:text-gold transition-colors">Blog</a><span class="mx-2">/</span></li>
+                <li class="flex items-center"><a href="/blog/category/anatomy/" class="hover:text-gold transition-colors">Anatomy</a><span class="mx-2">/</span></li>
+                <li class="text-cream truncate max-w-[200px]">Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss</li>
+            </ol>
+        </div>
+    </nav>
+
     <!-- ARTICLE -->
-    <article class="py-12 px-6">
-        <div class="max-w-3xl mx-auto">
-            
+    <article class="py-8 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-[1fr_280px] gap-12">
+                <div class="max-w-3xl">
+
             <!-- Article Header -->
             <header class="mb-10">
                 <div class="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                    <a href="/blog/" class="hover:text-gold transition-colors">← Back to Blog</a>
-                    <span>•</span>
                     <span class="text-gold uppercase tracking-wider">Anatomy</span>
                     <span>•</span>
                     <time datetime="2026-01-05">January 5, 2026</time>
                 </div>
-                
+
                 <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-cream mb-6">
                     Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss
                 </h1>
-                
+
                 <p class="text-xl text-gray-400 leading-relaxed">
                     Your lips pack 100 times more nerve endings than your fingertips. Learn how this remarkable anatomy shapes great kissing, and why lighter touch creates stronger sensation.
                 </p>
@@ -255,19 +238,18 @@
 
             <!-- Featured Image -->
             <div class="aspect-video rounded-xl overflow-hidden mb-10 border border-gold/20">
-                <img src="featured.jpg" alt="Close-up of two lips about to touch in soft morning light" class="w-full h-full object-cover">
+                <img src="featured.jpg" alt="Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss" class="w-full h-full object-cover" width="800" height="450">
             </div>
 
             <!-- Article Content -->
             <div class="article-content">
-
-<p>Your lips are liars. Not in the way you're thinking.</p>
+                <p>Your lips are liars. Not in the way you're thinking.</p>
 
 <p>They've been convincing you that kissing is just about technique, or chemistry, or some mystical spark you either have or don't. But the truth is far more interesting: your lips are biological marvels, engineered by millions of years of evolution to be the most sophisticated sensory instruments on your body.</p>
 
 <p>Understanding their anatomy won't just satisfy your curiosity. It will change how you kiss.</p>
 
-<h2>The Nerve Density That Changes Everything</h2>
+<h2 id="the-nerve-density-that-changes-everything">The Nerve Density That Changes Everything</h2>
 
 <p>Here's a number that should stop you cold: your lips contain roughly one million nerve endings.</p>
 
@@ -277,7 +259,7 @@
 
 <p>The practical implication is profound: <strong>your lips can detect sensations your fingers would miss entirely.</strong> A featherlight brush. A slight change in temperature. The texture difference between the edge of someone's lip and its center. Your lips register all of it.</p>
 
-<h2>Why Lip Skin Is Different (And What That Means)</h2>
+<h2 id="why-lip-skin-is-different-and-what-that-means">Why Lip Skin Is Different (And What That Means)</h2>
 
 <p>Run your tongue along the inside of your cheek, then across your lips. Notice the difference? Your lips feel smoother, almost slick compared to the rest of your mouth.</p>
 
@@ -306,7 +288,7 @@
     </a>
 </aside>
 
-<h2>Your Brain's Obsession With Your Lips</h2>
+<h2 id="your-brains-obsession-with-your-lips">Your Brain's Obsession With Your Lips</h2>
 
 <p>If you've ever seen a diagram of the "sensory homunculus," you know it looks absurd. It's a distorted human figure drawn to represent how much brain space each body part occupies on your sensory map. The lips? Enormous. Grotesquely large compared to the torso, the legs, the back.</p>
 
@@ -316,7 +298,7 @@
 
 <p>This is why a kiss can feel like it takes over your entire consciousness. It's not just poetry. It's architecture. Your brain is literally built to prioritize lip sensation above almost everything else.</p>
 
-<h2>Light Touch Beats Heavy Pressure (Here's Why)</h2>
+<h2 id="light-touch-beats-heavy-pressure-heres-why">Light Touch Beats Heavy Pressure (Here's Why)</h2>
 
 <p>Most people kiss too hard.</p>
 
@@ -336,7 +318,7 @@
 
 <p>Skilled kissers play with this. They let the anticipation build, breathing close without touching. They alternate between warm, lingering contact and brief separations. Every temperature shift registers as sensation, adding layers to the experience your brain eagerly processes.</p>
 
-<h2>What This Means For How You Kiss</h2>
+<h2 id="what-this-means-for-how-you-kiss">What This Means For How You Kiss</h2>
 
 <p>Understanding lip anatomy transforms kissing from mysterious to logical. Not in a clinical way. In a "now I know why that works" way.</p>
 
@@ -352,20 +334,19 @@
 "Your lips were built to feel everything. The question is whether you're giving them something worth feeling."
 </blockquote>
 
-<h2>The Evolutionary Accident That Makes Kissing Electric</h2>
+<h2 id="the-evolutionary-accident-that-makes-kissing-electric">The Evolutionary Accident That Makes Kissing Electric</h2>
 
 <p>Here's the thing: lips weren't designed for kissing. Not originally.</p>
 
 <p>They evolved for eating, for protection, for communication before words existed. The fact that pressing them against another person's mouth creates such profound sensation is almost an accident. A beautiful, fortunate accident that our ancestors discovered and we've been refining ever since.</p>
 
-<p>Your lips are survival equipment repurposed for connection. Every nerve ending that once kept your ancestors from burning their mouths now translates into pleasure when you kiss someone you want.</p>
+<p>Your lips are survival equipment repurposed for connection. Every nerve ending that once kept your ancestors from burning their mouths now translates into pleasure when you kiss someone you want. For more on the chemistry and neuroscience behind all of this, read our deep dive into <a href="/blog/science-of-kissing/">the science of kissing</a>.</p>
 
 <p>Knowing this changes nothing about the magic. If anything, it deepens it. Those million nerve endings don't care about the evolutionary history. They just respond to what's happening right now, in this moment, with this mouth against this mouth.</p>
 
 <p>The anatomy explains why kissing works. It doesn't explain why it matters. That part is still yours to feel, impossible to diagram, irreducible to neurons.</p>
 
 <p>But at least now you know what your lips are capable of. And maybe, with that knowledge, you'll give them something worthy of their extraordinary design.</p>
-
             </div>
 
             <!-- Author Box -->
@@ -380,7 +361,7 @@
                 </div>
             </div>
 
-                        <!-- Email Capture -->
+            <!-- Email Capture -->
             <div id="blog-email-box" class="mt-10 p-6 sm:p-8 bg-charcoal border border-gold/20 rounded-xl">
                 <div id="blog-email-form-state">
                     <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">Free Chapter</p>
@@ -406,14 +387,32 @@
 
             <!-- CTA Box -->
             <div class="mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center">
-                <h3 class="font-serif text-2xl text-cream mb-4">Ready for the Complete System?</h3>
-                <p class="text-gray-400 mb-6">The anatomy is just the beginning. Learn the techniques that put this knowledge into practice.</p>
+                <h3 class="font-serif text-2xl text-cream mb-4">Want More?</h3>
+                <p class="text-gray-400 mb-6">This article is just a preview. The complete system is in the book.</p>
                 <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
                     Get Kiss Perfect Now — $9.99
                 </a>
             </div>
 
-        </div>
+                </div><!-- end max-w-3xl -->
+
+                <!-- TOC Sidebar -->
+                <aside class="hidden lg:block">
+                    <div class="toc">
+                        <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-4">Contents</p>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li><a href="#the-nerve-density-that-changes-everything">The Nerve Density That Changes Everything</a></li>
+                            <li><a href="#why-lip-skin-is-different-and-what-that-means">Why Lip Skin Is Different (And What That Means)</a></li>
+                            <li><a href="#your-brains-obsession-with-your-lips">Your Brain's Obsession With Your Lips</a></li>
+                            <li><a href="#light-touch-beats-heavy-pressure-heres-why">Light Touch Beats Heavy Pressure (Here's Why)</a></li>
+                            <li><a href="#what-this-means-for-how-you-kiss">What This Means For How You Kiss</a></li>
+                            <li><a href="#the-evolutionary-accident-that-makes-kissing-electric">The Evolutionary Accident That Makes Kissing Electric</a></li>
+                        </ul>
+                    </div>
+                </aside>
+
+            </div><!-- end grid -->
+        </div><!-- end max-w-6xl -->
     </article>
 
     <!-- Related Posts -->
@@ -482,6 +481,7 @@
         var box = document.getElementById('blog-email-box');
         if (!box) return;
 
+        // If already captured, show success state
         if (localStorage.getItem(CAPTURED_KEY)) {
             document.getElementById('blog-email-form-state').classList.add('hidden');
             document.getElementById('blog-email-success').classList.remove('hidden');
@@ -498,7 +498,7 @@
 
             var btn = form.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.textContent = 'Sending…';
+            btn.textContent = 'Sending\u2026';
 
             fetch('https://api.brevo.com/v3/contacts', {
                 method: 'POST',

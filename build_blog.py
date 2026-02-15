@@ -122,6 +122,19 @@ def markdown_to_html(markdown: str) -> str:
     return '\n\n'.join(paragraphs)
 
 
+def extract_toc(html: str) -> str:
+    """Extract TOC items from H2 tags with IDs."""
+    toc_items = []
+    for match in re.finditer(r'<h2 id="([^"]+)">(.+?)</h2>', html):
+        toc_items.append(f'<li><a href="#{match.group(1)}">{match.group(2)}</a></li>')
+    return '\n                            '.join(toc_items)
+
+
+def slugify_category(category: str) -> str:
+    """Convert category name to URL-friendly slug."""
+    return re.sub(r'[^a-z0-9]+', '-', category.lower()).strip('-')
+
+
 def format_date(date_str: str) -> str:
     """Format date as 'December 21, 2025'."""
     try:
@@ -162,6 +175,8 @@ def build_post(data: dict) -> None:
     html = html.replace('{{CATEGORY}}', category)
     html = html.replace('{{KEYWORD}}', keyword)
     html = html.replace('{{CONTENT}}', content)
+    html = html.replace('{{TOC_ITEMS}}', extract_toc(content))
+    html = html.replace('{{CATEGORY_SLUG}}', slugify_category(category))
     
     # Create post directory
     post_dir = BLOG_DIR / slug
