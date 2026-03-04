@@ -26,6 +26,7 @@
     <meta property="og:title" content="How to Tease with a Kiss: The Art of Almost">
     <meta property="og:description" content="The best kiss you ever give might be the one you almost don't. Learn 7 ways to build irresistible anticipation that makes every kiss hit harder.">
     <meta property="og:image" content="https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/featured.jpg">
+    <meta property="article:modified_time" content="2026-03-04">
     <meta property="article:published_time" content="2026-02-23">
     <meta property="article:author" content="C.J. McKenna">
 
@@ -156,7 +157,11 @@
         "image": "https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/featured.jpg",
         "author": {
             "@type": "Person",
-            "name": "C.J. McKenna"
+            "name": "C.J. McKenna",
+            "url": "https://howtokissbetter.com",
+            "jobTitle": "Author and Intimacy Expert",
+            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
+            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
         },
         "publisher": {
             "@type": "Organization",
@@ -164,7 +169,7 @@
             "url": "https://howtokissbetter.com"
         },
         "datePublished": "2026-02-23",
-        "dateModified": "2026-02-23",
+        "dateModified": "2026-03-04",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/"
@@ -210,6 +215,58 @@
             }
         ]
     }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to Tease with a Kiss: The Art of Almost",
+        "description": "The best kiss you ever give might be the one you almost don't. Learn 7 ways to build irresistible anticipation that makes every kiss hit harder.",
+        "image": "https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/featured.jpg",
+        "totalTime": "PT10M",
+        "step": [
+                {
+                        "@type": "HowToStep",
+                        "name": "Understand Why Almost-Kisses Are Powerful",
+                        "text": "Anticipation activates the brain's reward system more intensely than the reward itself. The gap between expectation and delivery is where desire lives."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Master the Pull-Away",
+                        "text": "Kiss them briefly then stop, holding just a few inches back. The sudden absence of contact after a taste of it creates an almost unbearable urge to close the gap."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Perfect the Hover",
+                        "text": "Get close enough that they can feel your breath on their lips, but do not close the final distance. Hold this position and let the tension build."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Use Touch Without Kissing",
+                        "text": "Cup their face, trace their jawline, or run a thumb across their lower lip without leaning in for the kiss. Physical closeness without lip contact creates electric anticipation."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Try the Whispered Promise",
+                        "text": "Lean in close to their ear and whisper something about wanting to kiss them. The warmth of your breath and the intimacy of a whisper can be more arousing than the kiss itself."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Deploy the Kiss Migration",
+                        "text": "Kiss everywhere except their lips first: jaw, neck, cheek, corner of the mouth. Each kiss that is not quite on the lips builds anticipation for when you finally arrive."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Apply Teasing in Long-Term Relationships",
+                        "text": "Use teasing to reintroduce novelty and anticipation when kissing has become routine. Create moments of almost-kissing throughout the day."
+                },
+                {
+                        "@type": "HowToStep",
+                        "name": "Know When Teasing Backfires",
+                        "text": "Read your partner's energy. If they seem frustrated rather than excited, the tease has gone too long. Always deliver the payoff and adjust based on their response."
+                }
+        ]
+}
     </script>
 </head>
 
@@ -271,6 +328,14 @@
             <!-- Featured Image -->
             <div class="aspect-video rounded-xl overflow-hidden mb-10 border border-gold/20">
                 <img src="featured.jpg" alt="How to Tease with a Kiss: The Art of Almost" class="w-full h-full object-cover" width="800" height="450">
+            </div>
+
+            <!-- Answer-First Summary -->
+            <div class="mb-10 p-6 bg-wine/10 border-l-4 border-gold rounded-r-lg">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">The Short Answer</p>
+                <p class="text-cream text-lg leading-relaxed">
+                    Teasing with a kiss means deliberately building anticipation by almost kissing but pulling back at the last moment. Lean in close enough that your breath falls on their lips, pause there, then pull away or redirect to their cheek, jaw, or neck. The power of the tease comes from the gap between expectation and delivery -- the longer you make someone wait, the more electric the eventual kiss becomes. Use this sparingly; the tease is most effective as a buildup tool, not the main event.
+                </p>
             </div>
 
             <!-- Article Content -->
@@ -515,7 +580,11 @@
                 const response = await fetch('/blog/posts.json');
                 const posts = await response.json();
                 const currentSlug = 'how-to-tease-with-a-kiss';
-                const related = posts.filter(p => p.slug !== currentSlug).slice(0, 3);
+                const currentCategory = 'Relationships';
+                const others = posts.filter(p => p.slug !== currentSlug);
+                const sameCategory = others.filter(p => p.category === currentCategory);
+                const diffCategory = others.filter(p => p.category !== currentCategory);
+                const related = [...sameCategory, ...diffCategory].slice(0, 3);
                 
                 if (related.length === 0) return;
                 

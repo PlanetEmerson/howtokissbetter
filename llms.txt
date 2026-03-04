@@ -1,0 +1,47 @@
+# How to Kiss Better
+
+> howtokissbetter.com — Expert kissing advice, techniques, and a complete system for becoming an unforgettable kisser.
+
+## About This Site
+
+How to Kiss Better is an educational resource dedicated to the art and science of kissing. The site is authored by C.J. McKenna, author of *Kiss Perfect Now: A Master Class in Kissology*. It covers kissing techniques, first kiss advice, relationship intimacy, the science behind kissing, and common mistakes to avoid.
+
+## The Book
+
+**Kiss Perfect Now: A Master Class in Kissology** — A 200-page guide covering 16 chapters of kissing techniques, from the foundational Mirror Technique to advanced methods for maintaining passion in long-term relationships. Available as instant PDF download for $9.99.
+
+## Blog Topics
+
+The blog publishes long-form (2,000+ word) articles across these categories:
+
+- **Techniques**: French kissing, neck kissing, lip biting, hand placement, making out, breathing while kissing, matching your partner's style
+- **First Kiss**: How to initiate a kiss, first kiss nerves, reading body language signals, when to kiss on a date, how to ask for a kiss
+- **Relationships**: Why couples stop kissing, teasing with a kiss, what to do after a kiss, types of kisses and their meanings
+- **Science & Anatomy**: The science of kissing (hormones, brain chemistry), why lips are so sensitive
+- **Preparation**: Fresh breath tips, kissing with braces
+- **Special Situations**: Kissing with a height difference, kissing someone with a beard
+
+## Key Content
+
+- /blog/ — Full article index (27 posts)
+- /blog/how-to-french-kiss/ — Complete guide to French kissing
+- /blog/how-to-be-a-better-kisser/ — 7 techniques that actually work
+- /blog/how-to-kiss-someone-for-the-first-time/ — Step-by-step first kiss guide
+- /blog/science-of-kissing/ — Brain chemistry and hormones behind kissing
+- /blog/how-to-make-out/ — Complete guide to passionate kissing
+- /blog/how-to-initiate-a-kiss/ — Reading signals and making your move
+- /blog/what-to-do-with-your-hands-while-kissing/ — Hand placement guide
+- /blog/how-to-kiss-someones-neck/ — Neck kissing techniques
+- /blog/types-of-kisses-and-what-they-mean/ — What different kisses reveal
+- /blog/signs-youre-a-bad-kisser/ — Common mistakes and how to fix them
+- /blog/how-to-breathe-while-kissing/ — Breathing techniques during kissing
+- /blog/how-to-ask-for-a-kiss/ — Consent-forward approaches
+- /blog/what-to-do-after-a-kiss/ — Post-kiss advice
+
+## Author
+
+C.J. McKenna — Author of *Kiss Perfect Now* and intimacy expert specializing in the art of kissing. Writes evidence-based content drawing from relationship science, neuroscience, and two decades of studying what makes kisses unforgettable.
+
+## Sitemap
+
+https://howtokissbetter.com/sitemap.xml

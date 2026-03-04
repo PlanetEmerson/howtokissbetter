@@ -26,6 +26,7 @@
     <meta property="og:title" content="How to Tell If Someone Wants to Kiss You (12 Signs That Never Lie)">
     <meta property="og:description" content="Not sure if they want to be kissed? Learn the 12 research-backed body language signals that reveal when someone is ready, plus the one rule that makes them reliable.">
     <meta property="og:image" content="https://howtokissbetter.com/blog/how-to-tell-if-someone-wants-to-kiss-you/featured.jpg">
+    <meta property="article:modified_time" content="2026-03-04">
     <meta property="article:published_time" content="2026-02-18">
     <meta property="article:author" content="C.J. McKenna">
 
@@ -156,7 +157,11 @@
         "image": "https://howtokissbetter.com/blog/how-to-tell-if-someone-wants-to-kiss-you/featured.jpg",
         "author": {
             "@type": "Person",
-            "name": "C.J. McKenna"
+            "name": "C.J. McKenna",
+            "url": "https://howtokissbetter.com",
+            "jobTitle": "Author and Intimacy Expert",
+            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
+            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
         },
         "publisher": {
             "@type": "Organization",
@@ -164,7 +169,7 @@
             "url": "https://howtokissbetter.com"
         },
         "datePublished": "2026-02-18",
-        "dateModified": "2026-02-18",
+        "dateModified": "2026-03-04",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://howtokissbetter.com/blog/how-to-tell-if-someone-wants-to-kiss-you/"
@@ -177,6 +182,15 @@
         {"@type":"ListItem","position":2,"name":"Blog","item":"https://howtokissbetter.com/blog/"},
         {"@type":"ListItem","position":3,"name":"First Kiss","item":"https://howtokissbetter.com/blog/category/first-kiss/"},
         {"@type":"ListItem","position":4,"name":"How to Tell If Someone Wants to Kiss You (12 Signs That Never Lie)"}
+    ]}
+    </script>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+        {"@type":"Question","name":"How do you know if someone wants to kiss you for the first time?","acceptedAnswer":{"@type":"Answer","text":"Look for the convergence of three or more signals: sustained eye contact with glances at your lips, physical proximity that keeps decreasing, touch that's escalating from casual to personal, and the linger (staying when they could leave). First-time kiss signals tend to be accompanied by nervous energy like fidgeting, laughing more than usual, or playing with their hair."}},
+        {"@type":"Question","name":"What does the triangle gaze mean?","acceptedAnswer":{"@type":"Answer","text":"The triangle gaze is when someone's eyes move between your eyes and your lips in a triangular pattern. When it happens involuntarily, it's one of the most reliable indicators of desire. Research confirms the gaze-to-lips pattern correlates with attraction, though there are no clinical studies supporting the deliberate use of this technique to create attraction."}},
+        {"@type":"Question","name":"Should I ask before kissing someone?","acceptedAnswer":{"@type":"Answer","text":"Yes, and it doesn't have to be awkward. Phrases like 'I really want to kiss you' or 'Can I kiss you?' delivered with confidence are perceived as attractive, not clinical. About 75% of pre-kiss consent is communicated nonverbally in practice, but a verbal check-in shows self-assurance and respect."}},
+        {"@type":"Question","name":"Can you tell if someone wants to kiss you by their eyes alone?","acceptedAnswer":{"@type":"Answer","text":"Eyes provide strong signals (triangle gaze, pupil dilation, the hold-break-return pattern), but no single body part tells the whole story. Use the Cluster Rule: combine eye signals with at least two other categories (proximity, touch, voice, or mouth cues) before making your move."}},
+        {"@type":"Question","name":"What if I misread the signals?","acceptedAnswer":{"@type":"Answer","text":"It happens to everyone, and it's not the end of the world. If you lean in and they pull back, simply smile, say something light like 'my mistake' or redirect to the conversation naturally. Don't apologize excessively, don't draw attention to it, and don't try again immediately. People who recover gracefully are the ones who get invited back."}}
     ]}
     </script>
 </head>
@@ -239,6 +253,14 @@
             <!-- Featured Image -->
             <div class="aspect-video rounded-xl overflow-hidden mb-10 border border-gold/20">
                 <img src="featured.jpg" alt="How to Tell If Someone Wants to Kiss You (12 Signs That Never Lie)" class="w-full h-full object-cover" width="800" height="450">
+            </div>
+
+            <!-- Answer-First Summary -->
+            <div class="mb-10 p-6 bg-wine/10 border-l-4 border-gold rounded-r-lg">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">The Short Answer</p>
+                <p class="text-cream text-lg leading-relaxed">
+                    The most reliable sign someone wants to kiss you is the "triangle gaze" -- when their eyes repeatedly move between your eyes and your lips. Other strong indicators include sustained proximity (they keep finding reasons to be close), touch escalation (casual touches becoming more frequent and intentional), lingering at goodbyes, and a noticeable drop in conversation pace with increased eye contact. Look for clusters of these signals rather than any single one.
+                </p>
             </div>
 
             <!-- Article Content -->
@@ -543,7 +565,11 @@
                 const response = await fetch('/blog/posts.json');
                 const posts = await response.json();
                 const currentSlug = 'how-to-tell-if-someone-wants-to-kiss-you';
-                const related = posts.filter(p => p.slug !== currentSlug).slice(0, 3);
+                const currentCategory = 'First Kiss';
+                const others = posts.filter(p => p.slug !== currentSlug);
+                const sameCategory = others.filter(p => p.category === currentCategory);
+                const diffCategory = others.filter(p => p.category !== currentCategory);
+                const related = [...sameCategory, ...diffCategory].slice(0, 3);
                 
                 if (related.length === 0) return;
                 

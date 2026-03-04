@@ -26,6 +26,7 @@
     <meta property="og:title" content="When to Kiss on a Date (And How to Make It Count)">
     <meta property="og:description" content="Not sure when to go for the kiss on a date? Learn exactly how to read the moment, choose the right timing, and make that first date kiss one neither of you forgets.">
     <meta property="og:image" content="https://howtokissbetter.com/blog/when-to-kiss-on-a-date/featured.jpg">
+    <meta property="article:modified_time" content="2026-03-04">
     <meta property="article:published_time" content="2026-02-16">
     <meta property="article:author" content="C.J. McKenna">
 
@@ -156,7 +157,11 @@
         "image": "https://howtokissbetter.com/blog/when-to-kiss-on-a-date/featured.jpg",
         "author": {
             "@type": "Person",
-            "name": "C.J. McKenna"
+            "name": "C.J. McKenna",
+            "url": "https://howtokissbetter.com",
+            "jobTitle": "Author and Intimacy Expert",
+            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
+            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
         },
         "publisher": {
             "@type": "Organization",
@@ -164,7 +169,7 @@
             "url": "https://howtokissbetter.com"
         },
         "datePublished": "2026-02-16",
-        "dateModified": "2026-02-16",
+        "dateModified": "2026-03-04",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://howtokissbetter.com/blog/when-to-kiss-on-a-date/"
@@ -279,6 +284,14 @@
             <!-- Featured Image -->
             <div class="aspect-video rounded-xl overflow-hidden mb-10 border border-gold/20">
                 <img src="featured.jpg" alt="Couple sharing a charged moment before a goodnight kiss at the end of a date" class="w-full h-full object-cover" width="800" height="450">
+            </div>
+
+            <!-- Answer-First Summary -->
+            <div class="mb-10 p-6 bg-wine/10 border-l-4 border-gold rounded-r-lg">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">The Short Answer</p>
+                <p class="text-cream text-lg leading-relaxed">
+                    The best time to kiss on a date is during a natural lull in conversation when you're physically close, making extended eye contact, and both lingering rather than rushing to leave. End-of-date moments -- at the car, the doorstep, or walking to the train -- create natural pauses where a kiss feels organic rather than forced. There is no fixed rule about which date number is right; the signals matter more than the timeline.
+                </p>
             </div>
 
             <!-- Article Content -->
@@ -607,7 +620,11 @@
                 const response = await fetch('/blog/posts.json');
                 const posts = await response.json();
                 const currentSlug = 'when-to-kiss-on-a-date';
-                const related = posts.filter(p => p.slug !== currentSlug).slice(0, 3);
+                const currentCategory = 'First Kiss';
+                const others = posts.filter(p => p.slug !== currentSlug);
+                const sameCategory = others.filter(p => p.category === currentCategory);
+                const diffCategory = others.filter(p => p.category !== currentCategory);
+                const related = [...sameCategory, ...diffCategory].slice(0, 3);
                 
                 if (related.length === 0) return;
                 
