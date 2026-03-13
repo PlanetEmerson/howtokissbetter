@@ -1,5 +1,21 @@
 [
     {
+        "title": "How Long Should a Kiss Last? (The Honest Answer)",
+        "description": "Everyone wants a number. The real answer is more interesting. Here's what research says about kiss duration, Gottman's 6-second rule, and how to know when a kiss should end.",
+        "slug": "how-long-should-a-kiss-last",
+        "date": "March 13, 2026",
+        "category": "Relationships",
+        "tags": [
+            "how long should a kiss last",
+            "kiss duration",
+            "6 second kiss",
+            "Gottman kiss rule",
+            "ideal kiss length",
+            "how long to kiss someone",
+            "kissing tips"
+        ]
+    },
+    {
         "title": "What Makes a Good Kisser (The Honest Answer)",
         "description": "New research proves it's not about technique. Here's what actually makes someone a good kisser, backed by a 2026 study and a lot of firsthand research.",
         "slug": "what-makes-a-good-kisser",
@@ -12,7 +28,8 @@
             "kissing study",
             "qualities of a good kisser",
             "kissing science"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "How to Kiss a Friend (Without Ruining Everything)",
@@ -27,7 +44,8 @@
             "should I kiss my friend",
             "first kiss with a friend",
             "friends to relationship"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "Why Do We Close Our Eyes When We Kiss?",
@@ -42,7 +60,8 @@
             "neuroscience of kissing",
             "eyes closed kiss",
             "sensory overload kissing"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "How to Kiss Slowly (And Why It Changes Everything)",
@@ -57,7 +76,8 @@
             "kissing techniques",
             "sensual kissing",
             "romantic kissing"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "What to Do After a Kiss (So They Want to Do It Again)",
@@ -72,7 +92,8 @@
             "post-kiss",
             "kissing tips",
             "after the kiss"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "How to Ask for a Kiss (Without Making It Weird)",
@@ -87,7 +108,8 @@
             "asking for a kiss",
             "consent kissing",
             "first kiss tips"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "How to Breathe While Kissing (Without Ruining the Moment)",
@@ -102,7 +124,8 @@
             "kissing breathing technique",
             "kissing tips",
             "natural pause kissing"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Tease with a Kiss: The Art of Almost",
@@ -118,7 +141,8 @@
             "almost kiss",
             "kissing foreplay",
             "kissing in relationships"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "Lip Biting While Kissing: How to Do It Right",
@@ -133,7 +157,8 @@
             "gentle lip bite",
             "kissing techniques",
             "lip nibble"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Tell If Someone Wants to Kiss You (12 Signs That Never Lie)",
@@ -150,7 +175,8 @@
             "pre-kiss body language",
             "does she want to kiss me",
             "does he want to kiss me"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "When to Kiss on a Date (And How to Make It Count)",
@@ -166,7 +192,8 @@
             "date kiss timing",
             "how to kiss on a date",
             "end of date kiss"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "How to Kiss with a Height Difference",
@@ -181,7 +208,8 @@
             "tall short couple kissing",
             "height gap kissing tips",
             "kissing positions"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "How to Kiss Someone with a Beard: The Complete Guide",
@@ -196,7 +224,8 @@
             "mustache kissing",
             "beard care",
             "kissing tips"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Kiss with Braces: The Complete Guide (No Awkwardness Required)",
@@ -212,7 +241,8 @@
             "making out with braces",
             "braces dating",
             "orthodontic kissing"
-        ]
+        ],
+        "category_slug": "preparation"
     },
     {
         "title": "How to Match Your Partner's Kissing Style: The Art of Sync",
@@ -228,7 +258,8 @@
             "how to kiss in sync",
             "kissing compatibility",
             "mirror technique"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Initiate a Kiss: Reading the Signals and Making Your Move",
@@ -243,7 +274,8 @@
             "how to go for the kiss",
             "first kiss timing",
             "kiss body language signals"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "How to Have Fresh Breath Before Kissing: The Complete Guide",
@@ -258,7 +290,8 @@
             "oral hygiene dating",
             "breath tips for kissing",
             "how to smell good before a kiss"
-        ]
+        ],
+        "category_slug": "preparation"
     },
     {
         "title": "How to Practice Kissing: What Actually Works (And What Doesn't)",
@@ -273,7 +306,8 @@
             "first kiss preparation",
             "kissing tips for beginners",
             "how to get better at kissing"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Make Out: The Complete Guide to Passionate Kissing",
@@ -288,7 +322,8 @@
             "kissing techniques",
             "how to kiss passionately",
             "extended kissing"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to Kiss Someone for the First Time: The Only Guide You'll Need",
@@ -303,7 +338,8 @@
             "first time kissing",
             "kiss guide",
             "dating advice"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss",
@@ -318,7 +354,8 @@
             "vermilion border",
             "sensory homunculus",
             "kissing science"
-        ]
+        ],
+        "category_slug": "anatomy"
     },
     {
         "title": "How to Kiss Someone's Neck: The Complete Guide to Neck Kisses",
@@ -333,7 +370,8 @@
             "erogenous zones",
             "intimate kissing",
             "where to kiss neck"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "The Science of Kissing: What Actually Happens When Your Lips Touch",
@@ -348,7 +386,8 @@
             "dopamine",
             "why kissing feels good",
             "kissing brain chemistry"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "Why Couples Stop Kissing (And How to Bring It Back)",
@@ -362,7 +401,8 @@
             "long-term relationship",
             "physical affection",
             "kissing frequency"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "What to Do with Your Hands While Kissing",
@@ -376,7 +416,8 @@
             "kissing tips",
             "body language",
             "kissing techniques"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "How to French Kiss: A Complete Guide to Passionate Kissing",
@@ -390,7 +431,8 @@
             "passionate kissing",
             "kissing with tongue",
             "kissing techniques"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "Types of Kisses and What They Really Mean",
@@ -404,7 +446,8 @@
             "relationship intimacy",
             "forehead kiss",
             "French kiss"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "Signs You're a Bad Kisser (And How to Fix It)",
@@ -417,7 +460,8 @@
             "kissing mistakes",
             "how to fix",
             "self-improvement"
-        ]
+        ],
+        "category_slug": "mistakes"
     },
     {
         "title": "First Kiss Nerves Are Normal: Here's What Actually Matters",
@@ -430,7 +474,8 @@
             "anxiety",
             "signals",
             "dating"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "How to Be a Better Kisser: 7 Techniques That Actually Work",
@@ -442,6 +487,7 @@
             "techniques",
             "kissing tips",
             "how to kiss"
-        ]
+        ],
+        "category_slug": "techniques"
     }
 ]
