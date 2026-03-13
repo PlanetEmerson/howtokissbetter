@@ -169,7 +169,7 @@
             "url": "https://howtokissbetter.com"
         },
         "datePublished": "{{DATE}}",
-        "dateModified": "{{DATE}}",
+        "dateModified": "{{DATE_MODIFIED}}",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "https://howtokissbetter.com/blog/{{SLUG}}/"
@@ -317,7 +317,7 @@
         <div class="max-w-6xl mx-auto">
             <h2 class="font-serif text-2xl text-cream mb-8 text-center">More Articles</h2>
             <div class="grid md:grid-cols-3 gap-6" id="related-posts">
-                <!-- Dynamically loaded -->
+                {{RELATED_POSTS}}
             </div>
             <div class="text-center mt-8">
                 <a href="/blog/" class="text-gold hover:text-gold-dark transition-colors">View all articles →</a>
@@ -343,36 +343,6 @@
         </div>
     </footer>
 
-    <script>
-        // Load related posts — category-matched for topical cluster signals
-        async function loadRelated() {
-            try {
-                const response = await fetch('/blog/posts.json');
-                const posts = await response.json();
-                const currentSlug = '{{SLUG}}';
-                const currentCategory = '{{CATEGORY}}';
-                const others = posts.filter(p => p.slug !== currentSlug);
-                // Prioritize same-category posts, then fill with others
-                const sameCategory = others.filter(p => p.category === currentCategory);
-                const diffCategory = others.filter(p => p.category !== currentCategory);
-                const related = [...sameCategory, ...diffCategory].slice(0, 3);
-                
-                if (related.length === 0) return;
-                
-                document.getElementById('related-posts').innerHTML = related.map(post => `
-                    <a href="/blog/${post.slug}/" class="block bg-wine/20 border border-gold/20 rounded-xl overflow-hidden hover:border-gold/40 transition-colors">
-                        <div class="aspect-video overflow-hidden">
-                            <img src="/blog/${post.slug}/featured.jpg" alt="${post.title}" class="w-full h-full object-cover">
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-serif text-lg text-cream leading-tight">${post.title}</h3>
-                        </div>
-                    </a>
-                `).join('');
-            } catch (e) {}
-        }
-        loadRelated();
-    </script>
     <!-- Blog Email Capture Logic -->
     <script>
     (function() {

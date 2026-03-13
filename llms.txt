@@ -17,15 +17,18 @@ The blog publishes long-form (2,000+ word) articles across these categories:
 - **Techniques**: French kissing, neck kissing, lip biting, hand placement, making out, breathing while kissing, matching your partner's style
 - **First Kiss**: How to initiate a kiss, first kiss nerves, reading body language signals, when to kiss on a date, how to ask for a kiss
 - **Relationships**: Why couples stop kissing, teasing with a kiss, what to do after a kiss, types of kisses and their meanings
-- **Science & Anatomy**: The science of kissing (hormones, brain chemistry), why lips are so sensitive
+- **Science**: The science of kissing, what makes a good kisser, why we close our eyes when we kiss
+- **Anatomy**: Why lips are so sensitive and other sensory mechanics behind kissing
 - **Preparation**: Fresh breath tips, kissing with braces
 - **Special Situations**: Kissing with a height difference, kissing someone with a beard
 
 ## Key Content
 
-- /blog/ — Full article index (27 posts)
+- /blog/ — Full article index (30 posts)
 - /blog/how-to-french-kiss/ — Complete guide to French kissing
 - /blog/how-to-be-a-better-kisser/ — 7 techniques that actually work
+- /blog/what-makes-a-good-kisser/ — Research-backed breakdown of what actually separates a great kisser from a forgettable one
+- /blog/why-we-close-our-eyes-when-kissing/ — Neuroscience of sensory amplification during kissing
 - /blog/how-to-kiss-someone-for-the-first-time/ — Step-by-step first kiss guide
 - /blog/science-of-kissing/ — Brain chemistry and hormones behind kissing
 - /blog/how-to-make-out/ — Complete guide to passionate kissing
@@ -37,6 +40,9 @@ The blog publishes long-form (2,000+ word) articles across these categories:
 - /blog/how-to-breathe-while-kissing/ — Breathing techniques during kissing
 - /blog/how-to-ask-for-a-kiss/ — Consent-forward approaches
 - /blog/what-to-do-after-a-kiss/ — Post-kiss advice
+- /blog/category/science/ — Science-focused archive page
+- /blog/category/preparation/ — Preparation-focused archive page
+- /blog/category/special-situations/ — Special-situations archive page
 
 ## Author
 
