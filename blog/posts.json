@@ -1,5 +1,20 @@
 [
     {
+        "title": "How to Kiss Someone New (Without Overthinking It)",
+        "description": "Kissing someone new is its own skill. Here's how to handle the nerves, drop the muscle memory of your ex, and make that first kiss with a new person feel natural.",
+        "slug": "how-to-kiss-someone-new",
+        "date": "March 16, 2026",
+        "category": "Special Situations",
+        "tags": [
+            "how to kiss someone new",
+            "kissing someone new",
+            "first kiss new partner",
+            "kissing after breakup",
+            "new relationship kiss",
+            "kissing anxiety"
+        ]
+    },
+    {
         "title": "How Long Should a Kiss Last? (The Honest Answer)",
         "description": "Everyone wants a number. The real answer is more interesting. Here's what research says about kiss duration, Gottman's 6-second rule, and how to know when a kiss should end.",
         "slug": "how-long-should-a-kiss-last",
@@ -13,7 +28,8 @@
             "ideal kiss length",
             "how long to kiss someone",
             "kissing tips"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "What Makes a Good Kisser (The Honest Answer)",
