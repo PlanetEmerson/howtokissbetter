@@ -768,7 +768,7 @@ def build_post(data: dict[str, Any]) -> None:
     slug = fm.get("slug", title.lower().replace(" ", "-"))
     date = fm.get("date", datetime.now().strftime("%Y-%m-%d"))
     date_formatted = format_date(date)
-    date_modified = fm.get("dateModified") or fm.get("date_modified") or date
+    date_modified = fm.get("dateModified") or fm.get("date_modified") or datetime.now().strftime("%Y-%m-%d")
     category = fm.get("category", "General")
     tags = fm.get("tags", [])
     keyword = data.get("keyword", title)
@@ -830,11 +830,22 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("path", nargs="?", help="Path to a post JSON file")
     parser.add_argument("--from-n8n", dest="from_n8n", help="Raw n8n JSON payload")
     parser.add_argument("--rebuild-listings", action="store_true", help="Regenerate /blog/ and /blog/category/* pages from posts.json")
+    parser.add_argument("--rebuild-all", action="store_true", help="Rebuild all posts from their post.json files with fresh dateModified")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+
+    if args.rebuild_all:
+        post_jsons = sorted(BLOG_DIR.glob("*/post.json"))
+        print(f"Rebuilding {len(post_jsons)} posts from post.json files...")
+        for post_json in post_jsons:
+            data = json.loads(post_json.read_text())
+            build_post(data)
+        rebuild_archive_pages()
+        print("Done.")
+        return
 
     if args.rebuild_listings:
         rebuild_archive_pages()
