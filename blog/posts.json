@@ -1,5 +1,21 @@
 [
     {
+        "title": "Why Do We Kiss? (The Answer Goes Deeper Than You Think)",
+        "description": "Kissing is objectively weird. So why do billions of humans do it? New research traces the answer back 21 million years, and the truth changes how you think about every kiss.",
+        "slug": "why-do-we-kiss",
+        "date": "March 27, 2026",
+        "category": "Science",
+        "tags": [
+            "why do we kiss",
+            "why do people kiss",
+            "why do humans kiss",
+            "evolution of kissing",
+            "kissing science",
+            "psychology of kissing",
+            "history of kissing"
+        ]
+    },
+    {
         "title": "Never Been Kissed? Here's What Everyone's Afraid to Tell You",
         "description": "You've never been kissed and you feel behind. Here's the truth about late first kisses, why the timeline is a lie, and how to stop waiting and start living.",
         "slug": "never-been-kissed",
@@ -63,7 +79,8 @@
             "kissing after breakup",
             "new relationship kiss",
             "kissing anxiety"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "How Long Should a Kiss Last? (The Honest Answer)",
