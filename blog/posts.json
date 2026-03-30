@@ -1,5 +1,21 @@
 [
     {
+        "title": "Why Some People Don't Like Kissing (And What It Actually Means)",
+        "description": "You're not broken. Twenty-one percent of people skip kissing because they don't enjoy it. Here's why some people feel nothing when they kiss, what's behind it, and what to do about it.",
+        "slug": "why-some-people-dont-like-kissing",
+        "date": "March 30, 2026",
+        "category": "Relationships",
+        "tags": [
+            "why don't I like kissing",
+            "is it normal to not like kissing",
+            "don't enjoy kissing",
+            "kissing aversion",
+            "hate kissing",
+            "kissing feels weird",
+            "not into kissing"
+        ]
+    },
+    {
         "title": "Why Do We Kiss? (The Answer Goes Deeper Than You Think)",
         "description": "Kissing is objectively weird. So why do billions of humans do it? New research traces the answer back 21 million years, and the truth changes how you think about every kiss.",
         "slug": "why-do-we-kiss",
@@ -13,7 +29,8 @@
             "kissing science",
             "psychology of kissing",
             "history of kissing"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "Never Been Kissed? Here's What Everyone's Afraid to Tell You",
