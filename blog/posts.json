@@ -1,5 +1,21 @@
 [
     {
+        "title": "How to Kiss Passionately (It's Not What You Think)",
+        "description": "Passionate kissing isn't about force or intensity. It's about presence. Here's how to build real fire through escalation, restraint, and reading your partner.",
+        "slug": "how-to-kiss-passionately",
+        "date": "April 01, 2026",
+        "category": "Techniques",
+        "tags": [
+            "how to kiss passionately",
+            "passionate kissing",
+            "kissing with passion",
+            "intense kissing",
+            "kissing techniques",
+            "how to kiss with more passion",
+            "passionate kiss tips"
+        ]
+    },
+    {
         "title": "Why Some People Don't Like Kissing (And What It Actually Means)",
         "description": "You're not broken. Twenty-one percent of people skip kissing because they don't enjoy it. Here's why some people feel nothing when they kiss, what's behind it, and what to do about it.",
         "slug": "why-some-people-dont-like-kissing",
@@ -13,7 +29,8 @@
             "hate kissing",
             "kissing feels weird",
             "not into kissing"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "Why Do We Kiss? (The Answer Goes Deeper Than You Think)",
