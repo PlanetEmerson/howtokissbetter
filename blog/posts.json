@@ -1,5 +1,21 @@
 [
     {
+        "title": "Where to Kiss Someone (And Why Each Spot Hits Different)",
+        "description": "Your partner's body is a map and you've been visiting the same two cities your whole life. Here's the neuroscience of where to kiss someone, from the spots everyone knows to the ones nobody thinks to try.",
+        "slug": "where-to-kiss-someone",
+        "date": "April 03, 2026",
+        "category": "Anatomy",
+        "tags": [
+            "where to kiss someone",
+            "best places to kiss",
+            "where do guys like to be kissed",
+            "where do girls like to be kissed",
+            "sensitive spots to kiss",
+            "erogenous zones kissing",
+            "kissing body map"
+        ]
+    },
+    {
         "title": "How to Kiss Passionately (It's Not What You Think)",
         "description": "Passionate kissing isn't about force or intensity. It's about presence. Here's how to build real fire through escalation, restraint, and reading your partner.",
         "slug": "how-to-kiss-passionately",
@@ -13,7 +29,8 @@
             "kissing techniques",
             "how to kiss with more passion",
             "passionate kiss tips"
-        ]
+        ],
+        "category_slug": "techniques"
     },
     {
         "title": "Why Some People Don't Like Kissing (And What It Actually Means)",
