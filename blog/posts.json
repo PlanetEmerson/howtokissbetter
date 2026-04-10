@@ -1,5 +1,21 @@
 [
     {
+        "title": "How to Surprise Someone with a Kiss (And Make Them Think About It All Day)",
+        "description": "The best kiss you'll ever give is the one they don't see coming. Here are seven surprise kisses that bypass overthinking and land directly in long-term memory.",
+        "slug": "how-to-surprise-someone-with-a-kiss",
+        "date": "April 10, 2026",
+        "category": "Relationships",
+        "tags": [
+            "how to surprise someone with a kiss",
+            "surprise kiss",
+            "spontaneous kiss",
+            "romantic kiss ideas",
+            "surprise your partner",
+            "unexpected kiss",
+            "keep kissing exciting"
+        ]
+    },
+    {
         "title": "What Kissing Does to Your Body (It's More Than You Think)",
         "description": "A single kiss triggers four neurotransmitter systems, lowers blood pressure, trains your immune system, and burns calories. Here's the full science of what happens inside you when you kiss someone.",
         "slug": "what-kissing-does-to-your-body",
@@ -13,7 +29,8 @@
             "kissing hormones",
             "benefits of kissing",
             "kissing and health"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "How to Stop Overthinking When You Kiss (Your Brain Is the Problem)",
