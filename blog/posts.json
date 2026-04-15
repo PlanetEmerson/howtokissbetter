@@ -1,5 +1,21 @@
 [
     {
+        "title": "Why Some Kisses Feel Electric (And Others Feel Like Nothing)",
+        "description": "You've kissed someone and forgotten your own name. You've also kissed someone and felt absolutely nothing. Same you, same lips, completely different experience. Here's the neuroscience of why.",
+        "slug": "why-some-kisses-feel-electric",
+        "date": "April 15, 2026",
+        "category": "Science",
+        "tags": [
+            "why some kisses feel electric",
+            "kissing chemistry",
+            "why didn't I feel anything when we kissed",
+            "electric kiss",
+            "why do some kisses feel better",
+            "kissing neuroscience",
+            "what makes a kiss feel good"
+        ]
+    },
+    {
         "title": "How to Tell Someone They're a Bad Kisser (Without Crushing Them)",
         "description": "You like them. You want to keep kissing them. But something's off and you don't know how to say it. Here's how to redirect a bad kisser without making them feel terrible about themselves.",
         "slug": "how-to-tell-someone-theyre-a-bad-kisser",
@@ -13,7 +29,8 @@
             "how to fix bad kissing",
             "partner bad kisser",
             "kissing compatibility"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "How to Surprise Someone with a Kiss (And Make Them Think About It All Day)",
