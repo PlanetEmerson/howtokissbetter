@@ -1,5 +1,21 @@
 [
     {
+        "title": "How to Kiss in a Car (Without Making It Awkward)",
+        "description": "The driveway kiss is the most mythologized moment in modern dating. Here's how to actually pull it off: the angle, the setup, the console problem, and what nobody warns you about.",
+        "slug": "how-to-kiss-in-a-car",
+        "date": "April 17, 2026",
+        "category": "Special Situations",
+        "tags": [
+            "how to kiss in a car",
+            "driveway kiss",
+            "first kiss in car",
+            "car kiss tips",
+            "how to kiss after a date",
+            "kissing in a car",
+            "goodnight kiss car"
+        ]
+    },
+    {
         "title": "Why Some Kisses Feel Electric (And Others Feel Like Nothing)",
         "description": "You've kissed someone and forgotten your own name. You've also kissed someone and felt absolutely nothing. Same you, same lips, completely different experience. Here's the neuroscience of why.",
         "slug": "why-some-kisses-feel-electric",
@@ -13,7 +29,8 @@
             "why do some kisses feel better",
             "kissing neuroscience",
             "what makes a kiss feel good"
-        ]
+        ],
+        "category_slug": "science"
     },
     {
         "title": "How to Tell Someone They're a Bad Kisser (Without Crushing Them)",
