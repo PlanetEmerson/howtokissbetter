@@ -3,3 +3,15 @@ _private/
 
 # OS files
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Local tool state
+.playwright-mcp/
+.claude/settings.local.json
+.claude/plans/
