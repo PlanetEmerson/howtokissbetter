@@ -445,22 +445,28 @@ def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:
 
 
 def render_related_posts(posts: list[dict[str, Any]], slug: str, category: str) -> str:
-    """Render a static related-posts grid for new posts."""
+    """Render a static related-posts grid for new posts.
+
+    Picks up to 6 related posts — 4 from same category first, then fill with
+    other categories. More links = more crawl paths for Google.
+    """
     same_category = [post for post in posts if post["slug"] != slug and post["category"] == category]
     others = [post for post in posts if post["slug"] != slug and post["category"] != category]
-    related = (same_category + others)[:3]
+    related = (same_category[:4] + others)[:6]
     if not related:
         return ""
 
     cards = []
     for post in related:
         cards.append(
-            f"""                <a href="/blog/{html.escape(post['slug'])}/" class="block bg-wine/20 border border-gold/20 rounded-xl overflow-hidden hover:border-gold/40 transition-colors">
+            f"""                <a href="/blog/{html.escape(post['slug'])}/" class="block bg-wine/20 border border-gold/20 rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
                     <div class="aspect-video overflow-hidden">
-                        <img src="/blog/{html.escape(post['slug'])}/featured.jpg" alt="{html.escape(post['title'])}" class="w-full h-full object-cover" loading="lazy" width="400" height="225">
+                        <img src="/blog/{html.escape(post['slug'])}/featured.jpg" alt="{html.escape(post['title'])}" loading="lazy" width="400" height="225" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-serif text-lg text-cream leading-tight">{html.escape(post['title'])}</h3>
+                    <div class="p-5">
+                        <p class="text-gold text-xs font-medium uppercase tracking-wider mb-2">{html.escape(post['category'])}</p>
+                        <h3 class="font-serif text-lg text-cream group-hover:text-gold transition-colors leading-snug mb-2">{html.escape(post['title'])}</h3>
+                        <p class="text-gray-400 text-sm line-clamp-2">{html.escape(post.get('description', ''))}</p>
                     </div>
                 </a>"""
         )
@@ -624,6 +630,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
         f"{SITE_URL}/blog/",
         schema,
     )
+    post_count = len(posts)
     return f"""<!DOCTYPE html>
 <html lang="en">
 {head}
@@ -632,15 +639,35 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
 {render_site_header(active_blog=True)}
 
     <!-- HERO -->
-    <section class="py-20 px-6">
+    <section class="py-16 sm:py-20 px-6">
         <div class="max-w-4xl mx-auto text-center">
             <p class="text-gold font-medium tracking-widest uppercase text-sm mb-4">The Blog</p>
             <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                 Kissing Tips & <span class="gradient-text">Techniques</span>
             </h1>
-            <p class="text-xl text-gray-400 max-w-2xl mx-auto">
-                Free expert advice from C.J. McKenna. Long-form articles on kissing technique, chemistry, confidence, and connection.
+            <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-6">
+                {post_count} long-form articles from C.J. McKenna on the technique, science, and emotional logic of kissing well. Research-backed, experience-tested, and written for the parts most tips skip.
             </p>
+            <p class="text-base text-gray-500 max-w-2xl mx-auto">
+                Start with the fundamentals or jump straight to whatever is on your mind — first kiss nerves, practice methods, height differences, making out, or the neuroscience of why kisses feel the way they do.
+            </p>
+        </div>
+    </section>
+
+    <!-- START HERE -->
+    <section class="px-6 pb-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-wine/20 border border-gold/20 rounded-2xl p-6 sm:p-8">
+                <p class="text-gold font-medium tracking-widest uppercase text-xs mb-4 text-center">New Here? Start With These</p>
+                <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-[0.98rem]">
+                    <a href="/blog/how-to-be-a-better-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ How to Be a Better Kisser: 7 Techniques That Actually Work</a>
+                    <a href="/blog/how-to-kiss-someone-for-the-first-time/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Someone for the First Time</a>
+                    <a href="/blog/how-to-practice-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ How to Practice Kissing: 7 Methods That Actually Work</a>
+                    <a href="/blog/science-of-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ The Science of Kissing: What Actually Happens When Lips Touch</a>
+                    <a href="/blog/what-makes-a-good-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ What Makes a Good Kisser: The Honest Answer</a>
+                    <a href="/blog/how-to-french-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to French Kiss: A Complete Guide</a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -656,6 +683,25 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
         <div class="max-w-6xl mx-auto">
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="posts-grid">
 {cards}
+            </div>
+        </div>
+    </section>
+
+    <!-- AUTHOR / E-E-A-T -->
+    <section class="py-16 px-6 bg-wine/5 border-t border-gold/10">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+                <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-2 border-gold/30 flex-shrink-0">
+                <div class="text-center md:text-left">
+                    <p class="text-gold font-medium text-xs uppercase tracking-widest mb-2">About the Author</p>
+                    <h2 class="font-serif text-2xl sm:text-3xl text-cream mb-3">C.J. McKenna</h2>
+                    <p class="text-gray-300 leading-relaxed mb-3">
+                        Author of <em class="text-cream">Kiss Perfect Now: A Master Class in Kissology</em>, an intimacy expert whose work focuses on the mechanics, neuroscience, and emotional practice of kissing well. Every article here reflects first-hand coaching experience and peer-reviewed research — the goal is advice that holds up under a microscope and still works at dinner.
+                    </p>
+                    <p class="text-gray-400 text-sm">
+                        Topics of focus: kissing techniques, intimacy, relationship science, body language, physical chemistry.
+                    </p>
+                </div>
             </div>
         </div>
     </section>

@@ -315,12 +315,13 @@
     <!-- Related Posts -->
     <section class="py-16 px-6 bg-wine/10">
         <div class="max-w-6xl mx-auto">
-            <h2 class="font-serif text-2xl text-cream mb-8 text-center">More Articles</h2>
-            <div class="grid md:grid-cols-3 gap-6" id="related-posts">
-                {{RELATED_POSTS}}
+            <h2 class="font-serif text-3xl text-cream mb-2 text-center">Keep Reading</h2>
+            <p class="text-gray-400 text-center mb-10">Six more pieces, chosen to follow the thread you're on.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="related-posts">
+{{RELATED_POSTS}}
             </div>
-            <div class="text-center mt-8">
-                <a href="/blog/" class="text-gold hover:text-gold-dark transition-colors">View all articles →</a>
+            <div class="text-center mt-10">
+                <a href="/blog/" class="inline-block border border-gold/40 text-gold hover:bg-gold hover:text-charcoal font-medium py-3 px-8 rounded-lg transition-colors">Browse the full library →</a>
             </div>
         </div>
     </section>
