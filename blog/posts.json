@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Kiss in Public (Without Making It Weird)",
+        "description": "Public kissing is a confidence game more than a technique game. Here's how to pull off the sidewalk kiss, the airport kiss, the party kiss, and the one in front of your friends without turning it cringe.",
+        "slug": "how-to-kiss-in-public",
+        "date": "April 20, 2026",
+        "category": "Special Situations",
+        "tags": [
+            "how to kiss in public",
+            "PDA",
+            "public display of affection",
+            "kissing in public",
+            "airport kiss",
+            "kiss in front of friends",
+            "how to do PDA",
+            "public kiss tips"
+        ]
+    },
+    {
         "title": "How to Kiss in a Car (Without Making It Awkward)",
         "description": "The driveway kiss is the most mythologized moment in modern dating. Here's how to actually pull it off: the angle, the setup, the console problem, and what nobody warns you about.",
         "slug": "how-to-kiss-in-a-car",
@@ -13,7 +30,8 @@
             "how to kiss after a date",
             "kissing in a car",
             "goodnight kiss car"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "Why Some Kisses Feel Electric (And Others Feel Like Nothing)",
