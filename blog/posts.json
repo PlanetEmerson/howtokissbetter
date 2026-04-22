@@ -1,5 +1,22 @@
 [
     {
+        "title": "Too Much Saliva When Kissing? The Fix Nobody Googles",
+        "description": "Too much saliva when kissing is the most googled-at-3am kiss problem nobody solves. Here's what's actually causing it and the five fixes that work.",
+        "slug": "too-much-saliva-when-kissing",
+        "date": "April 22, 2026",
+        "category": "Mistakes",
+        "tags": [
+            "too much saliva when kissing",
+            "wet kisser",
+            "sloppy kisser",
+            "how to kiss without being wet",
+            "kissing too wet",
+            "excessive saliva kissing",
+            "how to stop drooling when kissing",
+            "kissing mistakes"
+        ]
+    },
+    {
         "title": "How to Kiss in Public (Without Making It Weird)",
         "description": "Public kissing is a confidence game more than a technique game. Here's how to pull off the sidewalk kiss, the airport kiss, the party kiss, and the one in front of your friends without turning it cringe.",
         "slug": "how-to-kiss-in-public",
@@ -14,7 +31,8 @@
             "kiss in front of friends",
             "how to do PDA",
             "public kiss tips"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "How to Kiss in a Car (Without Making It Awkward)",
