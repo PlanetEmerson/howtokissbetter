@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Give a Hickey (Without Wrecking Their Week)",
+        "description": "A hickey is just controlled bruising, but most people overshoot it on the first try. Here's the physics, the placement map, the intensity scale, and the move that leaves a mark you'll both actually be glad about.",
+        "slug": "how-to-give-a-hickey",
+        "date": "May 01, 2026",
+        "category": "Techniques",
+        "tags": [
+            "how to give a hickey",
+            "hickey",
+            "love bite",
+            "how to give a love bite",
+            "hickey technique",
+            "hickey without leaving a mark",
+            "how to give someone a hickey",
+            "neck kissing"
+        ]
+    },
+    {
         "title": "How to Kiss Your Crush (Without Letting Your Brain Ruin It)",
         "description": "Kissing your crush is harder than a normal first kiss because you've been rehearsing it in your head for weeks. Here's how to put yourself back in the room with the actual person, and the slow lean that decides everything.",
         "slug": "how-to-kiss-your-crush",
@@ -14,7 +31,8 @@
             "crush kiss",
             "first kiss tips",
             "kissing your crush for the first time"
-        ]
+        ],
+        "category_slug": "first-kiss"
     },
     {
         "title": "What Does a Forehead Kiss Mean? (The Honest Answer)",
