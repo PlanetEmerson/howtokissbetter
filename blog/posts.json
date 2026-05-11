@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Give the Perfect Goodnight Kiss (The One Move That Decides Everything)",
+        "description": "The goodnight kiss is the highest-leverage kiss in dating. Here's the 9-move sequence that lands it cleanly, and the one-inch pull-back that decides everything.",
+        "slug": "how-to-give-the-perfect-goodnight-kiss",
+        "date": "May 11, 2026",
+        "category": "First Kiss",
+        "tags": [
+            "goodnight kiss",
+            "how to give a goodnight kiss",
+            "first date goodnight kiss",
+            "end of date kiss",
+            "perfect goodnight kiss",
+            "saying goodnight on a date",
+            "date night kiss",
+            "goodnight kiss tips"
+        ]
+    },
+    {
         "title": "How to Kiss with Glasses On (Without the Awkward Bump)",
         "description": "Glasses don't ruin a kiss; hesitation does. Here's how to handle the lean-in, the bump, the take-off question, and the logistics nobody warns you about.",
         "slug": "how-to-kiss-with-glasses-on",
@@ -14,7 +31,8 @@
             "first kiss with glasses",
             "kissing tips glasses",
             "kissing with eyeglasses"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "What Does a Kiss on the Cheek Mean? (The Honest Answer Depends on Where It Lands)",
