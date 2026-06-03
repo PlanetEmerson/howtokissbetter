@@ -1,5 +1,20 @@
 [
     {
+        "title": "What to Do With Your Nose When Kissing (The Tilt Nobody Explains)",
+        "description": "Wondering what to do with your nose when kissing? The fix is one small head tilt. Here's which way to go and how to never bump noses again.",
+        "slug": "what-to-do-with-your-nose-when-kissing",
+        "date": "June 03, 2026",
+        "category": "Anatomy",
+        "tags": [
+            "nose when kissing",
+            "head tilt kissing",
+            "how to kiss",
+            "nose bumping",
+            "first kiss tips",
+            "kissing technique"
+        ]
+    },
+    {
         "title": "What Does a Good Kiss Feel Like? (And How to Know You Just Had One)",
         "description": "What does a good kiss feel like? Warmth, slowed time, and the urge to lean back in. Here's how to know it was good and what 'feeling nothing' really means.",
         "slug": "what-does-a-good-kiss-feel-like",
@@ -14,7 +29,8 @@
             "how to know if a kiss was good",
             "kissing sensations",
             "what does kissing feel like"
-        ]
+        ],
+        "category_slug": "anatomy"
     },
     {
         "title": "Where to Put Your Tongue When Kissing (The Map Nobody Drew For You)",
