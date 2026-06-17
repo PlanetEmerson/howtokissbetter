@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Kiss With Lipstick On (Without Painting Their Whole Face)",
+        "description": "How to kiss with lipstick on without the smudge panic: the 5-minute prep, the formulas that actually hold, and the kissing technique no beauty blog mentions.",
+        "slug": "how-to-kiss-with-lipstick-on",
+        "date": "June 17, 2026",
+        "category": "Preparation",
+        "tags": [
+            "how to kiss with lipstick on",
+            "kissing with lipstick",
+            "kiss proof lipstick",
+            "lipstick transfer kissing",
+            "how to keep lipstick on while kissing",
+            "transfer proof lipstick",
+            "best lipstick for kissing",
+            "kissing without smudging lipstick"
+        ]
+    },
+    {
         "title": "How to Get Rid of a Hickey (What Actually Works)",
         "description": "Need to get rid of a hickey fast? Here's what actually speeds up the fade, the popular tricks that make it worse, and how to hide it until it's gone.",
         "slug": "how-to-get-rid-of-a-hickey",
@@ -14,7 +31,8 @@
             "cover up a hickey",
             "hickey remedies",
             "does toothpaste get rid of a hickey"
-        ]
+        ],
+        "category_slug": "mistakes"
     },
     {
         "title": "What to Do With Your Nose When Kissing (The Tilt Nobody Explains)",
