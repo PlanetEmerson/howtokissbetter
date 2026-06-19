@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Kiss Back (What to Do When Someone Kisses You)",
+        "description": "Someone kisses you and you freeze. Here is how to kiss back: the first three seconds, what your lips and hands do, and why responding beats performing.",
+        "slug": "how-to-kiss-back",
+        "date": "June 19, 2026",
+        "category": "Techniques",
+        "tags": [
+            "how to kiss back",
+            "what to do when someone kisses you",
+            "how to kiss someone back",
+            "kissing back",
+            "how to respond to a kiss",
+            "how to reciprocate a kiss",
+            "do you kiss back",
+            "kissing back when nervous"
+        ]
+    },
+    {
         "title": "How to Kiss With Lipstick On (Without Painting Their Whole Face)",
         "description": "How to kiss with lipstick on without the smudge panic: the 5-minute prep, the formulas that actually hold, and the kissing technique no beauty blog mentions.",
         "slug": "how-to-kiss-with-lipstick-on",
@@ -14,7 +31,8 @@
             "transfer proof lipstick",
             "best lipstick for kissing",
             "kissing without smudging lipstick"
-        ]
+        ],
+        "category_slug": "preparation"
     },
     {
         "title": "How to Get Rid of a Hickey (What Actually Works)",
