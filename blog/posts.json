@@ -1,5 +1,22 @@
 [
     {
+        "title": "How to Kiss Standing Up (Without the Wobble)",
+        "description": "How to kiss standing up without the wobble: the balance fix nobody mentions, where your hands go, the neck-crank cure, and the doorframe lean that lands.",
+        "slug": "how-to-kiss-standing-up",
+        "date": "June 24, 2026",
+        "category": "Special Situations",
+        "tags": [
+            "how to kiss standing up",
+            "standing kiss",
+            "how to kiss against a wall",
+            "kissing standing up",
+            "doorframe lean",
+            "how to make out standing up",
+            "where to put your hands kissing",
+            "standing kiss tips"
+        ]
+    },
+    {
         "title": "How to Kiss While Lying Down (Without the Dead Arm)",
         "description": "How to kiss while lying down without the dead arm, the neck crank, or the panic of who goes on top. The logistics nobody solves, and the positions that last.",
         "slug": "how-to-kiss-while-lying-down",
@@ -14,7 +31,8 @@
             "how to make out lying down",
             "kissing while laying down",
             "lying down kiss tips"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "How to Kiss Back (What to Do When Someone Kisses You)",
