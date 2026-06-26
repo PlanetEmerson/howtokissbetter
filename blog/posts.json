@@ -1,5 +1,22 @@
 [
     {
+        "title": "What to Do With Your Teeth When Kissing (Without the Clack)",
+        "description": "What to do with your teeth when kissing: why they clash, the head-tilt fix that ends the clack, when a gentle graze actually helps, and how to recover with grace.",
+        "slug": "what-to-do-with-your-teeth-when-kissing",
+        "date": "June 26, 2026",
+        "category": "Anatomy",
+        "tags": [
+            "what to do with your teeth when kissing",
+            "kissing with teeth",
+            "teeth clashing when kissing",
+            "do teeth touch when kissing",
+            "how to avoid teeth when kissing",
+            "teeth bump kissing",
+            "how to kiss without teeth",
+            "gentle lip nibble"
+        ]
+    },
+    {
         "title": "How to Kiss Standing Up (Without the Wobble)",
         "description": "How to kiss standing up without the wobble: the balance fix nobody mentions, where your hands go, the neck-crank cure, and the doorframe lean that lands.",
         "slug": "how-to-kiss-standing-up",
@@ -14,7 +31,8 @@
             "how to make out standing up",
             "where to put your hands kissing",
             "standing kiss tips"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "How to Kiss While Lying Down (Without the Dead Arm)",
