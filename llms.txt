@@ -24,7 +24,7 @@ The blog publishes long-form (2,000+ word) articles across these categories:
 
 ## Key Content
 
-- /blog/ — Full article index (30 posts)
+- /blog/ — Full article index (66 posts)
 - /blog/how-to-french-kiss/ — Complete guide to French kissing
 - /blog/how-to-be-a-better-kisser/ — 7 techniques that actually work
 - /blog/what-makes-a-good-kisser/ — Research-backed breakdown of what actually separates a great kisser from a forgettable one
