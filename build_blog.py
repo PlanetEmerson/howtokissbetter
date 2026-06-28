@@ -645,6 +645,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
             <div class="bg-wine/20 border border-gold/20 rounded-2xl p-6 sm:p-8">
                 <p class="text-gold font-medium tracking-widest uppercase text-xs mb-4 text-center">New Here? Start With These</p>
                 <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-[0.98rem]">
+                    <a href="/blog/how-to-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss: The Complete Guide</a>
                     <a href="/blog/how-to-be-a-better-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ How to Be a Better Kisser: 7 Techniques That Actually Work</a>
                     <a href="/blog/how-to-kiss-someone-for-the-first-time/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Someone for the First Time</a>
                     <a href="/blog/how-to-practice-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ How to Practice Kissing: 7 Methods That Actually Work</a>

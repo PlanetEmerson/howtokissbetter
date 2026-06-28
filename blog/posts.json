@@ -1,5 +1,65 @@
 [
     {
+        "title": "How to Kiss a Guy (and Leave Him Thinking About It)",
+        "description": "How to kiss a guy with confidence: read his signals, close the distance, lean in, and start soft and slow so the kiss lands and he keeps replaying it.",
+        "slug": "how-to-kiss-a-guy",
+        "date": "June 28, 2026",
+        "category": "First Kiss",
+        "tags": [
+            "how to kiss a guy",
+            "first kiss",
+            "how to kiss",
+            "making the first move",
+            "first kiss tips"
+        ]
+    },
+    {
+        "title": "How to Kiss a Girl (So She Actually Wants More)",
+        "description": "How to kiss a girl so she actually wants more: read her green-light signals, build the moment, pause, then start soft. A warm, consent-first first-kiss guide.",
+        "slug": "how-to-kiss-a-girl",
+        "date": "June 28, 2026",
+        "category": "First Kiss",
+        "tags": [
+            "how to kiss a girl",
+            "first kiss",
+            "how to kiss",
+            "reading signals",
+            "first kiss tips"
+        ],
+        "category_slug": "first-kiss"
+    },
+    {
+        "title": "Kissing Positions: 9 Ways to Kiss for Every Mood and Moment",
+        "description": "Kissing positions for every mood: face-to-face standing, the cradle, sitting in their lap, lying down, against the wall, the dip, and more, with a tip for each.",
+        "slug": "kissing-positions",
+        "date": "June 28, 2026",
+        "category": "Techniques",
+        "tags": [
+            "kissing positions",
+            "ways to kiss",
+            "how to kiss",
+            "kissing styles",
+            "making out positions"
+        ],
+        "category_slug": "techniques"
+    },
+    {
+        "title": "How to Kiss: The Complete Guide",
+        "description": "How to kiss, fully explained: soft lips, a slow start, reading your partner, hands, tongue, breathing, and the one habit that makes any kiss unforgettable.",
+        "slug": "how-to-kiss",
+        "date": "June 28, 2026",
+        "category": "Techniques",
+        "tags": [
+            "how to kiss",
+            "kissing guide",
+            "how to kiss someone",
+            "kissing tips",
+            "kissing techniques",
+            "how to kiss better"
+        ],
+        "category_slug": "techniques"
+    },
+    {
         "title": "What to Do With Your Teeth When Kissing (Without the Clack)",
         "description": "What to do with your teeth when kissing: why they clash, the head-tilt fix that ends the clack, when a gentle graze actually helps, and how to recover with grace.",
         "slug": "what-to-do-with-your-teeth-when-kissing",
@@ -14,7 +74,8 @@
             "teeth bump kissing",
             "how to kiss without teeth",
             "gentle lip nibble"
-        ]
+        ],
+        "category_slug": "anatomy"
     },
     {
         "title": "How to Kiss Standing Up (Without the Wobble)",
