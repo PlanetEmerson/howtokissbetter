@@ -682,63 +682,7 @@
     <script>
         // Load related posts
     </script>
-    <!-- Blog Email Capture Logic -->
-    <script>
-    (function() {
-        var BREVO_KEY = 'kSGr1E3FFmPNgncS-e3f78ae2c73f8636a62d86c9d39afa122b102a7a5064b8b60c1276dcb0341add-bisyekx'.split('').reverse().join('');
-        var LIST_ID = 3;
-        var CAPTURED_KEY = 'kiss_email_captured';
-
-        var box = document.getElementById('blog-email-box');
-        if (!box) return;
-
-        // If already captured, show success state
-        if (localStorage.getItem(CAPTURED_KEY)) {
-            document.getElementById('blog-email-form-state').classList.add('hidden');
-            document.getElementById('blog-email-success').classList.remove('hidden');
-            return;
-        }
-
-        var form = document.getElementById('blog-email-form');
-        if (!form) return;
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            var email = form.email.value.trim();
-            if (!email) return;
-
-            var btn = form.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.textContent = 'Sending\u2026';
-
-            fetch('https://api.brevo.com/v3/contacts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                body: JSON.stringify({ email: email, listIds: [LIST_ID], updateEnabled: true, attributes: { NURTURE_SIGNUP: new Date().toISOString().split('T')[0], NURTURE_STEP: 1 } })
-            })
-            .then(function(res) {
-                if (res.ok || res.status === 201 || res.status === 204) {
-                    fetch('https://api.brevo.com/v3/smtp/email', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-                        body: JSON.stringify({ templateId: 1, to: [{ email: email }] })
-                    });
-                    document.getElementById('blog-email-form-state').classList.add('hidden');
-                    document.getElementById('blog-email-success').classList.remove('hidden');
-                    localStorage.setItem(CAPTURED_KEY, '1');
-                    if (typeof gtag !== 'undefined') gtag('event', 'email_capture', { capture_location: 'blog_inline' });
-                } else {
-                    throw new Error('failed');
-                }
-            })
-            .catch(function() {
-                document.getElementById('blog-email-form-state').classList.add('hidden');
-                document.getElementById('blog-email-success').classList.remove('hidden');
-                localStorage.setItem(CAPTURED_KEY, '1');
-            });
-        });
-    })();
-    </script>
+    <script src="/assets/email-capture.js" defer></script>
     <script src="https://payhip.com/payhip.js" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
