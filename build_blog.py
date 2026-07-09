@@ -49,6 +49,7 @@ CATEGORY_CONFIG = {
             "These articles cover the fundamentals. The book goes deeper with the "
             "full system behind unforgettable kissing."
         ),
+        "intro": ("""<p>Most kissing advice stops at "be gentle and use less tongue." True, but useless on its own. The guides in this section break technique into its actual parts: pressure, rhythm, hands, breathing, and the escalation from a soft first press to <a href="/blog/how-to-make-out/" class="text-gold hover:underline">a proper make-out</a>. Start with <a href="/blog/how-to-kiss/" class="text-gold hover:underline">the complete guide to kissing better</a> if you want the full map, or jump straight to a specific skill like <a href="/blog/how-to-french-kiss/" class="text-gold hover:underline">French kissing</a> or <a href="/blog/what-to-do-with-your-hands-while-kissing/" class="text-gold hover:underline">what to do with your hands</a>. Every article is written to be usable tonight, not someday.</p>"""),
     },
     "first-kiss": {
         "name": "First Kiss",
@@ -67,6 +68,7 @@ CATEGORY_CONFIG = {
             "The book includes the complete confidence system, including scripts, "
             "timing cues, and practical ways to build the moment."
         ),
+        "intro": ("""<p>A first kiss is mostly a timing and nerves problem, not a technique problem. The articles here deal with the parts people actually worry about: <a href="/blog/how-to-tell-if-someone-wants-to-kiss-you/" class="text-gold hover:underline">reading whether they want to be kissed</a>, picking the moment, and staying calm enough to enjoy it. If your hands shake at the thought, begin with <a href="/blog/first-kiss-nerves-what-actually-matters/" class="text-gold hover:underline">first kiss nerves and what actually matters</a>. If the mechanics worry you more than the moment, <a href="/blog/how-to-kiss-someone-for-the-first-time/" class="text-gold hover:underline">how to kiss someone for the first time</a> walks through every beat, from the lean-in to the pull-back. And yes, there is a guide for <a href="/blog/never-been-kissed/" class="text-gold hover:underline">never having been kissed</a>. No judgment, just a plan.</p>"""),
     },
     "relationships": {
         "name": "Relationships",
@@ -85,6 +87,7 @@ CATEGORY_CONFIG = {
             "The book expands these ideas into a full intimacy system designed to "
             "make connection feel alive again."
         ),
+        "intro": ("""<p>Kissing changes after the first month. It stops being an event and starts being a language, and like any language it can go quiet without anyone deciding to stop speaking it. This section covers kissing inside real relationships: <a href="/blog/why-couples-stop-kissing/" class="text-gold hover:underline">why couples stop kissing</a> and how to restart, what different kisses mean (<a href="/blog/what-does-a-forehead-kiss-mean/" class="text-gold hover:underline">forehead</a>, cheek, hand), and the awkward conversations, like <a href="/blog/how-to-tell-someone-theyre-a-bad-kisser/" class="text-gold hover:underline">telling a partner they're a bad kisser</a> without wrecking their confidence. If you want the spark back, start with <a href="/blog/how-long-should-a-kiss-last/" class="text-gold hover:underline">how long a kiss should last</a>. The answer surprises most couples.</p>"""),
     },
     "mistakes": {
         "name": "Mistakes",
@@ -102,6 +105,7 @@ CATEGORY_CONFIG = {
         "cta_description": (
             "The book turns awkward habits into repeatable strengths with a step-by-step system."
         ),
+        "intro": ("""<p>Almost nobody is told when they're a bad kisser. Partners just quietly kiss them less. That silence is why the mistakes in this section matter: they're common, fixable, and almost always invisible to the person making them. Start with <a href="/blog/signs-youre-a-bad-kisser/" class="text-gold hover:underline">the signs you're a bad kisser</a> for an honest self-check, then the specific fixes: <a href="/blog/too-much-saliva-when-kissing/" class="text-gold hover:underline">too much saliva</a>, <a href="/blog/why-kissing-feels-awkward/" class="text-gold hover:underline">kisses that feel awkward</a>, and <a href="/blog/how-to-stop-overthinking-when-you-kiss/" class="text-gold hover:underline">overthinking every second of it</a>. Each one traces the habit to its cause and gives you the correction, because a bad kisser is just a good kisser who never got feedback.</p>"""),
     },
     "anatomy": {
         "name": "Anatomy",
@@ -120,6 +124,7 @@ CATEGORY_CONFIG = {
             "The book shows how to turn anatomy and touch awareness into chemistry "
             "that feels natural rather than mechanical."
         ),
+        "intro": ("""<p>Your lips have more nerve endings per square millimeter than almost anywhere else on your body, and most kissing advice ignores everything science knows about them. This section is the owner's manual: <a href="/blog/why-lips-are-so-sensitive/" class="text-gold hover:underline">why lips are so sensitive</a>, <a href="/blog/where-to-kiss-someone/" class="text-gold hover:underline">where to kiss someone</a> for the biggest response, and the mechanical questions everyone quietly Googles, like <a href="/blog/what-to-do-with-your-teeth-when-kissing/" class="text-gold hover:underline">what to do with your teeth</a> and <a href="/blog/what-to-do-with-your-nose-when-kissing/" class="text-gold hover:underline">where your nose goes</a>. Understanding the wiring is the difference between kissing harder and kissing better.</p>"""),
     },
     "science": {
         "name": "Science",
@@ -138,6 +143,7 @@ CATEGORY_CONFIG = {
             "The book takes the research and translates it into practical kissing "
             "moves you can actually use."
         ),
+        "intro": ("""<p>A good kiss triggers a measurable chemical event: dopamine, oxytocin, adrenaline, and a heart rate that can double in seconds. The articles here unpack that research in plain language: <a href="/blog/science-of-kissing/" class="text-gold hover:underline">what actually happens when lips touch</a>, <a href="/blog/why-some-kisses-feel-electric/" class="text-gold hover:underline">why some kisses feel electric</a> while others fall flat, and evolutionary puzzles like <a href="/blog/why-do-we-kiss/" class="text-gold hover:underline">why humans kiss at all</a> and <a href="/blog/why-we-close-our-eyes-when-kissing/" class="text-gold hover:underline">why we close our eyes</a>. None of it is trivia for its own sake. Every mechanism explained here maps to something you can do differently the next time you lean in.</p>"""),
     },
     "preparation": {
         "name": "Preparation",
@@ -156,6 +162,7 @@ CATEGORY_CONFIG = {
             "The book shows how preparation, timing, and confidence work together "
             "to make the kiss itself effortless."
         ),
+        "intro": ("""<p>The kiss is decided before it starts. Chapped lips, worried breath, or the low-grade panic of not feeling ready will sabotage technique you already have. This section handles the prep work: <a href="/blog/how-to-make-your-lips-soft-for-kissing/" class="text-gold hover:underline">getting your lips genuinely soft</a>, <a href="/blog/fresh-breath-before-kissing/" class="text-gold hover:underline">fresh breath you don't have to think about</a>, and the situational fixes for <a href="/blog/how-to-kiss-with-braces/" class="text-gold hover:underline">braces</a>, <a href="/blog/how-to-kiss-with-chapped-lips/" class="text-gold hover:underline">chapped lips</a>, and lipstick. None of this is vanity. It's the difference between being in the kiss and being in your head about it.</p>"""),
     },
     "special-situations": {
         "name": "Special Situations",
@@ -174,6 +181,7 @@ CATEGORY_CONFIG = {
             "The book builds the underlying skills that make unusual situations "
             "feel less awkward and more intuitive."
         ),
+        "intro": ("""<p>Real kisses rarely happen in ideal conditions. They happen in parked cars, against height differences, wearing glasses, in front of people, or with someone you were "just friends" with an hour ago. This section covers the scenarios standard advice skips: <a href="/blog/how-to-kiss-with-a-height-difference/" class="text-gold hover:underline">kissing with a height difference</a>, <a href="/blog/how-to-kiss-in-public/" class="text-gold hover:underline">public kisses that don't make anyone cringe</a>, <a href="/blog/how-to-kiss-a-friend/" class="text-gold hover:underline">crossing the friend line</a>, and more. The physics change, the logistics change, but the rules of a good kiss stay the same. These guides show you how to adapt.</p>"""),
     },
 }
 
@@ -609,13 +617,13 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
             "url": SITE_URL,
         },
     }
+    post_count = len(posts)
     head = build_archive_head(
-        "Kissing Tips & Techniques Blog | How to Kiss Better",
-        "Expert kissing advice, techniques, and tips from C.J. McKenna. Learn the secrets to unforgettable kisses with free long-form articles.",
+        f"Kissing Advice Blog: All {post_count} Guides | How to Kiss Better",
+        "Browse every kissing guide from C.J. McKenna in one place: first kisses, technique, practice methods, and the science behind a great kiss.",
         f"{SITE_URL}/blog/",
         schema,
     )
-    post_count = len(posts)
     return f"""<!DOCTYPE html>
 <html lang="en">
 {head}
@@ -645,7 +653,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
             <div class="bg-wine/20 border border-gold/20 rounded-2xl p-6 sm:p-8">
                 <p class="text-gold font-medium tracking-widest uppercase text-xs mb-4 text-center">New Here? Start With These</p>
                 <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-[0.98rem]">
-                    <a href="/blog/how-to-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss: The Complete Guide</a>
+                    <a href="/blog/how-to-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Better: The Complete Guide</a>
                     <a href="/blog/how-to-be-a-better-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ How to Be a Better Kisser: 7 Techniques That Actually Work</a>
                     <a href="/blog/how-to-kiss-someone-for-the-first-time/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Someone for the First Time</a>
                     <a href="/blog/how-to-practice-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ How to Practice Kissing: 7 Methods That Actually Work</a>
@@ -725,6 +733,18 @@ def render_category_page(category_slug: str, category_posts: list[dict[str, Any]
     hero_description = html.escape(metadata["hero_description"])
     cta_title = html.escape(metadata["cta_title"])
     cta_description = html.escape(metadata["cta_description"])
+    intro_html = ""
+    if metadata.get("intro"):
+        intro_html = f"""
+    <!-- CATEGORY INTRO -->
+    <section class="px-6 pb-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-gray-300 leading-relaxed space-y-4 text-lg">
+                {metadata["intro"]}
+            </div>
+        </div>
+    </section>
+"""
     return f"""<!DOCTYPE html>
 <html lang="en">
 {head}
@@ -744,7 +764,7 @@ def render_category_page(category_slug: str, category_posts: list[dict[str, Any]
             </p>
         </div>
     </section>
-
+{intro_html}
     <!-- POSTS GRID -->
     <section class="py-12 px-6">
         <div class="max-w-6xl mx-auto">
