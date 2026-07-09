@@ -15,3 +15,10 @@ __pycache__/
 .playwright-mcp/
 .claude/settings.local.json
 .claude/plans/
+
+# Agent memory files - local only, never publish
+CLAUDE.md
+**/CLAUDE.md
+
+# Internal strategy docs
+GEO-AIO Playbook*.md
