@@ -40,6 +40,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
 
     <!-- Fonts -->
+    <link rel="preload" as="image" href="assets/images/hero-bg-v2.webp" type="image/webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -494,7 +495,7 @@
             <div class="section-bg">
                 <picture>
                     <source srcset="assets/images/hero-bg-v2.webp" type="image/webp">
-                    <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns hero-bg-img" loading="eager" width="1536" height="1024">
+                    <img src="assets/images/hero-bg-v2.png" alt="" class="ken-burns hero-bg-img" loading="eager" width="1536" height="1024" fetchpriority="high">
                 </picture>
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/55 to-charcoal"></div>

@@ -417,7 +417,7 @@ def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:
     return f"""                <article class="post-card bg-wine/20 border border-gold/20 rounded-xl overflow-hidden">
                     <a href="/blog/{slug}/">
                         <div class="aspect-video overflow-hidden">
-                            <img src="/blog/{slug}/featured.jpg" alt="{title}"
+                            <img src="/blog/{slug}/thumb.webp" alt="{title}"
                                  class="post-image w-full h-full object-cover" loading="lazy" width="400" height="225">
                         </div>
                         <div class="p-6">
@@ -447,7 +447,7 @@ def render_related_posts(posts: list[dict[str, Any]], slug: str, category: str) 
         cards.append(
             f"""                <a href="/blog/{html.escape(post['slug'])}/" class="block bg-wine/20 border border-gold/20 rounded-xl overflow-hidden hover:border-gold/40 transition-colors group">
                     <div class="aspect-video overflow-hidden">
-                        <img src="/blog/{html.escape(post['slug'])}/featured.jpg" alt="{html.escape(post['title'])}" loading="lazy" width="400" height="225" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="/blog/{html.escape(post['slug'])}/thumb.webp" alt="{html.escape(post['title'])}" loading="lazy" width="400" height="225" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-5">
                         <p class="text-gold text-xs font-medium uppercase tracking-wider mb-2">{html.escape(post['category'])}</p>
