@@ -1,5 +1,22 @@
 [
     {
+        "title": "Wedding First Kiss: How to Nail It With Everyone Watching",
+        "description": "Your wedding first kiss gets photographed, filmed, and replayed forever. The timing, hand placement, and 3-second rule that make it look and feel perfect.",
+        "slug": "wedding-first-kiss",
+        "date": "July 13, 2026",
+        "category": "Special Situations",
+        "tags": [
+            "wedding first kiss",
+            "how to kiss at your wedding",
+            "wedding kiss tips",
+            "first kiss as husband and wife",
+            "how long should the wedding kiss last",
+            "wedding kiss ideas",
+            "awkward wedding kiss",
+            "wedding dip kiss"
+        ]
+    },
+    {
         "title": "Kissing With Your Eyes Open: What It Actually Means",
         "description": "Caught your partner kissing with their eyes open? Here's what it actually means, when it matters, and the one version that's a genuine green flag.",
         "slug": "kissing-with-eyes-open",
@@ -14,7 +31,8 @@
             "kissing eyes open or closed",
             "eye contact while kissing",
             "what does it mean when someone kisses with their eyes open"
-        ]
+        ],
+        "category_slug": "relationships"
     },
     {
         "title": "Why Do We Tilt Our Heads When We Kiss? (And Which Way to Go)",
