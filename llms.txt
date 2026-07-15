@@ -13,7 +13,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (76 posts)
+- /blog/ — Full article index (78 posts)
 
 ## Techniques (16 articles)
 
@@ -86,10 +86,11 @@ The neuroscience, chemistry, and psychology behind kissing.
 - /blog/why-we-close-our-eyes-when-kissing/ — Why Do We Close Our Eyes When We Kiss?
 - /blog/science-of-kissing/ — The Science of Kissing: What Actually Happens When Your Lips Touch
 
-## Special Situations (8 articles)
+## Special Situations (9 articles)
 
 Height differences, cars, public kisses, friends, and other real-world scenarios.
 
+- /blog/wedding-first-kiss/ — Wedding First Kiss: How to Nail It With Everyone Watching
 - /blog/how-to-kiss-standing-up/ — How to Kiss Standing Up (Without the Wobble)
 - /blog/how-to-kiss-while-lying-down/ — How to Kiss While Lying Down (Without the Dead Arm)
 - /blog/how-to-kiss-with-glasses-on/ — How to Kiss with Glasses On (Without the Awkward Bump)
@@ -99,10 +100,11 @@ Height differences, cars, public kisses, friends, and other real-world scenarios
 - /blog/how-to-kiss-a-friend/ — How to Kiss a Friend (Without Ruining Everything)
 - /blog/how-to-kiss-with-a-height-difference/ — How to Kiss with a Height Difference
 
-## Mistakes (6 articles)
+## Mistakes (7 articles)
 
 The habits that quietly ruin kisses and how to fix them.
 
+- /blog/bad-first-kiss/ — Bad First Kiss? What It Means (and What It Doesn't)
 - /blog/how-to-get-rid-of-a-hickey/ — How to Get Rid of a Hickey (What Actually Works)
 - /blog/signs-youre-a-good-kisser/ — Signs You're a Good Kisser (The 9 Tells You Probably Miss)
 - /blog/too-much-saliva-when-kissing/ — Too Much Saliva When Kissing? The Fix Nobody Googles

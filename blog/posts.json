@@ -1,5 +1,22 @@
 [
     {
+        "title": "Bad First Kiss? What It Means (and What It Doesn't)",
+        "description": "A bad first kiss feels like a verdict on the whole thing. It usually isn't. How to tell awkward-bad from nothing-bad, and how to make the second kiss land.",
+        "slug": "bad-first-kiss",
+        "date": "July 15, 2026",
+        "category": "Mistakes",
+        "tags": [
+            "bad first kiss",
+            "first kiss was awkward",
+            "does a bad first kiss mean anything",
+            "awkward first kiss",
+            "bad first kiss second chance",
+            "first kiss went badly",
+            "is a bad first kiss a dealbreaker",
+            "should I give a bad kisser a second chance"
+        ]
+    },
+    {
         "title": "Wedding First Kiss: How to Nail It With Everyone Watching",
         "description": "Your wedding first kiss gets photographed, filmed, and replayed forever. The timing, hand placement, and 3-second rule that make it look and feel perfect.",
         "slug": "wedding-first-kiss",
@@ -14,7 +31,8 @@
             "wedding kiss ideas",
             "awkward wedding kiss",
             "wedding dip kiss"
-        ]
+        ],
+        "category_slug": "special-situations"
     },
     {
         "title": "Kissing With Your Eyes Open: What It Actually Means",
