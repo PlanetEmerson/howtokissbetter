@@ -1,5 +1,22 @@
 [
     {
+        "title": "Kissing With Morning Breath: How Couples Actually Handle It",
+        "description": "Kissing with morning breath: why everyone has it, what kissing anyway really signals, and six fixes that save the morning kiss without killing the moment.",
+        "slug": "kissing-with-morning-breath",
+        "date": "July 17, 2026",
+        "category": "Preparation",
+        "tags": [
+            "kissing with morning breath",
+            "morning breath kissing",
+            "morning kiss",
+            "how to kiss in the morning",
+            "do couples kiss with morning breath",
+            "good morning kiss",
+            "how to get rid of morning breath fast",
+            "kissing before brushing teeth"
+        ]
+    },
+    {
         "title": "Bad First Kiss? What It Means (and What It Doesn't)",
         "description": "A bad first kiss feels like a verdict on the whole thing. It usually isn't. How to tell awkward-bad from nothing-bad, and how to make the second kiss land.",
         "slug": "bad-first-kiss",
@@ -14,7 +31,8 @@
             "first kiss went badly",
             "is a bad first kiss a dealbreaker",
             "should I give a bad kisser a second chance"
-        ]
+        ],
+        "category_slug": "mistakes"
     },
     {
         "title": "Wedding First Kiss: How to Nail It With Everyone Watching",
