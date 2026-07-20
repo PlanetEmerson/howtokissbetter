@@ -1,5 +1,22 @@
 [
     {
+        "title": "Average Age of First Kiss (and Why Yours Doesn't Matter)",
+        "description": "The average age of a first kiss is about 15. But 14% of college students haven't had theirs, and first kisses are trending later worldwide. The real numbers.",
+        "slug": "average-age-of-first-kiss",
+        "date": "July 20, 2026",
+        "category": "First Kiss",
+        "tags": [
+            "average age of first kiss",
+            "what age do most people have their first kiss",
+            "first kiss age",
+            "average age for first kiss",
+            "when do most people have their first kiss",
+            "is 16 too late for a first kiss",
+            "never had my first kiss at 18",
+            "first kiss statistics"
+        ]
+    },
+    {
         "title": "Kissing With Morning Breath: How Couples Actually Handle It",
         "description": "Kissing with morning breath: why everyone has it, what kissing anyway really signals, and six fixes that save the morning kiss without killing the moment.",
         "slug": "kissing-with-morning-breath",
@@ -14,7 +31,8 @@
             "good morning kiss",
             "how to get rid of morning breath fast",
             "kissing before brushing teeth"
-        ]
+        ],
+        "category_slug": "preparation"
     },
     {
         "title": "Bad First Kiss? What It Means (and What It Doesn't)",
