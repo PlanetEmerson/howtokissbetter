@@ -27,8 +27,7 @@ CATEGORY_DIR = BLOG_DIR / "category"
 
 SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
-PAYHIP_PRODUCT_ID = "YyLMc"
-PAYHIP_URL = f"https://payhip.com/b/{PAYHIP_PRODUCT_ID}"
+BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
 
 CATEGORY_CONFIG = {
@@ -201,6 +200,7 @@ FONT_AND_TAILWIND_SNIPPET = """    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
+    <link rel="stylesheet" href="/assets/conversion.css">
 """
 
 ARCHIVE_STYLES = """    <style>
@@ -234,22 +234,7 @@ ARCHIVE_STYLES = """    <style>
     </style>
 """
 
-PAYHIP_SNIPPET = f"""    <script src="https://payhip.com/payhip.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {{
-            document.querySelectorAll('a[data-product]').forEach(function(btn) {{
-                btn.addEventListener('click', function(e) {{
-                    e.preventDefault();
-                    var productId = this.getAttribute('data-product');
-                    if (typeof Payhip !== 'undefined' && Payhip.Checkout) {{
-                        Payhip.Checkout.open({{ product: productId }});
-                    }} else {{
-                        window.open(this.href, '_blank');
-                    }}
-                }});
-            }});
-        }});
-    </script>
+CONVERSION_SNIPPET = """    <script src="/assets/conversion.js" defer></script>
 """
 
 
@@ -498,13 +483,13 @@ def build_archive_head(title: str, description: str, canonical: str, schema: dic
     <meta property="og:url" content="{canonical_attr}">
     <meta property="og:title" content="{title_attr}">
     <meta property="og:description" content="{description_attr}">
-    <meta property="og:image" content="{SITE_URL}/assets/og-image.jpg">
+    <meta property="og:image" content="{SITE_URL}/assets/images/hero-bg-v2.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{title_attr}">
     <meta name="twitter:description" content="{description_attr}">
-    <meta name="twitter:image" content="{SITE_URL}/assets/og-image.jpg">
+    <meta name="twitter:image" content="{SITE_URL}/assets/images/hero-bg-v2.png">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
@@ -529,8 +514,8 @@ def render_site_header(active_blog: bool = False) -> str:
             </a>
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="{blog_class} transition-colors text-sm sm:text-base">Blog</a>
-                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="{PAYHIP_URL}" data-product="{PAYHIP_PRODUCT_ID}" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="{BOOK_URL}" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
+                <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -711,7 +696,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
     </section>
 
 {render_footer()}
-{PAYHIP_SNIPPET}
+{CONVERSION_SNIPPET}
 </body>
 </html>
 """
@@ -791,14 +776,14 @@ def render_category_page(category_slug: str, category_posts: list[dict[str, Any]
             <p class="text-gray-400 text-lg mb-8">
                 {cta_description}
             </p>
-            <a href="{PAYHIP_URL}" data-product="{PAYHIP_PRODUCT_ID}" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
+            <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
                 Get Kiss Perfect Now
             </a>
         </div>
     </section>
 
 {render_footer()}
-{PAYHIP_SNIPPET}
+{CONVERSION_SNIPPET}
 </body>
 </html>
 """

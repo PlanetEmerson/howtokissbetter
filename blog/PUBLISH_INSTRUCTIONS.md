@@ -88,7 +88,7 @@ Add new post to the beginning of the array:
 
 ### Step 7: Git commit and push
 ```bash
-cd /Users/murph/howtokissbetter
+cd /path/to/howtokissbetter
 git add .
 git commit -m "New blog post: [title]"
 git push origin main

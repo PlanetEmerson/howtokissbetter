@@ -46,6 +46,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
+    <link rel="stylesheet" href="/assets/conversion.css">
 
     <style>
         html { scroll-behavior: smooth; }
@@ -184,8 +185,8 @@
             </a>
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
-                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_nav" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -464,38 +465,30 @@
                 </div>
             </div>
 
-            <!-- Email Capture -->
-            <div id="blog-email-box" class="mt-10 p-6 sm:p-8 bg-charcoal border border-gold/20 rounded-xl">
-                <div id="blog-email-form-state">
-                    <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">Free Chapter</p>
-                    <h3 class="font-serif text-2xl text-cream mb-2">Get The 10 Kiss Commandments</h3>
-                    <p class="text-gray-400 mb-5 text-sm">The chapter from <em class="text-cream/80">Kiss Perfect Now</em> that readers say changed everything. Free, instant download.</p>
-                    <form id="blog-email-form" class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" name="email" required placeholder="Your email address"
-                            class="flex-1 px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-cream placeholder-gray-500 font-sans text-base focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-all">
-                        <button type="submit"
-                            class="px-6 py-3 rounded-lg bg-gradient-to-r from-gold to-gold-dark text-charcoal font-sans font-bold text-sm tracking-wide hover:shadow-lg hover:shadow-gold/20 transition-all cursor-pointer whitespace-nowrap">
-                            Send It Free
-                        </button>
-                    </form>
-                    <p class="text-gray-600 text-xs mt-2">No spam. Unsubscribe anytime.</p>
-                </div>
-                <div id="blog-email-success" class="hidden text-center py-2">
-                    <p class="font-serif text-xl text-cream mb-2">Check your inbox 💋</p>
-                    <p class="text-gray-400 text-sm mb-3">The 10 Kiss Commandments is on its way.</p>
-                    <a href="/downloads/the-10-kiss-commandments-free-chapter.pdf" download
-                        class="text-gold text-sm hover:text-gold-dark transition-colors">Or download now &rarr;</a>
+            <!-- Native Brevo email capture -->
+            <div class="mt-10">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Free chapter</p>
+                <div class="brevo-form-wrap">
+                    <iframe
+                        class="brevo-form-frame"
+                        data-brevo-form
+                        title="Get The 10 Kiss Commandments by email"
+                        src="https://6cc4ce1f.sibforms.com/v2/serve/MUIFAAlrmfq3XRaAilqRX-igrjTbbRedvh6Q6qI_KNuBpur_axZPoQkG8_uDgYw4XILy75YNSQN32CCcguba-5_Yek2i9gYelnuP_NeV7ZAWwa9Vir9bRyVYGgzxysO4uKBCS43OSxdB3n0qqT90lpkCrB8apiMJ9KvTUjXg7fV0sAM1Vm-IMdAyYgHvJ8OwzQhk4M9k_m74gaFb5w=="
+                        width="540"
+                        height="430"
+                        loading="lazy"></iframe>
                 </div>
             </div>
 
             <!-- CTA Box -->
-            <div class="mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center">
-                <h3 class="font-serif text-2xl text-cream mb-4">Want More?</h3>
-                <p class="text-gray-400 mb-6">This article is just a preview. The complete system is in the book.</p>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" data-cta-location="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
-                    Get Kiss Perfect Now — $4.95
+            <div class="js-offer mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center" data-offer-placement="post-cta">
+                <h3 class="font-serif text-2xl text-cream mb-4">Put the Full System in Your Hands</h3>
+                <p class="text-gray-400 mb-6">Go from one article to a clear guide for pressure, pace, hands, breath, confidence, and connection.</p>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_cta" data-offer-link data-offer-placement="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
+                    Get Kiss Perfect Now: $4.95
                 </a>
             </div>
+
 
                 </div><!-- end max-w-3xl -->
 
@@ -630,26 +623,6 @@
     <script>
         // Load related posts
     </script>
-    <script src="/assets/email-capture.js" defer></script>
-    <script src="https://payhip.com/payhip.js" defer></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll("a[data-product]").forEach(function(btn) {
-                btn.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    var productId = this.getAttribute("data-product");
-                    var ctaLocation = this.getAttribute("data-cta-location") || "blog-post";
-                    if (typeof gtag !== "undefined") {
-                        gtag("event", "cta_click", { cta_location: ctaLocation, page_path: window.location.pathname });
-                    }
-                    if (typeof Payhip !== "undefined" && Payhip.Checkout) {
-                        Payhip.Checkout.open({ product: productId });
-                    } else {
-                        window.open(this.href, "_blank");
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/assets/conversion.js" defer></script>
 </body>
 </html>

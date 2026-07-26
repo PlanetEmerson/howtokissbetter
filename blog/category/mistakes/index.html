@@ -25,13 +25,13 @@
     <meta property="og:url" content="https://howtokissbetter.com/blog/category/mistakes/">
     <meta property="og:title" content="Kissing Mistakes to Avoid | How to Kiss Better Blog">
     <meta property="og:description" content="Spot the habits that make kisses fall flat and learn how to correct them before they sabotage chemistry.">
-    <meta property="og:image" content="https://howtokissbetter.com/assets/og-image.jpg">
+    <meta property="og:image" content="https://howtokissbetter.com/assets/images/hero-bg-v2.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Kissing Mistakes to Avoid | How to Kiss Better Blog">
     <meta name="twitter:description" content="Spot the habits that make kisses fall flat and learn how to correct them before they sabotage chemistry.">
-    <meta name="twitter:image" content="https://howtokissbetter.com/assets/og-image.jpg">
+    <meta name="twitter:image" content="https://howtokissbetter.com/assets/images/hero-bg-v2.png">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
@@ -42,6 +42,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
+    <link rel="stylesheet" href="/assets/conversion.css">
     <style>
         html { scroll-behavior: smooth; }
         .gradient-text {
@@ -99,8 +100,8 @@
             </a>
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gold font-medium transition-colors text-sm sm:text-base">Blog</a>
-                <a href="/#preview" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
+                <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -243,7 +244,7 @@
             <p class="text-gray-400 text-lg mb-8">
                 The book turns awkward habits into repeatable strengths with a step-by-step system.
             </p>
-            <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
+            <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
                 Get Kiss Perfect Now
             </a>
         </div>
@@ -282,22 +283,7 @@
             </div>
         </div>
     </footer>
-    <script src="https://payhip.com/payhip.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('a[data-product]').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var productId = this.getAttribute('data-product');
-                    if (typeof Payhip !== 'undefined' && Payhip.Checkout) {
-                        Payhip.Checkout.open({ product: productId });
-                    } else {
-                        window.open(this.href, '_blank');
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/assets/conversion.js" defer></script>
 
 </body>
 </html>

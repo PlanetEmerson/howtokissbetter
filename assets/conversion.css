@@ -1,0 +1,367 @@
+:root {
+    --conversion-ink: #191619;
+    --conversion-panel: #231c22;
+    --conversion-wine: #4a1c23;
+    --conversion-gold: #d4af37;
+    --conversion-gold-dark: #b8860b;
+    --conversion-cream: #fdf8f3;
+    --conversion-muted: #a9a3a7;
+}
+
+.conversion-shell {
+    background:
+        radial-gradient(circle at 78% 8%, rgba(212, 175, 55, 0.1), transparent 30rem),
+        linear-gradient(180deg, #231c22 0%, #191619 60%, #21191f 100%);
+    color: var(--conversion-cream);
+    min-height: 100vh;
+}
+
+.conversion-kicker {
+    color: var(--conversion-gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.conversion-rule {
+    background: linear-gradient(90deg, var(--conversion-gold), rgba(212, 175, 55, 0));
+    height: 1px;
+    width: 7rem;
+}
+
+.conversion-panel {
+    background: rgba(35, 28, 34, 0.88);
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    border-radius: 1.25rem;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.conversion-button {
+    align-items: center;
+    background: linear-gradient(135deg, var(--conversion-gold), var(--conversion-gold-dark));
+    border: 0;
+    border-radius: 0.75rem;
+    color: #211b16;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 800;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0.85rem 1.35rem;
+    text-align: center;
+    text-decoration: none;
+    transition: filter 160ms ease, transform 160ms ease;
+}
+
+.conversion-button:hover {
+    filter: brightness(1.07);
+    transform: translateY(-1px);
+}
+
+.conversion-button-secondary {
+    background: transparent;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: var(--conversion-gold);
+}
+
+.conversion-button-secondary:hover {
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.conversion-button:focus-visible,
+.conversion-link:focus-visible,
+.mobile-buy-bar__link:focus-visible,
+.popup-close:focus-visible {
+    outline: 3px solid var(--conversion-cream);
+    outline-offset: 3px;
+}
+
+.brevo-form-wrap {
+    background: var(--conversion-ink);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.brevo-form-frame {
+    background: var(--conversion-ink);
+    border: 0;
+    color-scheme: dark;
+    display: block;
+    min-height: 430px;
+    width: 100%;
+}
+
+.conversion-offer {
+    background:
+        linear-gradient(135deg, rgba(74, 28, 35, 0.55), rgba(35, 28, 34, 0.96)),
+        var(--conversion-panel);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 1rem;
+    margin: 2.25rem 0;
+    overflow: hidden;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.conversion-offer::before {
+    background: var(--conversion-gold);
+    content: "";
+    inset: 0 auto 0 0;
+    position: absolute;
+    width: 3px;
+}
+
+.conversion-offer__eyebrow {
+    color: var(--conversion-gold);
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    margin: 0 0 0.55rem;
+    text-transform: uppercase;
+}
+
+.article-content .conversion-offer__title {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.6rem, 4vw, 2.15rem);
+    line-height: 1.1;
+    margin: 0 0 0.65rem;
+}
+
+.article-content .conversion-offer__copy {
+    color: #d1d5db;
+    font-size: 1rem;
+    line-height: 1.55;
+    margin: 0 0 1.15rem;
+}
+
+.article-content .conversion-offer__link {
+    color: #211b16;
+    text-decoration: none;
+}
+
+.conversion-price {
+    align-items: baseline;
+    display: flex;
+    gap: 0.65rem;
+}
+
+.conversion-price__amount {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(3rem, 9vw, 5rem);
+    font-weight: 700;
+    line-height: 0.9;
+}
+
+.conversion-price__currency {
+    color: var(--conversion-muted);
+    font-size: 0.82rem;
+}
+
+.book-hero {
+    align-items: center;
+    display: grid;
+    gap: clamp(2rem, 6vw, 5rem);
+    grid-template-columns: minmax(0, 1.08fr) minmax(240px, 0.72fr);
+    min-height: 76vh;
+}
+
+.book-cover-stage {
+    isolation: isolate;
+    margin-inline: auto;
+    max-width: 360px;
+    position: relative;
+}
+
+.book-cover-stage::before {
+    background: rgba(212, 175, 55, 0.18);
+    border-radius: 999px;
+    content: "";
+    filter: blur(42px);
+    inset: 15% 0;
+    position: absolute;
+    z-index: -1;
+}
+
+.book-cover-stage img {
+    border-radius: 0.75rem;
+    box-shadow: 0 32px 70px rgba(0, 0, 0, 0.52);
+    display: block;
+    height: auto;
+    transform: rotate(1.5deg);
+    width: 100%;
+}
+
+.book-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.book-card {
+    background: rgba(35, 28, 34, 0.72);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 1rem;
+    padding: 1.35rem;
+}
+
+.book-card h3 {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.55rem;
+    line-height: 1.1;
+    margin: 0 0 0.65rem;
+}
+
+.book-card p,
+.book-card li {
+    color: #c9c4c8;
+    line-height: 1.6;
+}
+
+.book-sample {
+    border-left: 3px solid var(--conversion-gold);
+    color: #e9e3e5;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.4rem, 3vw, 1.95rem);
+    line-height: 1.45;
+    margin: 0;
+    padding-left: 1.3rem;
+}
+
+.book-faq details {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+    padding: 1rem 0;
+}
+
+.book-faq summary {
+    color: var(--conversion-cream);
+    cursor: pointer;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.book-faq details p {
+    color: #bdb7bc;
+    line-height: 1.65;
+    margin: 0.75rem 0 0;
+}
+
+.confirmed-icon {
+    align-items: center;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 999px;
+    color: var(--conversion-gold);
+    display: flex;
+    font-size: 2rem;
+    height: 5rem;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    width: 5rem;
+}
+
+.confirmed-panel {
+    padding: clamp(2rem, 5vw, 3rem);
+}
+
+.confirmation-note {
+    margin: 1.75rem 0 0;
+}
+
+.mobile-buy-bar {
+    align-items: center;
+    background: rgba(25, 22, 25, 0.97);
+    border-top: 1px solid rgba(212, 175, 55, 0.35);
+    bottom: 0;
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.38);
+    display: none;
+    gap: 0.75rem;
+    justify-content: space-between;
+    left: 0;
+    padding: 0.65rem max(0.75rem, env(safe-area-inset-left)) calc(0.65rem + env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-right));
+    position: fixed;
+    right: 0;
+    transform: translateY(120%);
+    transition: transform 180ms ease;
+    z-index: 60;
+}
+
+.mobile-buy-bar.is-visible {
+    transform: translateY(0);
+}
+
+.mobile-buy-bar__copy {
+    color: var(--conversion-cream);
+    font-size: 0.78rem;
+    line-height: 1.25;
+    margin: 0;
+}
+
+.mobile-buy-bar__copy strong {
+    color: var(--conversion-gold);
+    display: block;
+}
+
+.mobile-buy-bar__link {
+    background: var(--conversion-gold);
+    border-radius: 0.6rem;
+    color: #211b16;
+    flex: 0 0 auto;
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.72rem 0.9rem;
+    text-decoration: none;
+}
+
+@media (max-width: 800px) {
+    .book-hero {
+        grid-template-columns: 1fr;
+        padding-top: 2.5rem;
+        text-align: center;
+    }
+
+    .book-cover-stage {
+        max-width: 250px;
+        order: -1;
+    }
+
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .mobile-buy-bar {
+        display: flex;
+    }
+
+    body.has-mobile-buy-bar {
+        padding-bottom: calc(4.65rem + env(safe-area-inset-bottom));
+    }
+
+    .brevo-form-frame {
+        min-height: 570px;
+    }
+
+    .conversion-offer {
+        margin-inline: -0.35rem;
+        padding: 1.25rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .conversion-button,
+    .mobile-buy-bar {
+        transition: none;
+    }
+
+    .conversion-button:hover {
+        transform: none;
+    }
+}

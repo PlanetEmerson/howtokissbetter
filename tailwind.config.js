@@ -10,9 +10,10 @@ module.exports = {
     './privacy/**/*.html',
     './terms/**/*.html',
     './blog/**/*.html',
+    './book/**/*.html',
+    './free-chapter-confirmed/**/*.html',
     // Class names are also emitted from Python f-strings at build time:
     './build_blog.py',
-    './_private/automation/seo_boost.py',
   ],
   // `hidden` is toggled by JS (classList.add('hidden')); keep it even if a scan misses it.
   safelist: ['hidden'],

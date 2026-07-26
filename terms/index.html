@@ -24,7 +24,7 @@
     <meta property="og:url" content="https://howtokissbetter.com/terms/">
     <meta property="og:title" content="Terms of Service | How to Kiss Better">
     <meta property="og:description" content="Terms of Service for How to Kiss Better and Kiss Perfect Now.">
-    <meta property="og:image" content="https://howtokissbetter.com/assets/og-image.jpg">
+    <meta property="og:image" content="https://howtokissbetter.com/assets/images/hero-bg-v2.png">
     <meta property="og:site_name" content="How to Kiss Better">
 
     <!-- Twitter -->
@@ -114,7 +114,7 @@
             </a>
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
-                <a href="https://payhip.com/b/YyLMc" data-product="YyLMc" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -133,7 +133,7 @@
             <p class="text-gray-400 mb-8">Last updated: December 21, 2025</p>
 
             <div class="legal-content">
-                <p>Welcome to How to Kiss Better. By accessing our website or purchasing our products, including <a href="/">Kiss Perfect Now</a> by C.J. McKenna, you agree to be bound by these Terms of Service.</p>
+                <p>Welcome to How to Kiss Better. By accessing our website or purchasing our products, including <a href="/book/">Kiss Perfect Now</a> by C.J. McKenna, you agree to be bound by these Terms of Service.</p>
 
                 <h2>1. Acceptance of Terms</h2>
                 <p>By accessing or using the How to Kiss Better website and purchasing our products, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our website or purchase our products.</p>
@@ -156,7 +156,7 @@
                 </ul>
 
                 <h2>4. Satisfaction Guarantee</h2>
-                <p>We stand behind our products. If you are not satisfied with your purchase of Kiss Perfect Now, contact us at <a href="mailto:hello@howtokissbetter.com">hello@howtokissbetter.com</a> and we will make it right. We want you to be completely happy with your purchase of Kiss Perfect Now.</p>
+                <p>We stand behind our products. If you are not satisfied with your purchase of Kiss Perfect Now, contact us at <a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a> and we will make it right.</p>
 
                 <h2>5. Intellectual Property</h2>
                 <p>All content on this website and in our products, including but not limited to text, graphics, images, and the book content, is the property of C.J. McKenna and How to Kiss Better. You may not:</p>
@@ -199,12 +199,12 @@
 
                 <h2>14. Contact Information</h2>
                 <p>For questions about these Terms of Service, please contact us at:</p>
-                <p><a href="mailto:hello@howtokissbetter.com">hello@howtokissbetter.com</a></p>
+                <p><a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a></p>
 
                 <div class="mt-12 p-6 bg-wine/20 border border-gold/20 rounded-xl">
-                    <p class="text-cream font-medium mb-2">Ready to become unforgettable?</p>
-                    <p class="text-gray-400 mb-4">Join thousands who have transformed their kissing with Kiss Perfect Now.</p>
-                    <a href="/" class="text-gold hover:underline">Get the book →</a>
+                    <p class="text-cream font-medium mb-2">Want to see what the book covers?</p>
+                    <p class="text-gray-400 mb-4">Read the details before you buy Kiss Perfect Now.</p>
+                    <a href="/book/" class="text-gold hover:underline">See the book →</a>
                 </div>
             </div>
         </div>
@@ -244,21 +244,6 @@
         </div>
     </footer>
 
-    <script src="https://payhip.com/payhip.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('a[data-product]').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var productId = this.getAttribute('data-product');
-                    if (typeof Payhip !== 'undefined' && Payhip.Checkout) {
-                        Payhip.Checkout.open({ product: productId });
-                    } else {
-                        window.open(this.href, '_blank');
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/assets/conversion.js" defer></script>
 </body>
 </html>
