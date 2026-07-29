@@ -13,7 +13,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (83 posts)
+- /blog/ — Full article index (84 posts)
 
 ## Techniques (17 articles)
 
@@ -116,10 +116,11 @@ The habits that quietly ruin kisses and how to fix them.
 - /blog/why-kissing-feels-awkward/ — Why Kissing Feels Awkward Sometimes (And How to Fix It)
 - /blog/signs-youre-a-bad-kisser/ — Signs You're a Bad Kisser (And How to Fix It)
 
-## Anatomy (6 articles)
+## Anatomy (7 articles)
 
 Lips, tongue, teeth, noses, and the sensory mechanics of kissing.
 
+- /blog/how-to-move-your-lips-when-kissing/ — How to Move Your Lips When Kissing (Catch, Hold, Release)
 - /blog/what-to-do-with-your-teeth-when-kissing/ — What to Do With Your Teeth When Kissing (Without the Clack)
 - /blog/what-to-do-with-your-nose-when-kissing/ — What to Do With Your Nose When Kissing (The Tilt Nobody Explains)
 - /blog/what-does-a-good-kiss-feel-like/ — What Does a Good Kiss Feel Like? (And How to Know You Just Had One)
