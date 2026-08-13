@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
+    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YNQ785TC90');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', 'G-YNQ785TC90', {
+          linker: {
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }
+        });
+      } else {
+        window.__kpnGtagSpy = window.dataLayer;
+      }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Primary Meta Tags -->
     <title>How to Practice Kissing: 7 Methods That Actually Work (Alone or With a Partner) | How to Kiss Better</title>
@@ -46,7 +58,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
 
     <style>
         html { scroll-behavior: smooth; }
@@ -139,9 +151,7 @@
             "@type": "Person",
             "name": "C.J. McKenna",
             "url": "https://howtokissbetter.com",
-            "jobTitle": "Author and Intimacy Expert",
-            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
-            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
+            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."
         },
         "publisher": {
             "@type": "Organization",
@@ -212,7 +222,7 @@
     </script>
 </head>
 
-<body class="bg-charcoal text-off-white font-sans antialiased">
+<body class="bg-charcoal text-off-white font-sans antialiased" data-page-kind="article" data-article-slug="how-to-practice-kissing" data-offer-key="practice" data-chapter-id="chapter-02">
 
     <!-- HEADER -->
     <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10">
@@ -224,7 +234,7 @@
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
                 <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_nav" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav&amp;offer_key=practice#practice" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -285,78 +295,7 @@
 
             <!-- Article Content -->
             <div class="article-content">
-                <aside class="not-prose mb-10 p-6 sm:p-7 bg-wine/20 border border-gold/20 rounded-xl">
-                    <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Quick Answer</p>
-                    <p class="text-cream/90 leading-relaxed mb-0"><strong>Yes, you can practice kissing alone</strong> — and the methods that actually help are simpler than the internet pretends. Practice on the back of your hand or your inner forearm to get used to soft, relaxed lip pressure; rehearse a slow, unhurried rhythm; and practice breathing calmly through your nose so you never feel like you're suffocating. What you <em>can't</em> rehearse solo is responsiveness — reading and matching a real partner — which is the part that actually makes a kiss good. So practice to calm your nerves and build muscle memory, not to "master" anything. Here's exactly what works, what's a waste of time, and what to do the moment lips finally meet.</p>
-                </aside>
-                <p>Let's acknowledge the elephant in the room: you're reading an article about practicing kissing. Alone. Probably on your phone in your bedroom with the door closed.</p>
 
-<p>No judgment here. Because here's something I rarely admit: before my first real kiss, I absolutely practiced. On my hand. On my forearm. Once, embarrassingly, on a peach. (The internet told me fruit was helpful. The internet lied.)</p>
-
-<p>The desire to prepare makes complete sense. Kissing feels like a test you never studied for, and the stakes feel enormous when you're inexperienced. What if you're terrible? What if they notice? What if there's <a href="/blog/too-much-saliva-when-kissing/">too much saliva</a>? What if you bump noses or miss their mouth entirely or do that thing with your tongue that you've heard is awful but aren't sure what it even is?</p>
-
-<p>I get it. And I'm going to be honest with you about what actually helps, what's mostly theater, and what really matters when lips finally meet.</p>
-
-<h2 id="the-hard-truth-what-you-cant-practice-alone">The Hard Truth: What You Can't Practice Alone</h2>
-
-<p>Let me save you some time and awkwardness. There are aspects of kissing that simply cannot be practiced solo, no matter how creative you get with produce or pillows or the back of your hand.</p>
-
-<p><strong>You can't practice responsiveness.</strong> Great kissing is a conversation. It requires reading what your partner is doing and adjusting in real time. A pillow doesn't lean in when you pull back. Your hand doesn't part its lips when you deepen a kiss. The most crucial skill in kissing is paying attention to someone else's responses, and that requires... someone else. It's also why <a href="/blog/how-to-kiss-back/">knowing how to kiss back</a> is something you learn mid-kiss, not beforehand.</p>
-
-<p><strong>You can't practice the energy exchange.</strong> There's something that happens when you kiss another person that has nothing to do with technique. Call it chemistry, electricity, connection. It's the feeling of their breath mixing with yours, the warmth of their proximity, the subtle tension of two nervous systems synchronizing. This can't be simulated.</p>
-
-<p><strong>You can't practice adjusting to a real partner.</strong> Everyone kisses differently. Some people are aggressive; others are tentative. Some use lots of tongue; others barely any. <a href="/blog/how-to-be-a-better-kisser/">Being a better kisser</a> means learning to read and match your specific partner, and that's always learned in the moment, with that person.</p>
-
-<p>So if you're hoping to emerge from your bedroom as a certified expert based on solo drills? That's not how this works.</p>
-
-<p>But that doesn't mean practice is pointless.</p>
-
-<h2 id="what-you-can-actually-practice">What You Can Actually Practice</h2>
-
-<p>While the interactive elements of kissing require a partner, there are foundational skills you can develop on your own. Think of it like a musician practicing scales: it won't make you a rock star, but it builds the underlying competence that lets talent emerge.</p>
-
-<h3>Lip Awareness and Relaxation</h3>
-
-<p>Most first-time kissers make the same mistake: they tense up. Their lips become rigid, pressed together like they're bracing for impact. This feels terrible for the other person, like kissing a wall.</p>
-
-<p>You can practice keeping your lips soft and relaxed. Stand in front of a mirror. Let your jaw relax. Let your lips part slightly, naturally. Notice if you're holding tension. Practice releasing it.</p>
-
-<p>Your lips should feel pliable, not pursed. Soft, not slack. There's a sweet spot between "kissing fish face" and "completely limp." Find it. A relaxed jaw also keeps your teeth tucked away, which quietly solves most of the worry about <a href="/blog/what-to-do-with-your-teeth-when-kissing/">what to do with your teeth when kissing</a>.</p>
-
-<p>Honestly? This exercise alone puts you ahead of most nervous first-timers who lock their mouths up like bank vaults.</p>
-
-<h3>Breath Awareness</h3>
-
-<p>Anxious people hold their breath. And nothing kills a kiss faster than desperately gasping for air thirty seconds in because you forgot you needed oxygen.</p>
-
-<p>Practice breathing through your nose while your lips are slightly parted. Get comfortable with it. When you're actually kissing someone, you'll naturally take small breaths through your nose during softer moments, and you'll use brief breaks to breathe more deeply.</p>
-
-<p>The goal is making breathing feel automatic so you're not thinking about it when the moment arrives. If air management is your biggest fear, the full guide on <a href="/blog/how-to-breathe-while-kissing/">how to breathe while kissing</a> goes deeper on timing and technique.</p>
-
-<h3>Head Tilt Mechanics</h3>
-
-<p>Two faces approaching head-on is a recipe for a nose collision. Someone needs to tilt.</p>
-
-<p>In front of a mirror, practice tilting your head slightly to one side. Notice how it would create clearance for someone approaching from the front. There's no "correct" side; most people naturally tilt right, so tilting left can actually work better. But the key is having the awareness that tilting is necessary.</p>
-
-<p>You'll adjust this in the moment based on what your partner does, but knowing that you need to tilt removes one variable from the chaos of a <a href="/blog/how-to-kiss-someone-for-the-first-time/">first kiss</a>.</p>
-
-<h3>Hand Placement Comfort</h3>
-
-<p>Your hands need somewhere to go, and "dangling awkwardly at your sides like a confused penguin" isn't it.</p>
-
-<p>Practice the motion of bringing your hand to someone's face. Cupping an imaginary cheek. Resting your hand on an imaginary waist. <a href="/blog/what-to-do-with-your-hands-while-kissing/">Knowing what to do with your hands</a> reduces cognitive load when you're already nervous about the lip part.</p>
-
-<p>This feels silly. Do it anyway. Muscle memory is real.</p>
-
-<aside class="my-12 p-8 bg-wine/20 border border-gold/20 rounded-xl">
-    <p class="text-lg text-gray-300 mb-4">
-        Chapter 3 of <span class="text-gold">Kiss Perfect Now</span> breaks down the exact mechanics of initiating a kiss, including the approach, the positioning, and how to recover gracefully if things go sideways.
-    </p>
-    <a href="/#preview" class="text-gold hover:underline">
-        See what's inside &rarr;
-    </a>
-</aside>
 
 <h2 id="the-internets-terrible-advice-evaluated">The Internet's Terrible Advice (Evaluated)</h2>
 
@@ -380,6 +319,26 @@
 
 <p><strong>Verdict: Weird and unhelpful.</strong></p>
 
+<!-- PROOF_LED_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" data-offer-placement="article-quarter" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" aria-label="Book preview">
+    <div class="conversion-offer__proof" aria-hidden="true">
+        <picture>
+            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+            <source srcset="/assets/images/book-proof/mirror-technique-480.webp" type="image/webp">
+            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
+    </div>
+    <div class="conversion-offer__body">
+        <p class="conversion-offer__eyebrow">Continue with Chapter 2</p>
+        <h2 class="conversion-offer__title" data-offer-title>Practice the part that makes everything else easier</h2>
+        <p class="conversion-offer__chapter">The Mirror, Mirror Technique</p>
+        <p class="conversion-offer__copy" data-offer-copy>Chapter 2 gives you a clear way to match pressure, pace, and rhythm so you have somewhere useful to begin when nerves take over.</p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-quarter&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="article-quarter" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" class="conversion-button conversion-offer__link" data-offer-label>Preview the practice path</a>
+        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+    </div>
+</aside>
+<!-- PROOF_LED_QUARTER_END -->
+
 <p>The theory is that fruit mimics the softness of lips. The reality is that you're now standing in your kitchen making out with a peach, getting juice on your chin, and you're no better at kissing humans.</p>
 
 <p>I tried this. I felt ridiculous. I learned nothing except that peaches are better eaten than kissed.</p>
@@ -391,7 +350,6 @@
 <p>Your brain can't fully distinguish between vividly imagined experiences and real ones. Watching kissing scenes in movies (good ones, not aggressive ones) and then closing your eyes to imagine the sensations can actually prime your nervous system for the real thing.</p>
 
 <p>Don't make it weird. But a little mental rehearsal isn't crazy. Athletes do it. Performers do it. You can too.</p>
-
 <h2 id="the-real-preparation-that-matters">The Real Preparation That Matters</h2>
 
 <p>Here's what I wish someone had told me before my first kiss: technique matters far less than you think, and something else matters far more.</p>
@@ -478,18 +436,16 @@
                         loading="lazy"></iframe>
                 </div>
             </div>
-
-            <!-- CTA Box -->
-            <div class="js-offer mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center" data-offer-placement="post-cta">
-                <h3 class="font-serif text-2xl text-cream mb-4">Put the Full System in Your Hands</h3>
-                <p class="text-gray-400 mb-6">Go from one article to a clear guide for pressure, pace, hands, breath, confidence, and connection.</p>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_cta" data-offer-link data-offer-placement="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
-                    Get Kiss Perfect Now: $4.95
-                </a>
-            </div>
-
-
-                </div><!-- end max-w-3xl -->
+            <!-- PROOF_LED_FINAL_START -->
+            <aside class="conversion-final js-offer" data-offer-placement="article-final" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" aria-label="Book offer">
+                <p class="conversion-offer__eyebrow">The complete guide</p>
+                <h2 class="conversion-final__title" data-offer-title>Practice the part that makes everything else easier</h2>
+                <p class="conversion-final__copy" data-offer-copy>Chapter 2 gives you a clear way to match pressure, pace, and rhythm so you have somewhere useful to begin when nerves take over.</p>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-final&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="article-final" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" class="conversion-button" data-offer-label>Preview the practice path</a>
+                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+            </aside>
+            <!-- PROOF_LED_FINAL_END -->
+</div><!-- end max-w-3xl -->
 
                 <!-- TOC Sidebar -->
                 <aside class="hidden lg:block">
@@ -619,6 +575,14 @@
     <script>
         // Load related posts
     </script>
-    <script src="/assets/conversion.js" defer></script>
+    <!-- PROOF_LED_MOBILE_START -->
+    <aside class="mobile-buy-bar js-offer" data-offer-placement="mobile-buy-bar" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" aria-label="Book preview" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>Chapter 2</strong><span data-mobile-offer-copy>See a real page</span></p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=mobile-buy-bar&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="mobile-buy-bar" data-offer-key="practice" data-offer-variant="A" data-article-slug="how-to-practice-kissing" data-chapter-id="chapter-02" class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+    </aside>
+    <!-- PROOF_LED_MOBILE_END -->
+
+    <script src="/assets/offer-catalog.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>

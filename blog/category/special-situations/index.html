@@ -2,13 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
+    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YNQ785TC90');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', 'G-YNQ785TC90', {
+          linker: {
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }
+        });
+      } else {
+        window.__kpnGtagSpy = window.dataLayer;
+      }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -42,7 +54,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
     <style>
         html { scroll-behavior: smooth; }
         .gradient-text {
@@ -101,7 +113,7 @@
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gold font-medium transition-colors text-sm sm:text-base">Blog</a>
                 <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=proof_led_rebuild&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -272,7 +284,7 @@
             <p class="text-gray-400 text-lg mb-8">
                 The book builds the underlying skills that make unusual situations feel less awkward and more intuitive.
             </p>
-            <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
+            <a href="/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=proof_led_rebuild&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
                 Get Kiss Perfect Now
             </a>
         </div>
@@ -311,7 +323,8 @@
             </div>
         </div>
     </footer>
-    <script src="/assets/conversion.js" defer></script>
+    <script src="/assets/offer-catalog.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 
 </body>
 </html>

@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
+    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YNQ785TC90');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', 'G-YNQ785TC90', {
+          linker: {
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }
+        });
+      } else {
+        window.__kpnGtagSpy = window.dataLayer;
+      }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Primary Meta Tags -->
     <title>Why Your Lips Are So Sensitive: The Anatomy of a Perfect Kiss | How to Kiss Better</title>
@@ -46,7 +58,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
 
     <style>
         html { scroll-behavior: smooth; }
@@ -139,9 +151,7 @@
             "@type": "Person",
             "name": "C.J. McKenna",
             "url": "https://howtokissbetter.com",
-            "jobTitle": "Author and Intimacy Expert",
-            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
-            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
+            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."
         },
         "publisher": {
             "@type": "Organization",
@@ -174,7 +184,7 @@
     </script>
 </head>
 
-<body class="bg-charcoal text-off-white font-sans antialiased">
+<body class="bg-charcoal text-off-white font-sans antialiased" data-page-kind="article" data-article-slug="why-lips-are-so-sensitive" data-offer-key="technique" data-chapter-id="chapter-03">
 
     <!-- HEADER -->
     <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10">
@@ -186,7 +196,7 @@
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
                 <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_nav" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav&amp;offer_key=technique#technique" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -247,54 +257,7 @@
 
             <!-- Article Content -->
             <div class="article-content">
-                <aside class="not-prose mb-10 p-6 sm:p-7 bg-wine/20 border border-gold/20 rounded-xl">
-                    <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Quick Answer</p>
-                    <p class="text-cream/90 leading-relaxed mb-0"><strong>Lips are so sensitive because they pack roughly 100 times more nerve endings than your fingertips</strong>, and an unusually large share of your brain's sensory cortex is devoted to them. The skin is also far thinner than elsewhere on your body, so blood vessels and nerves sit close to the surface. That density is exactly why a <em>lighter</em> touch often feels more intense than a harder one — and why lips evolved into one of the body's primary instruments of connection. Here's the full anatomy, and what it means for how you kiss.</p>
-                </aside>
-                <p>Your lips are liars. Not in the way you're thinking.</p>
 
-<p>They've been convincing you that kissing is just about technique, or chemistry, or some mystical spark you either have or don't. But the truth is far more interesting: your lips are biological marvels, engineered by millions of years of evolution to be the most sophisticated sensory instruments on your body.</p>
-
-<p>Understanding their anatomy won't just satisfy your curiosity. It will change how you kiss.</p>
-
-<h2 id="the-nerve-density-that-changes-everything">The Nerve Density That Changes Everything</h2>
-
-<p>Here's a number that should stop you cold: your lips contain roughly one million nerve endings.</p>
-
-<p>To put that in perspective, your fingertips (famous for their sensitivity, essential for reading Braille, praised by safe-crackers everywhere) have about 2,500 nerve receptors per square centimeter. Your lips? They're packing around 100 times that density in certain areas.</p>
-
-<p>This isn't an accident. Evolution built your lips to be the body's first line of sensory contact with the outside world. Before language, before tools, before we figured out fire, our ancestors were using their lips to test temperature, detect texture, identify edible versus poisonous. Your lips are ancient instruments of survival, repurposed for pleasure.</p>
-
-<p>The practical implication is profound: <strong>your lips can detect sensations your fingers would miss entirely.</strong> A featherlight brush. A slight change in temperature. The texture difference between the edge of someone's lip and its center. Your lips register all of it.</p>
-
-<h2 id="why-lip-skin-is-different-and-what-that-means">Why Lip Skin Is Different (And What That Means)</h2>
-
-<p>Run your tongue along the inside of your cheek, then across your lips. Notice the difference? Your lips feel smoother, almost slick compared to the rest of your mouth.</p>
-
-<p>That's because lip tissue is unique. Regular skin has about 16 layers of cells between you and the world. Lip skin? Three to five layers. That's it.</p>
-
-<p>This extreme thinness serves a purpose. Those million nerve endings need to be close to the surface to do their job. Thick skin would muffle the signals like wearing oven mitts to play piano. Your lips traded protection for sensitivity, and the exchange rate is staggering.</p>
-
-<p>This is also why lips are red (or pink, or darker shades depending on your complexion). You're seeing blood vessels through that thin tissue. The same thinness that makes lips vulnerable to chapping and sun damage is what makes them exquisitely responsive to touch.</p>
-
-<h3>The Vermilion Border: Your Secret Weapon</h3>
-
-<p>There's a specific zone on your lips that most people ignore entirely but holds disproportionate power: the vermilion border.</p>
-
-<p>This is the sharp edge where the colored part of your lip meets regular skin. Look in a mirror and trace it with your eyes. That precise line, that transition zone? It has the highest nerve concentration of anywhere on your lips.</p>
-
-<p>When someone traces a finger along that edge, the sensation registers with almost startling intensity. When lips brush against this border during a kiss, the signal floods the brain with information. This tiny anatomical feature punches far above its weight.</p>
-
-<p>Great kissers, whether they know the term or not, instinctively pay attention to this zone. They let their lips drift to the edge. They don't just mash center-to-center like they're trying to resuscitate someone.</p>
-
-<aside class="my-12 p-8 bg-wine/20 border border-gold/20 rounded-xl">
-    <p class="text-lg text-gray-300 mb-4">
-        The vermilion border technique is one of dozens covered in <span class="text-gold">Kiss Perfect Now</span>. Once you understand lip anatomy, the techniques feel obvious.
-    </p>
-    <a href="/#preview" class="text-gold hover:underline">
-        See what's inside →
-    </a>
-</aside>
 
 <h2 id="your-brains-obsession-with-your-lips">Your Brain's Obsession With Your Lips</h2>
 
@@ -315,8 +278,27 @@
 <p>The nerve endings in your lips are tuned to detect <em>change</em>. Variations in pressure. Shifts in temperature. Movement across texture. When you press hard and hold, you're giving those receptors a single sustained signal. Interesting at first, then rapidly boring.</p>
 
 <p>When you kiss with varying pressure, pulling back to almost nothing then returning, dragging lips lightly across each other, pausing to let breath be the only contact, you're feeding those nerve endings exactly what they crave. Novelty. Variation. Information.</p>
-
 <p>This is why the <a href="/blog/how-to-be-a-better-kisser/">best kissers create texture</a>. They understand (consciously or not) that lips respond to patterns, not pressure. That kind of adaptability is a huge part of <a href="/blog/what-makes-a-good-kisser/">what actually makes someone a good kisser</a>.</p>
+
+<!-- PROOF_LED_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" data-offer-placement="article-quarter" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" aria-label="Book preview">
+    <div class="conversion-offer__proof" aria-hidden="true">
+        <picture>
+            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+            <source srcset="/assets/images/book-proof/mirror-technique-480.webp" type="image/webp">
+            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
+    </div>
+    <div class="conversion-offer__body">
+        <p class="conversion-offer__eyebrow">Continue with Chapter 3</p>
+        <h2 class="conversion-offer__title" data-offer-title>See how pressure, pace, and rhythm fit together</h2>
+        <p class="conversion-offer__chapter">The Art of Discipline</p>
+        <p class="conversion-offer__copy" data-offer-copy>Chapter 3 turns restraint, pauses, and small changes in pressure into a method you can follow instead of a list of loose tips.</p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-quarter&amp;offer_key=technique#technique" data-offer-link="true" data-offer-placement="article-quarter" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" class="conversion-button conversion-offer__link" data-offer-label>Preview the technique path</a>
+        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+    </div>
+</aside>
+<!-- PROOF_LED_QUARTER_END -->
 
 <h3>The Temperature Factor</h3>
 
@@ -325,7 +307,6 @@
 <p>This sensitivity evolved for safety (hot food would burn your mouth without early warning) but it has delightful side effects. The warmth of another person's breath before contact. The slight coolness when they pull back and air rushes in. The heat that builds when mouths stay pressed together.</p>
 
 <p>Skilled kissers play with this. They let the anticipation build, breathing close without touching. They alternate between warm, lingering contact and brief separations. Every temperature shift registers as sensation, adding layers to the experience your brain eagerly processes.</p>
-
 <h2 id="what-this-means-for-how-you-kiss">What This Means For How You Kiss</h2>
 
 <p>Understanding lip anatomy transforms kissing from mysterious to logical. Not in a clinical way. In a "now I know why that works" way.</p>
@@ -406,18 +387,16 @@
                         loading="lazy"></iframe>
                 </div>
             </div>
-
-            <!-- CTA Box -->
-            <div class="js-offer mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center" data-offer-placement="post-cta">
-                <h3 class="font-serif text-2xl text-cream mb-4">Put the Full System in Your Hands</h3>
-                <p class="text-gray-400 mb-6">Go from one article to a clear guide for pressure, pace, hands, breath, confidence, and connection.</p>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_cta" data-offer-link data-offer-placement="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
-                    Get Kiss Perfect Now: $4.95
-                </a>
-            </div>
-
-
-                </div><!-- end max-w-3xl -->
+            <!-- PROOF_LED_FINAL_START -->
+            <aside class="conversion-final js-offer" data-offer-placement="article-final" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" aria-label="Book offer">
+                <p class="conversion-offer__eyebrow">The complete guide</p>
+                <h2 class="conversion-final__title" data-offer-title>See how pressure, pace, and rhythm fit together</h2>
+                <p class="conversion-final__copy" data-offer-copy>Chapter 3 turns restraint, pauses, and small changes in pressure into a method you can follow instead of a list of loose tips.</p>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-final&amp;offer_key=technique#technique" data-offer-link="true" data-offer-placement="article-final" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" class="conversion-button" data-offer-label>Preview the technique path</a>
+                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+            </aside>
+            <!-- PROOF_LED_FINAL_END -->
+</div><!-- end max-w-3xl -->
 
                 <!-- TOC Sidebar -->
                 <aside class="hidden lg:block">
@@ -548,6 +527,14 @@
     <script>
         // Load related posts
     </script>
-    <script src="/assets/conversion.js" defer></script>
+    <!-- PROOF_LED_MOBILE_START -->
+    <aside class="mobile-buy-bar js-offer" data-offer-placement="mobile-buy-bar" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" aria-label="Book preview" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>Chapter 3</strong><span data-mobile-offer-copy>See a real page</span></p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=mobile-buy-bar&amp;offer_key=technique#technique" data-offer-link="true" data-offer-placement="mobile-buy-bar" data-offer-key="technique" data-offer-variant="A" data-article-slug="why-lips-are-so-sensitive" data-chapter-id="chapter-03" class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+    </aside>
+    <!-- PROOF_LED_MOBILE_END -->
+
+    <script src="/assets/offer-catalog.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>

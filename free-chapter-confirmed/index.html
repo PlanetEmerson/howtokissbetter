@@ -2,12 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
-        gtag("js", new Date());
-        gtag("config", "G-YNQ785TC90");
+        if (window.location.hostname === "howtokissbetter.com" || window.location.hostname === "www.howtokissbetter.com") {
+            var analyticsScript = document.createElement("script");
+            analyticsScript.async = true;
+            analyticsScript.src = "https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90";
+            document.head.appendChild(analyticsScript);
+            gtag("js", new Date());
+            gtag("config", "G-YNQ785TC90", {
+                linker: {
+                    domains: ["howtokissbetter.com", "payhip.com"],
+                    accept_incoming: true
+                }
+            });
+        } else {
+            window.__kpnGtagSpy = window.dataLayer;
+        }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Free Chapter Is Ready | How to Kiss Better</title>
@@ -19,7 +31,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
 </head>
 
 <body class="conversion-shell font-sans antialiased" data-page-kind="confirmed">
@@ -62,6 +74,6 @@
         <p>&copy; 2026 C.J. McKenna. <a href="/privacy/" class="text-gold hover:underline">Privacy</a></p>
     </footer>
 
-    <script src="/assets/conversion.js" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>

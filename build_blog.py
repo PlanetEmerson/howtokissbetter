@@ -24,11 +24,180 @@ BLOG_DIR = ROOT_DIR / "blog"
 POSTS_JSON = BLOG_DIR / "posts.json"
 TEMPLATE_FILE = BLOG_DIR / "_template.html"
 CATEGORY_DIR = BLOG_DIR / "category"
+OFFER_CATALOG_JS = ROOT_DIR / "assets" / "offer-catalog.js"
 
 SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
+ASSET_VERSION = "20260813"
+
+VALID_CHAPTER_IDS = {f"chapter-{chapter:02d}" for chapter in range(1, 17)}
+CHAPTER_TITLES = {
+    "chapter-01": "Much Ado About Kissing",
+    "chapter-02": "The Mirror, Mirror Technique",
+    "chapter-03": "The Art of Discipline",
+    "chapter-04": "Shut Up and Dance With Me",
+    "chapter-05": "Kissing in La La Land",
+    "chapter-06": "In Good Hands",
+    "chapter-07": "The Body's Secret Playground",
+    "chapter-08": '"X" Marks the Spot',
+    "chapter-09": "All Hail the Inhale, Exhale!",
+    "chapter-10": "Oh For the Love of You",
+    "chapter-11": "Passion Is as Passion Does",
+    "chapter-12": "The Magic Words",
+    "chapter-13": "Touch",
+    "chapter-14": "The Kissing Commandments",
+    "chapter-15": "The Long Kiss Goodbye",
+    "chapter-16": "Your Mission",
+}
+
+OFFER_CLUSTERS: dict[str, dict[str, Any]] = {
+    "practice": {
+        "chapter_id": "chapter-02",
+        "chapter_label": "Chapter 2",
+        "chapter_title": "The Mirror, Mirror Technique",
+        "preview_anchor": "practice",
+        "preview_id": "mirror-technique",
+        "image": "/assets/images/book-proof/mirror-technique-480.webp",
+        "image_alt": "A real page from The Mirror, Mirror Technique in Kiss Perfect Now",
+        "variant_a": {
+            "title": "Practice the part that makes everything else easier",
+            "copy": "Chapter 2 gives you a clear way to match pressure, pace, and rhythm so you have somewhere useful to begin when nerves take over.",
+            "label": "Preview the practice path",
+        },
+    },
+    "technique": {
+        "chapter_id": "chapter-03",
+        "chapter_label": "Chapter 3",
+        "chapter_title": "The Art of Discipline",
+        "preview_anchor": "technique",
+        "preview_id": "mirror-technique",
+        "image": "/assets/images/book-proof/mirror-technique-480.webp",
+        "image_alt": "A real technique lesson from Kiss Perfect Now",
+        "variant_a": {
+            "title": "See how pressure, pace, and rhythm fit together",
+            "copy": "Chapter 3 turns restraint, pauses, and small changes in pressure into a method you can follow instead of a list of loose tips.",
+            "label": "Preview the technique path",
+        },
+    },
+    "touch": {
+        "chapter_id": "chapter-06",
+        "chapter_label": "Chapter 6",
+        "chapter_title": "In Good Hands",
+        "preview_anchor": "touch",
+        "preview_id": "hand-pressure",
+        "image": "/assets/images/book-proof/hand-pressure-480.webp",
+        "image_alt": "A real hand placement and pressure lesson from Kiss Perfect Now",
+        "variant_a": {
+            "title": "Put your hands somewhere with purpose",
+            "copy": "Chapter 6 shows what different placements communicate, how firm to be, and when stillness works better than constant movement.",
+            "label": "Preview the touch path",
+        },
+    },
+    "chemistry": {
+        "chapter_id": "chapter-12",
+        "chapter_label": "Chapter 12",
+        "chapter_title": "The Magic Words",
+        "preview_anchor": "chemistry",
+        "preview_id": "consent",
+        "image": "/assets/images/book-proof/consent-480.webp",
+        "image_alt": "A real first move and communication lesson from Kiss Perfect Now",
+        "variant_a": {
+            "title": "Make the first move clear, calm, and mutual",
+            "copy": "Chapter 12 covers the words, pause, eye contact, and response that can turn uncertainty into a moment both people choose.",
+            "label": "Preview the chemistry path",
+        },
+    },
+    "relationship": {
+        "chapter_id": "chapter-11",
+        "chapter_label": "Chapter 11",
+        "chapter_title": "Passion Is as Passion Does",
+        "preview_anchor": "relationship",
+        "preview_id": "contents-two",
+        "image": "/assets/images/book-proof/contents-two-480.webp",
+        "image_alt": "The second contents page from Kiss Perfect Now",
+        "variant_a": {
+            "title": "Bring intent back to familiar kisses",
+            "copy": "Chapter 11 focuses on attention, variety, and the small choices that keep kissing from turning into an automatic part of the day.",
+            "label": "Preview the relationship path",
+        },
+    },
+    "boundaries": {
+        "chapter_id": "chapter-12",
+        "chapter_label": "Chapter 12",
+        "chapter_title": "The Magic Words",
+        "preview_anchor": "boundaries",
+        "preview_id": "consent",
+        "image": "/assets/images/book-proof/consent-480.webp",
+        "image_alt": "A real consent and communication lesson from Kiss Perfect Now",
+        "variant_a": {
+            "title": "Read the response and respect it",
+            "copy": "Chapter 12 makes intent clear and leaves room for a real answer. Chapter 14 adds the habits that protect comfort and connection.",
+            "label": "Preview the boundaries path",
+        },
+    },
+    "complete-guide": {
+        "chapter_id": "chapter-01",
+        "chapter_label": "Chapter 1",
+        "chapter_title": "Much Ado About Kissing",
+        "preview_anchor": "look-inside",
+        "preview_id": "contents-one",
+        "image": "/assets/images/book-proof/contents-one-480.webp",
+        "image_alt": "The first contents page from Kiss Perfect Now",
+        "variant_a": {
+            "title": "See how the complete 16-chapter guide fits together",
+            "copy": "Start with the contents and real interior pages, then choose the skill you want help with before you decide whether to buy.",
+            "label": "Look inside the book",
+        },
+    },
+}
+
+VALUE_STACK_VARIANT = {
+    "title": "Turn one useful answer into a complete system",
+    "copy": "Get 183 pages and 16 chapters on pressure, pace, hands, confidence, consent, and connection. PDF and EPUB arrive through Payhip after checkout.",
+    "label": "See everything in the $4.95 book",
+}
+
+CLUSTER_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "boundaries": (
+        "consent", "permission", "say no", "saying no", "doesn't want", "does not want",
+        "uncomfortable", "discomfort", "preference", "ask for a kiss", "too wet", "wet kiss",
+        "sloppy kisser", "tell someone", "doesn't like kissing", "does not like kissing",
+    ),
+    "relationship": (
+        "boyfriend", "girlfriend", "partner", "relationship", "couple", "long-term",
+        "spark", "cheating", "friend", "meaning",
+    ),
+    "touch": (
+        "hands", "hand placement", "neck", "lip bite", "lip biting", "body", "hair",
+        "hickey", "ear", "forehead", "cheek", "head kiss", "where to kiss",
+    ),
+    "technique": (
+        "french kiss", "tongue", "slow", "lips", "rhythm", "pressure", "teeth",
+        "saliva", "make out", "breathe", "breathing", "position", "angle", "move your lips",
+    ),
+    "chemistry": (
+        "chemistry", "attraction", "signal", "want to kiss", "wants to kiss", "tell if",
+        "body language", "initiate", "first move", "crush", "eye contact", "electric",
+        "why do we kiss", "anticipation",
+    ),
+    "practice": (
+        "practice", "awkward", "nervous", "nerves", "confidence", "overthink",
+        "never been kissed", "bad kisser", "first kiss", "afraid", "anxiety",
+    ),
+}
+
+CATEGORY_CLUSTER_HINTS = {
+    "anatomy": "technique",
+    "first-kiss": "practice",
+    "mistakes": "practice",
+    "preparation": "practice",
+    "relationships": "relationship",
+    "science": "chemistry",
+    "special-situations": "practice",
+    "techniques": "technique",
+}
 
 CATEGORY_CONFIG = {
     "techniques": {
@@ -184,23 +353,35 @@ CATEGORY_CONFIG = {
     },
 }
 
-GA_SNIPPET = f"""    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+GA_SNIPPET = f"""    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){{dataLayer.push(arguments);}}
-      gtag('js', new Date());
-      gtag('config', '{GA_MEASUREMENT_ID}');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {{
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', '{GA_MEASUREMENT_ID}', {{
+          linker: {{
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }}
+        }});
+      }} else {{
+        window.__kpnGtagSpy = window.dataLayer;
+      }}
     </script>
 """
 
-FONT_AND_TAILWIND_SNIPPET = """    <!-- Fonts -->
+FONT_AND_TAILWIND_SNIPPET = f"""    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v={ASSET_VERSION}">
 """
 
 ARCHIVE_STYLES = """    <style>
@@ -234,7 +415,8 @@ ARCHIVE_STYLES = """    <style>
     </style>
 """
 
-CONVERSION_SNIPPET = """    <script src="/assets/conversion.js" defer></script>
+CONVERSION_SNIPPET = f"""    <script src="/assets/offer-catalog.js?v={ASSET_VERSION}" defer></script>
+    <script src="/assets/conversion.js?v={ASSET_VERSION}" defer></script>
 """
 
 
@@ -382,6 +564,388 @@ def read_posts() -> list[dict[str, Any]]:
     return posts
 
 
+def read_post_sources() -> dict[str, dict[str, Any]]:
+    """Return optional per-post source data without requiring every article to have post.json."""
+    sources: dict[str, dict[str, Any]] = {}
+    for post_json in sorted(BLOG_DIR.glob("*/post.json")):
+        data = json.loads(post_json.read_text())
+        frontmatter = parse_frontmatter(data.get("frontmatter", ""))
+        slug = str(frontmatter.get("slug") or post_json.parent.name)
+        sources[slug] = {
+            "keyword": data.get("keyword", ""),
+            "conversion_offer": data.get("conversion_offer"),
+        }
+    return sources
+
+
+def validate_conversion_override(slug: str, override: Any) -> dict[str, str]:
+    """Validate the optional conversion_offer object declared in a post source."""
+    if override is None:
+        return {}
+    if not isinstance(override, dict):
+        raise ValueError(f"{slug}: conversion_offer must be an object")
+
+    allowed_fields = {"cluster", "chapter_id", "preview_anchor"}
+    unknown_fields = set(override) - allowed_fields
+    if unknown_fields:
+        unknown = ", ".join(sorted(unknown_fields))
+        raise ValueError(f"{slug}: unsupported conversion_offer field(s): {unknown}")
+
+    cluster = str(override.get("cluster", ""))
+    if cluster not in OFFER_CLUSTERS:
+        raise ValueError(f"{slug}: invalid conversion_offer cluster: {cluster!r}")
+
+    chapter_id = str(override.get("chapter_id") or OFFER_CLUSTERS[cluster]["chapter_id"])
+    if chapter_id not in VALID_CHAPTER_IDS:
+        raise ValueError(f"{slug}: invalid conversion_offer chapter_id: {chapter_id!r}")
+
+    preview_anchor = str(override.get("preview_anchor") or OFFER_CLUSTERS[cluster]["preview_anchor"])
+    valid_anchors = set(OFFER_CLUSTERS) | {"look-inside"}
+    if preview_anchor not in valid_anchors:
+        raise ValueError(f"{slug}: invalid conversion_offer preview_anchor: {preview_anchor!r}")
+
+    return {
+        "cluster": cluster,
+        "chapter_id": chapter_id,
+        "preview_anchor": preview_anchor,
+    }
+
+
+def classify_conversion_cluster(post: dict[str, Any], source: dict[str, Any]) -> str:
+    """Choose one deterministic conversion cluster from existing post metadata."""
+    text_parts = [
+        str(post.get("title", "")),
+        str(post.get("description", "")),
+        str(post.get("category", "")),
+        " ".join(str(tag) for tag in post.get("tags", [])),
+        str(source.get("keyword", "")),
+    ]
+    search_text = " ".join(text_parts).lower()
+
+    scores = {
+        cluster: sum(search_text.count(keyword) for keyword in keywords)
+        for cluster, keywords in CLUSTER_KEYWORDS.items()
+    }
+    category_hint = CATEGORY_CLUSTER_HINTS.get(slugify_category(str(post.get("category", ""))))
+    if category_hint:
+        scores[category_hint] += 2
+
+    highest = max(scores.values(), default=0)
+    if highest <= 0:
+        return "complete-guide"
+
+    tie_order = ("boundaries", "relationship", "touch", "technique", "chemistry", "practice")
+    return next(cluster for cluster in tie_order if scores[cluster] == highest)
+
+
+def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
+    """Create a complete conversion offer record for one article."""
+    slug = str(post["slug"])
+    override = validate_conversion_override(slug, source.get("conversion_offer"))
+    cluster = override.get("cluster") or classify_conversion_cluster(post, source)
+    base = OFFER_CLUSTERS[cluster]
+    chapter_id = override.get("chapter_id") or str(base["chapter_id"])
+    preview_anchor = override.get("preview_anchor") or str(base["preview_anchor"])
+    chapter_number = int(chapter_id.split("-")[1])
+
+    return {
+        "article_slug": slug,
+        "article_title": str(post["title"]),
+        "offer_key": cluster,
+        "chapter_id": chapter_id,
+        "chapter_label": f"Chapter {chapter_number}",
+        "chapter_title": CHAPTER_TITLES[chapter_id],
+        "preview_anchor": preview_anchor,
+        "preview_id": str(base["preview_id"]),
+        "image": str(base["image"]),
+        "image_alt": str(base["image_alt"]),
+        "variant_a": dict(base["variant_a"]),
+        "variant_b": dict(VALUE_STACK_VARIANT),
+    }
+
+
+def build_offer_catalog() -> dict[str, dict[str, Any]]:
+    """Generate the route-keyed catalog consumed by static article markup and JavaScript."""
+    sources = read_post_sources()
+    catalog: dict[str, dict[str, Any]] = {}
+    for post in read_posts():
+        slug = str(post["slug"])
+        route = f"/blog/{slug}/"
+        if route in catalog:
+            raise ValueError(f"Duplicate article route in conversion catalog: {route}")
+        catalog[route] = conversion_offer_for_post(post, sources.get(slug, {}))
+    return catalog
+
+
+def book_offer_href(offer: dict[str, Any], placement: str) -> str:
+    """Build the stable article-to-book link contract."""
+    return (
+        "/book/?utm_source=howtokissbetter"
+        "&amp;utm_medium=site"
+        "&amp;utm_campaign=proof_led_rebuild"
+        f"&amp;utm_content={html.escape(placement, quote=True)}"
+        f"&amp;offer_key={html.escape(str(offer['offer_key']), quote=True)}"
+        f"#{html.escape(str(offer['preview_anchor']), quote=True)}"
+    )
+
+
+def offer_data_attributes(offer: dict[str, Any], placement: str, variant: str = "A") -> str:
+    """Render the shared analytics attributes for an offer surface or link."""
+    values = {
+        "data-offer-link": "true",
+        "data-offer-placement": placement,
+        "data-offer-key": str(offer["offer_key"]),
+        "data-offer-variant": variant,
+        "data-article-slug": str(offer["article_slug"]),
+        "data-chapter-id": str(offer["chapter_id"]),
+    }
+    return " ".join(
+        f'{name}="{html.escape(value, quote=True)}"' for name, value in values.items()
+    )
+
+
+def render_article_quarter_offer(offer: dict[str, Any]) -> str:
+    """Render the progressive-enhancement version of the topic-matched article offer."""
+    variant = offer["variant_a"]
+    image_stem = Path(str(offer["image"])).stem.replace("-480", "")
+    image_root = "/assets/images/book-proof"
+    placement = "article-quarter"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    link_attributes = offer_data_attributes(offer, placement)
+    return f"""<!-- PROOF_LED_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" {surface_attributes} aria-label="Book preview">
+    <div class="conversion-offer__proof" aria-hidden="true">
+        <picture>
+            <source srcset="{image_root}/{image_stem}-480.avif" type="image/avif">
+            <source srcset="{image_root}/{image_stem}-480.webp" type="image/webp">
+            <img src="{image_root}/{image_stem}-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
+    </div>
+    <div class="conversion-offer__body">
+        <p class="conversion-offer__eyebrow">Continue with {html.escape(str(offer['chapter_label']))}</p>
+        <h2 class="conversion-offer__title" data-offer-title>{html.escape(str(variant['title']))}</h2>
+        <p class="conversion-offer__chapter">{html.escape(str(offer['chapter_title']))}</p>
+        <p class="conversion-offer__copy" data-offer-copy>{html.escape(str(variant['copy']))}</p>
+        <a href="{book_offer_href(offer, placement)}" {link_attributes} class="conversion-button conversion-offer__link" data-offer-label>{html.escape(str(variant['label']))}</a>
+        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+    </div>
+</aside>
+<!-- PROOF_LED_QUARTER_END -->"""
+
+
+def render_article_final_offer(offer: dict[str, Any]) -> str:
+    """Render the clustered post-article offer."""
+    placement = "article-final"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    link_attributes = offer_data_attributes(offer, placement)
+    return f"""            <!-- PROOF_LED_FINAL_START -->
+            <aside class="conversion-final js-offer" {surface_attributes} aria-label="Book offer">
+                <p class="conversion-offer__eyebrow">The complete guide</p>
+                <h2 class="conversion-final__title" data-offer-title>{html.escape(str(offer['variant_a']['title']))}</h2>
+                <p class="conversion-final__copy" data-offer-copy>{html.escape(str(offer['variant_a']['copy']))}</p>
+                <a href="{book_offer_href(offer, placement)}" {link_attributes} class="conversion-button" data-offer-label>{html.escape(str(offer['variant_a']['label']))}</a>
+                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+            </aside>
+            <!-- PROOF_LED_FINAL_END -->"""
+
+
+def render_article_mobile_bar(offer: dict[str, Any]) -> str:
+    """Render the mobile offer bar in the static page so every article owns the surface."""
+    placement = "mobile-buy-bar"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    link_attributes = offer_data_attributes(offer, placement)
+    return f"""    <!-- PROOF_LED_MOBILE_START -->
+    <aside class="mobile-buy-bar js-offer" {surface_attributes} aria-label="Book preview" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>{html.escape(str(offer['chapter_label']))}</strong><span data-mobile-offer-copy>See a real page</span></p>
+        <a href="{book_offer_href(offer, placement)}" {link_attributes} class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+    </aside>
+    <!-- PROOF_LED_MOBILE_END -->"""
+
+
+def strip_generated_conversion_markup(page_html: str) -> str:
+    """Remove this builder's conversion blocks so regeneration stays idempotent."""
+    page_html = re.sub(
+        r"\s*<!-- PROOF_LED_QUARTER_START -->.*?<!-- PROOF_LED_QUARTER_END -->\s*",
+        "\n",
+        page_html,
+        flags=re.DOTALL,
+    )
+    page_html = re.sub(
+        r"\s*<!-- PROOF_LED_MOBILE_START -->.*?<!-- PROOF_LED_MOBILE_END -->\s*",
+        "\n",
+        page_html,
+        flags=re.DOTALL,
+    )
+    return page_html
+
+
+def matching_div_close(html_text: str, opening_start: int) -> tuple[int, int]:
+    """Return the start and end offsets of the closing div paired with opening_start."""
+    opening_end = html_text.find(">", opening_start)
+    if opening_start < 0 or opening_end < 0 or not html_text.startswith("<div", opening_start):
+        raise ValueError("Expected an opening div")
+
+    depth = 1
+    for match in re.finditer(r"<div\b[^>]*>|</div>", html_text[opening_end + 1 :], flags=re.IGNORECASE):
+        token = match.group(0).lower()
+        if token.startswith("<div"):
+            depth += 1
+        else:
+            depth -= 1
+            if depth == 0:
+                close_start = opening_end + 1 + match.start()
+                close_end = opening_end + 1 + match.end()
+                return close_start, close_end
+    raise ValueError("Matching closing div not found")
+
+
+def strip_legacy_book_asides(content_html: str) -> str:
+    """Remove the older in-article homepage preview card before inserting the proof-led offer."""
+    return re.sub(
+        r'<aside\b[^>]*>.*?href=["\']/\#preview["\'].*?</aside>',
+        "",
+        content_html,
+        flags=re.DOTALL | re.IGNORECASE,
+    )
+
+
+def insert_offer_after_complete_section(content_html: str, offer_html: str) -> str:
+    """Place the offer near the first quarter, at a section boundary whenever possible."""
+    if not content_html.strip():
+        return offer_html
+
+    target = len(content_html) * 0.25
+    heading_positions = [match.start() for match in re.finditer(r"<h2\b", content_html)]
+    section_boundaries = [
+        position
+        for position in heading_positions[1:]
+        if len(content_html) * 0.20 <= position <= len(content_html) * 0.30
+    ]
+    if section_boundaries:
+        boundary = min(section_boundaries, key=lambda position: abs(position - target))
+    else:
+        block_ends = [
+            match.end()
+            for match in re.finditer(r"</(?:p|ul|ol|blockquote)>", content_html)
+            if len(content_html) * 0.20 <= match.end() <= len(content_html) * 0.30
+        ]
+        if not block_ends:
+            block_ends = [
+                match.end()
+                for match in re.finditer(r"</(?:p|ul|ol|blockquote)>", content_html)
+            ]
+        boundary = min(block_ends, key=lambda position: abs(position - target)) if block_ends else len(content_html)
+    return f"{content_html[:boundary].rstrip()}\n\n{offer_html}\n\n{content_html[boundary:].lstrip()}"
+
+
+def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> str:
+    """Apply all proof-led conversion surfaces to one generated article page."""
+    page_html = strip_generated_conversion_markup(page_html)
+    page_html = re.sub(
+        r"\s*<!-- Google tag \(gtag\.js\).*?</script>\s*<script>.*?</script>\s*",
+        f"\n{GA_SNIPPET}",
+        page_html,
+        count=1,
+        flags=re.DOTALL,
+    )
+    page_html = re.sub(
+        r'href="/assets/conversion\.css(?:\?v=[^"]+)?"',
+        f'href="/assets/conversion.css?v={ASSET_VERSION}"',
+        page_html,
+        count=1,
+    )
+    page_html = re.sub(
+        r'<body\s+class="([^"]*)"(?:\s+data-page-kind="[^"]*")?(?:\s+data-article-slug="[^"]*")?(?:\s+data-offer-key="[^"]*")?(?:\s+data-chapter-id="[^"]*")?>',
+        (
+            r'<body class="\1" data-page-kind="article"'
+            f' data-article-slug="{html.escape(str(offer["article_slug"]), quote=True)}"'
+            f' data-offer-key="{html.escape(str(offer["offer_key"]), quote=True)}"'
+            f' data-chapter-id="{html.escape(str(offer["chapter_id"]), quote=True)}">'
+        ),
+        page_html,
+        count=1,
+    )
+
+    content_open = '<div class="article-content">'
+    content_open_start = page_html.find(content_open)
+    if content_open_start < 0:
+        raise ValueError(f"{offer['article_slug']}: article-content boundary not found")
+    content_start = content_open_start + len(content_open)
+    content_end, _ = matching_div_close(page_html, content_open_start)
+    content_html = strip_legacy_book_asides(page_html[content_start:content_end])
+    content_html = insert_offer_after_complete_section(content_html, render_article_quarter_offer(offer))
+    page_html = f"{page_html[:content_start]}{content_html}{page_html[content_end:]}"
+
+    if "<!-- PROOF_LED_FINAL_START -->" in page_html:
+        page_html = re.sub(
+            r"\s*<!-- PROOF_LED_FINAL_START -->.*?<!-- PROOF_LED_FINAL_END -->\s*",
+            f"\n{render_article_final_offer(offer)}\n",
+            page_html,
+            count=1,
+            flags=re.DOTALL,
+        )
+    else:
+        final_start = page_html.find("<!-- CTA Box -->")
+        final_div_start = page_html.find("<div", final_start)
+        if final_start < 0 or final_div_start < 0:
+            raise ValueError(f"{offer['article_slug']}: final offer boundary not found")
+        _, final_div_end = matching_div_close(page_html, final_div_start)
+        page_html = f"{page_html[:final_start]}{render_article_final_offer(offer)}{page_html[final_div_end:]}"
+
+    page_html = page_html.replace(
+        '            "jobTitle": "Author and Intimacy Expert",\n'
+        '            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],\n'
+        '            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."',
+        '            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."',
+    )
+    page_html = re.sub(
+        r'href="/book/\?[^\"]*utm_content=post_nav[^\"]*"',
+        f'href="{book_offer_href(offer, "post-nav")}"',
+        page_html,
+        count=1,
+    )
+    page_html = re.sub(
+        r"\s*<script src=\"/assets/offer-catalog\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
+        "\n",
+        page_html,
+    )
+    page_html = re.sub(
+        r"\s*<script src=\"/assets/conversion\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
+        (
+            f"\n{render_article_mobile_bar(offer)}\n\n"
+            f'    <script src="/assets/offer-catalog.js?v={ASSET_VERSION}" defer></script>\n'
+            f'    <script src="/assets/conversion.js?v={ASSET_VERSION}" defer></script>\n'
+        ),
+        page_html,
+        count=1,
+    )
+    return page_html
+
+
+def write_offer_catalog(catalog: dict[str, dict[str, Any]]) -> None:
+    """Write the deterministic public JavaScript catalog without runtime route guesses."""
+    payload = json.dumps(catalog, ensure_ascii=False, indent=2, sort_keys=True)
+    OFFER_CATALOG_JS.write_text(
+        "/* Generated by build_blog.py. Do not edit by hand. */\n"
+        f"window.KPN_OFFER_CATALOG = {payload};\n"
+    )
+
+
+def rebuild_conversion_surfaces() -> None:
+    """Regenerate the catalog and conversion markup for every article in the manifest."""
+    catalog = build_offer_catalog()
+    if len(catalog) != len(read_posts()):
+        raise ValueError("Conversion catalog route count does not match posts.json")
+    write_offer_catalog(catalog)
+
+    for route, offer in catalog.items():
+        page_path = ROOT_DIR / route.lstrip("/") / "index.html"
+        if not page_path.exists():
+            raise FileNotFoundError(f"Missing generated article page: {page_path}")
+        page_path.write_text(apply_conversion_to_article_page(page_path.read_text(), offer))
+    print(f"Rebuilt proof-led conversion surfaces for {len(catalog)} article routes.")
+
+
 def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:
     """Render a static blog card."""
     title = html.escape(post["title"])
@@ -515,7 +1079,7 @@ def render_site_header(active_blog: bool = False) -> str:
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="{blog_class} transition-colors text-sm sm:text-base">Blog</a>
                 <a href="{BOOK_URL}" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=proof_led_rebuild&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -776,7 +1340,7 @@ def render_category_page(category_slug: str, category_posts: list[dict[str, Any]
             <p class="text-gray-400 text-lg mb-8">
                 {cta_description}
             </p>
-            <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
+            <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=proof_led_rebuild&utm_content=category_cta" data-offer-link data-offer-placement="category-cta" class="bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-4 px-10 rounded-lg text-lg inline-block hover:opacity-90 transition-opacity">
                 Get Kiss Perfect Now
             </a>
         </div>
@@ -806,7 +1370,7 @@ def rebuild_archive_pages() -> None:
     print("Rebuilt blog index and category pages.")
 
 
-def build_post(data: dict[str, Any]) -> None:
+def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     """Build a blog post from n8n data."""
     fm = parse_frontmatter(data["frontmatter"])
 
@@ -866,6 +1430,8 @@ def build_post(data: dict[str, Any]) -> None:
     print(f"Updated: {POSTS_JSON}")
 
     rebuild_archive_pages()
+    if rebuild_conversions:
+        rebuild_conversion_surfaces()
 
     print(f"\n✅ Post created: /blog/{slug}/")
     print(f"📸 Remember to add featured image: /blog/{slug}/featured.jpg")
@@ -878,6 +1444,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--from-n8n", dest="from_n8n", help="Raw n8n JSON payload")
     parser.add_argument("--rebuild-listings", action="store_true", help="Regenerate /blog/ and /blog/category/* pages from posts.json")
     parser.add_argument("--rebuild-all", action="store_true", help="Rebuild all posts from their post.json files with fresh dateModified")
+    parser.add_argument("--rebuild-conversions", action="store_true", help="Regenerate clustered offers for every article route")
     return parser.parse_args()
 
 
@@ -889,9 +1456,14 @@ def main() -> None:
         print(f"Rebuilding {len(post_jsons)} posts from post.json files...")
         for post_json in post_jsons:
             data = json.loads(post_json.read_text())
-            build_post(data)
+            build_post(data, rebuild_conversions=False)
         rebuild_archive_pages()
+        rebuild_conversion_surfaces()
         print("Done.")
+        return
+
+    if args.rebuild_conversions:
+        rebuild_conversion_surfaces()
         return
 
     if args.rebuild_listings:
@@ -907,7 +1479,7 @@ def main() -> None:
             build_post(json.load(file_handle))
         return
 
-    raise SystemExit("Usage: python3 build_blog.py path/to/post.json | --from-n8n '{...}' | --rebuild-listings")
+    raise SystemExit("Usage: python3 build_blog.py path/to/post.json | --from-n8n '{...}' | --rebuild-listings | --rebuild-conversions")
 
 
 if __name__ == "__main__":

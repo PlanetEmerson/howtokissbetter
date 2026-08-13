@@ -82,7 +82,7 @@ def update_post(path: Path) -> bool:
         )
 
     text = re.sub(
-        r'href="https://payhip\.com/b/YyLMc" data-product="YyLMc" data-cta-location="([^"]+)"',
+        r'href="https://payhip\.com/b/(?:YyLMc|dbMu6)" data-product="(?:YyLMc|dbMu6)" data-cta-location="([^"]+)"',
         book_link,
         text,
     )

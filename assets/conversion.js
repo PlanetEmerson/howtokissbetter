@@ -2,54 +2,31 @@
     "use strict";
 
     var PRODUCT = {
-        id: "YyLMc",
+        id: "dbMu6",
         title: "Kiss Perfect Now: A Master Class in Kissology",
         price: 4.95,
         currency: "USD"
     };
+    var OFFER_VARIANT_KEY = "kpn_offer_variant_v1";
+    var LEAD_EVENT_KEY = "kpn_generate_lead_v2";
+    var OFFER_IMPRESSION_PREFIX = "kpn_offer_impression_v2:";
+    var VALID_OFFER_KEYS = [
+        "practice",
+        "technique",
+        "touch",
+        "chemistry",
+        "relationship",
+        "boundaries",
+        "complete-guide"
+    ];
 
-    var TOP_ARTICLE_OFFERS = {
-        "/blog/how-to-practice-kissing/": {
-            title: "Turn practice into real skill",
-            copy: "Use focused drills for pressure, timing, confidence, and the parts of kissing that only a partner can teach."
-        },
-        "/blog/why-kissing-feels-awkward/": {
-            title: "Make an awkward kiss feel natural",
-            copy: "Learn how to slow down, read your partner, and recover without letting one odd second take over."
-        },
-        "/blog/kissing-positions/": {
-            title: "Find positions that feel easy",
-            copy: "Get clear guidance for angles, hand placement, pace, comfort, and changing positions without breaking the moment."
-        },
-        "/blog/how-to-tell-someone-theyre-a-bad-kisser/": {
-            title: "Give useful feedback without killing the mood",
-            copy: "Use calm, specific ways to guide a kiss together while keeping trust and confidence intact."
-        },
-        "/blog/first-kiss-nerves-what-actually-matters/": {
-            title: "Calm the nerves before they take over",
-            copy: "Use a simple first-kiss plan that helps you stay present, read consent, and stop grading every move."
-        },
-        "/blog/how-to-kiss-someones-neck/": {
-            title: "Make neck kissing feel good, not random",
-            copy: "Learn where to start, how much pressure to use, and how to follow your partner's response."
-        },
-        "/blog/how-to-kiss-with-a-height-difference/": {
-            title: "Make the height difference work",
-            copy: "Use better angles, stable positions, and small moves that keep both people comfortable."
-        },
-        "/blog/how-to-kiss-slowly/": {
-            title: "Slow down without losing the spark",
-            copy: "Learn how pauses, pressure, and pace build tension while keeping the kiss responsive."
-        },
-        "/blog/lip-biting-while-kissing/": {
-            title: "Use a lip bite with care",
-            copy: "Get the timing, pressure, and consent cues that make a playful bite feel welcome."
-        },
-        "/blog/how-to-make-someone-want-to-kiss-you/": {
-            title: "Build the moment without forcing it",
-            copy: "Learn how to notice interest, create space for a yes, and make the lead-in feel clear."
+    function safeStorage(storage, method, key, value) {
+        try {
+            return storage[method](key, value);
+        } catch (error) {
+            return null;
         }
-    };
+    }
 
     function sendEvent(name, params) {
         if (typeof window.gtag !== "function") {
@@ -67,123 +44,120 @@
         }];
     }
 
-    function articleName() {
+    function articleTitle() {
         var heading = document.querySelector("article h1");
         return heading ? heading.textContent.trim() : document.title;
     }
 
-    function offerLink(placement, label) {
-        var link = document.createElement("a");
-        link.className = "conversion-button conversion-offer__link";
-        link.href = "/book/?utm_source=howtokissbetter&utm_medium=site&utm_campaign=conversion_repair&utm_content=" + encodeURIComponent(placement);
-        link.textContent = label;
-        link.dataset.offerLink = "true";
-        link.dataset.offerPlacement = placement;
-        return link;
+    function assignedVariant() {
+        var existing = safeStorage(window.localStorage, "getItem", OFFER_VARIANT_KEY);
+        if (existing === "A" || existing === "B") {
+            return existing;
+        }
+
+        var generated = "A";
+        if (window.crypto && window.crypto.getRandomValues) {
+            var randomValue = new Uint32Array(1);
+            window.crypto.getRandomValues(randomValue);
+            generated = randomValue[0] % 2 === 0 ? "A" : "B";
+        } else {
+            generated = Math.random() < 0.5 ? "A" : "B";
+        }
+        safeStorage(window.localStorage, "setItem", OFFER_VARIANT_KEY, generated);
+        return generated;
     }
 
-    function addArticleOffer() {
-        var offer = TOP_ARTICLE_OFFERS[window.location.pathname];
-        var content = document.querySelector(".article-content");
-        if (!offer || !content || content.querySelector(".conversion-offer")) {
-            return;
-        }
-
-        var paragraphs = Array.prototype.slice.call(content.querySelectorAll("p"));
-        if (paragraphs.length < 4) {
-            return;
-        }
-
-        var insertAt = Math.max(2, Math.floor(paragraphs.length * 0.25));
-        var target = paragraphs[Math.min(insertAt, paragraphs.length - 1)];
-        var panel = document.createElement("aside");
-        panel.className = "conversion-offer js-offer";
-        panel.dataset.offerPlacement = "article-quarter";
-        panel.setAttribute("aria-label", "Book recommendation");
-
-        var eyebrow = document.createElement("p");
-        eyebrow.className = "conversion-offer__eyebrow";
-        eyebrow.textContent = "Go beyond this guide";
-
-        var title = document.createElement("h2");
-        title.className = "conversion-offer__title";
-        title.textContent = offer.title;
-
-        var copy = document.createElement("p");
-        copy.className = "conversion-offer__copy";
-        copy.textContent = offer.copy;
-
-        panel.appendChild(eyebrow);
-        panel.appendChild(title);
-        panel.appendChild(copy);
-        panel.appendChild(offerLink("article-quarter", "See the full $4.95 book"));
-        target.insertAdjacentElement("afterend", panel);
+    function currentCatalogOffer() {
+        var catalog = window.KPN_OFFER_CATALOG || {};
+        return catalog[window.location.pathname] || null;
     }
 
-    function addMobileBuyBar() {
-        if (!TOP_ARTICLE_OFFERS[window.location.pathname]) {
+    function applyVariantToArticles() {
+        if (document.body.dataset.pageKind !== "article") {
+            return;
+        }
+        var offer = currentCatalogOffer();
+        var variant = assignedVariant();
+        if (!offer) {
             return;
         }
 
-        var articleHeader = document.querySelector("article header");
-        if (!articleHeader) {
+        var content = variant === "B" ? offer.variant_b : offer.variant_a;
+        document.querySelectorAll("[data-offer-title]").forEach(function (node) {
+            node.textContent = content.title;
+        });
+        document.querySelectorAll("[data-offer-copy]").forEach(function (node) {
+            node.textContent = content.copy;
+        });
+        document.querySelectorAll("[data-offer-label]").forEach(function (node) {
+            node.textContent = content.label;
+        });
+        document.querySelectorAll("[data-offer-variant]").forEach(function (node) {
+            node.dataset.offerVariant = variant;
+        });
+
+        var mobileCopy = document.querySelector("[data-mobile-offer-copy]");
+        if (mobileCopy && variant === "B") {
+            mobileCopy.textContent = "183 pages for $4.95";
+        }
+    }
+
+    function offerPayload(element) {
+        var articleSlug = element.dataset.articleSlug || document.body.dataset.articleSlug || "not-an-article";
+        return {
+            page: window.location.pathname,
+            article: articleSlug,
+            article_title: articleTitle(),
+            placement: element.dataset.offerPlacement || "unknown",
+            offer_key: element.dataset.offerKey || document.body.dataset.offerKey || "complete-guide",
+            chapter_id: element.dataset.chapterId || document.body.dataset.chapterId || "chapter-01",
+            variant: element.dataset.offerVariant || assignedVariant()
+        };
+    }
+
+    function impressionKey(payload) {
+        return OFFER_IMPRESSION_PREFIX + [
+            payload.page,
+            payload.placement,
+            payload.offer_key
+        ].join("|");
+    }
+
+    function trackOfferView(element) {
+        var payload = offerPayload(element);
+        var key = impressionKey(payload);
+        if (safeStorage(window.sessionStorage, "getItem", key)) {
             return;
         }
-
-        var bar = document.createElement("aside");
-        bar.className = "mobile-buy-bar";
-        bar.setAttribute("aria-label", "Book offer");
-        bar.innerHTML = '<p class="mobile-buy-bar__copy"><strong>Kiss Perfect Now</strong>Full guide, $4.95</p>';
-        var link = offerLink("mobile-buy-bar", "See the book");
-        link.className = "mobile-buy-bar__link";
-        link.tabIndex = -1;
-        bar.appendChild(link);
-        bar.setAttribute("aria-hidden", "true");
-        document.body.appendChild(bar);
-        document.body.classList.add("has-mobile-buy-bar");
-
-        function updateBar() {
-            var introPassed = window.scrollY > articleHeader.offsetTop + articleHeader.offsetHeight;
-            var footer = document.querySelector("footer");
-            var footerNear = footer && footer.getBoundingClientRect().top < window.innerHeight + 72;
-            var offerInView = Array.prototype.some.call(document.querySelectorAll(".js-offer"), function (offer) {
-                var bounds = offer.getBoundingClientRect();
-                return bounds.bottom > 0 && bounds.top < window.innerHeight;
-            });
-            var visible = introPassed && !footerNear && !offerInView;
-
-            bar.classList.toggle("is-visible", visible);
-            bar.setAttribute("aria-hidden", visible ? "false" : "true");
-            link.tabIndex = visible ? 0 : -1;
-        }
-
-        updateBar();
-        window.addEventListener("scroll", updateBar, { passive: true });
-        window.addEventListener("resize", updateBar);
+        safeStorage(window.sessionStorage, "setItem", key, "1");
+        sendEvent("offer_view", payload);
     }
 
     function trackOfferViews() {
+        var offers = document.querySelectorAll(".js-offer");
         if (!("IntersectionObserver" in window)) {
+            offers.forEach(function (offer) {
+                if (offer.getAttribute("aria-hidden") !== "true") {
+                    trackOfferView(offer);
+                }
+            });
             return;
         }
 
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
-                if (!entry.isIntersecting || entry.target.dataset.offerSeen === "true") {
+                if (!entry.isIntersecting || entry.intersectionRatio < 0.35) {
                     return;
                 }
-                entry.target.dataset.offerSeen = "true";
-                sendEvent("offer_view", {
-                    article: articleName(),
-                    page: window.location.pathname,
-                    placement: entry.target.dataset.offerPlacement || "unknown"
-                });
+                trackOfferView(entry.target);
                 observer.unobserve(entry.target);
             });
-        }, { threshold: 0.35 });
+        }, { threshold: [0.35] });
 
-        document.querySelectorAll(".js-offer").forEach(function (offer) {
-            observer.observe(offer);
+        offers.forEach(function (offer) {
+            if (!offer.classList.contains("mobile-buy-bar")) {
+                observer.observe(offer);
+            }
         });
     }
 
@@ -193,21 +167,98 @@
             if (!link) {
                 return;
             }
-            sendEvent("offer_click", {
-                article: articleName(),
-                page: window.location.pathname,
-                placement: link.dataset.offerPlacement || "unknown"
-            });
+            sendEvent("offer_click", offerPayload(link));
         });
     }
 
-    function trackBookPage() {
+    function setupMobileBuyBar() {
+        var bar = document.querySelector(".mobile-buy-bar");
+        var articleHeader = document.querySelector("article header");
+        if (!bar || !articleHeader) {
+            return;
+        }
+
+        var link = bar.querySelector("a");
+        var visibleBefore = false;
+        document.body.classList.add("has-mobile-buy-bar");
+
+        function updateBar() {
+            var mobileViewport = window.matchMedia("(max-width: 767px)").matches;
+            var introPassed = articleHeader.getBoundingClientRect().bottom < 0;
+            var footer = document.querySelector("footer");
+            var footerNear = footer && footer.getBoundingClientRect().top < window.innerHeight + 72;
+            var otherOfferInView = Array.prototype.some.call(
+                document.querySelectorAll(".js-offer:not(.mobile-buy-bar)"),
+                function (offer) {
+                    var bounds = offer.getBoundingClientRect();
+                    return bounds.bottom > 0 && bounds.top < window.innerHeight;
+                }
+            );
+            var visible = mobileViewport && introPassed && !footerNear && !otherOfferInView;
+
+            bar.classList.toggle("is-visible", visible);
+            bar.setAttribute("aria-hidden", visible ? "false" : "true");
+            if (link) {
+                link.tabIndex = visible ? 0 : -1;
+            }
+            if (visible && !visibleBefore) {
+                trackOfferView(bar);
+            }
+            visibleBefore = visible;
+        }
+
+        updateBar();
+        window.addEventListener("scroll", updateBar, { passive: true });
+        window.addEventListener("resize", updateBar);
+    }
+
+    function requestedOfferKey() {
+        var params = new URLSearchParams(window.location.search);
+        var hashKey = window.location.hash.replace(/^#/, "");
+        var key = params.get("offer_key") || hashKey || "complete-guide";
+        return VALID_OFFER_KEYS.indexOf(key) >= 0 ? key : "complete-guide";
+    }
+
+    function sourcePlacement() {
+        return new URLSearchParams(window.location.search).get("utm_content") || "book-page";
+    }
+
+    function openPreview(previewId, source, offerKey) {
+        var viewer = document.querySelector("[data-preview-viewer]");
+        if (!viewer || !window.KPNBookPreview) {
+            return;
+        }
+        window.KPNBookPreview.open(previewId);
+        sendEvent("preview_open", {
+            preview_id: previewId,
+            offer_key: offerKey,
+            source_placement: source
+        });
+    }
+
+    function setupBookPage() {
         if (document.body.dataset.pageKind !== "book") {
             return;
         }
+
+        var offerKey = requestedOfferKey();
+        var selectedPathway = offerKey === "complete-guide" ? "practice" : offerKey;
+        document.body.classList.add("is-enhanced");
+        document.body.dataset.offerKey = offerKey;
+        document.querySelectorAll("[data-book-offer-key]").forEach(function (node) {
+            node.dataset.bookOfferKey = offerKey;
+        });
+        document.querySelectorAll("[data-pathway]").forEach(function (button) {
+            button.setAttribute("aria-pressed", button.dataset.pathway === selectedPathway ? "true" : "false");
+        });
+        document.querySelectorAll("[data-pathway-panel]").forEach(function (panel) {
+            panel.hidden = panel.dataset.pathwayPanel !== selectedPathway;
+        });
+
         sendEvent("view_item", {
             currency: PRODUCT.currency,
             value: PRODUCT.price,
+            offer_key: offerKey,
             items: productItems()
         });
 
@@ -218,6 +269,7 @@
                     currency: PRODUCT.currency,
                     value: PRODUCT.price,
                     button_placement: button.dataset.checkoutPlacement || "book-page",
+                    offer_key: offerKey,
                     items: productItems()
                 });
                 if (window.Payhip && window.Payhip.Checkout) {
@@ -227,20 +279,81 @@
                 }
             });
         });
+
+        document.querySelectorAll("[data-preview-open]").forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                openPreview(
+                    button.dataset.previewOpen || "contents-one",
+                    button.dataset.previewSource || sourcePlacement(),
+                    offerKey
+                );
+            });
+        });
+
+        document.querySelectorAll("[data-pathway]").forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                var selected = button.dataset.pathway;
+                document.querySelectorAll("[data-pathway]").forEach(function (other) {
+                    other.setAttribute("aria-pressed", other === button ? "true" : "false");
+                });
+                document.querySelectorAll("[data-pathway-panel]").forEach(function (panel) {
+                    panel.hidden = panel.dataset.pathwayPanel !== selected;
+                });
+                sendEvent("book_pathway_select", {
+                    offer_key: selected,
+                    chapter_id: button.dataset.chapterId || "chapter-01"
+                });
+            });
+        });
+    }
+
+    function setupBookStickyBar() {
+        if (document.body.dataset.pageKind !== "book") {
+            return;
+        }
+        var bar = document.querySelector("[data-book-sticky]");
+        var heroButton = document.querySelector("[data-hero-checkout]");
+        var link = bar && bar.querySelector("a");
+        if (!bar || !heroButton || !link) {
+            return;
+        }
+
+        function updateStickyBar() {
+            var mobileViewport = window.matchMedia("(max-width: 767px)").matches;
+            var heroPassed = heroButton.getBoundingClientRect().bottom < 0;
+            var footer = document.querySelector(".book-footer");
+            var footerNear = footer && footer.getBoundingClientRect().top < window.innerHeight + 72;
+            var previewOpen = Boolean(document.querySelector("[data-preview-viewer][open]"));
+            var visible = mobileViewport && heroPassed && !footerNear && !previewOpen;
+            bar.classList.toggle("is-visible", visible);
+            document.body.classList.toggle("has-book-sticky", visible);
+            bar.setAttribute("aria-hidden", visible ? "false" : "true");
+            link.tabIndex = visible ? 0 : -1;
+        }
+
+        updateStickyBar();
+        window.addEventListener("scroll", updateStickyBar, { passive: true });
+        window.addEventListener("resize", updateStickyBar);
+        document.addEventListener("click", function (event) {
+            if (event.target.closest("[data-preview-open], [data-preview-close]")) {
+                window.setTimeout(updateStickyBar, 0);
+            }
+        });
     }
 
     function trackConfirmedLead() {
         if (document.body.dataset.pageKind !== "confirmed") {
             return;
         }
-        var key = "kiss_generate_lead_sent";
-        if (sessionStorage.getItem(key)) {
+        if (safeStorage(window.localStorage, "getItem", LEAD_EVENT_KEY)) {
             return;
         }
-        sessionStorage.setItem(key, "1");
+        safeStorage(window.localStorage, "setItem", LEAD_EVENT_KEY, "1");
         sendEvent("generate_lead", {
-            form: "free_chapter_double_confirmation",
-            source_page: localStorage.getItem("kiss_free_chapter_source") || "brevo_confirmation"
+            form_id: "free_chapter_double_confirmation",
+            source_page: safeStorage(window.localStorage, "getItem", "kiss_free_chapter_source") || "brevo_confirmation"
         });
     }
 
@@ -248,7 +361,7 @@
         if (!document.querySelector("[data-brevo-form]")) {
             return;
         }
-        localStorage.setItem("kiss_free_chapter_source", window.location.pathname);
+        safeStorage(window.localStorage, "setItem", "kiss_free_chapter_source", window.location.pathname);
     }
 
     function setupExitPopup() {
@@ -259,9 +372,8 @@
 
         var seenKey = "kiss_popup_seen";
         var shown = false;
-
         function show() {
-            if (shown || localStorage.getItem(seenKey)) {
+            if (shown || safeStorage(window.localStorage, "getItem", seenKey)) {
                 return;
             }
             shown = true;
@@ -269,13 +381,15 @@
             sendEvent("offer_view", {
                 article: document.title,
                 page: window.location.pathname,
-                placement: "free-chapter-popup"
+                placement: "free-chapter-popup",
+                offer_key: "free-chapter",
+                chapter_id: "chapter-14",
+                variant: "not-applicable"
             });
         }
-
         function hide() {
             popup.classList.remove("active");
-            localStorage.setItem(seenKey, "1");
+            safeStorage(window.localStorage, "setItem", seenKey, "1");
         }
 
         popup.querySelectorAll("[data-popup-close]").forEach(function (button) {
@@ -300,11 +414,12 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        addArticleOffer();
-        addMobileBuyBar();
+        applyVariantToArticles();
         bindOfferClicks();
         trackOfferViews();
-        trackBookPage();
+        setupMobileBuyBar();
+        setupBookPage();
+        setupBookStickyBar();
         trackConfirmedLead();
         rememberFormSource();
         setupExitPopup();

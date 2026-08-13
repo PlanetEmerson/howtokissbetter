@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
+    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YNQ785TC90');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', 'G-YNQ785TC90', {
+          linker: {
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }
+        });
+      } else {
+        window.__kpnGtagSpy = window.dataLayer;
+      }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Primary Meta Tags -->
     <title>How to Ask for a Kiss (Without Making It Weird) | How to Kiss Better</title>
@@ -46,7 +58,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
 
     <style>
         html { scroll-behavior: smooth; }
@@ -139,9 +151,7 @@
             "@type": "Person",
             "name": "C.J. McKenna",
             "url": "https://howtokissbetter.com",
-            "jobTitle": "Author and Intimacy Expert",
-            "knowsAbout": ["Kissing Techniques", "Intimacy", "Relationship Science", "Body Language", "Physical Chemistry"],
-            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."
+            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."
         },
         "publisher": {
             "@type": "Organization",
@@ -216,7 +226,7 @@
     </script>
 </head>
 
-<body class="bg-charcoal text-off-white font-sans antialiased">
+<body class="bg-charcoal text-off-white font-sans antialiased" data-page-kind="article" data-article-slug="how-to-ask-for-a-kiss" data-offer-key="boundaries" data-chapter-id="chapter-12">
 
     <!-- HEADER -->
     <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10">
@@ -228,7 +238,7 @@
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
                 <a href="/book/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_nav" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav&amp;offer_key=boundaries#boundaries" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
                 </a>
@@ -329,6 +339,26 @@
 
 <p>You're not just asking permission. You're building a tiny, perfect moment of tension. And tension, as anyone who's ever been <a href="/blog/how-to-tease-with-a-kiss/" target="_blank" rel="noopener">teased with an almost-kiss</a> knows, is where the magic lives.</p>
 
+<!-- PROOF_LED_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" data-offer-placement="article-quarter" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" aria-label="Book preview">
+    <div class="conversion-offer__proof" aria-hidden="true">
+        <picture>
+            <source srcset="/assets/images/book-proof/consent-480.avif" type="image/avif">
+            <source srcset="/assets/images/book-proof/consent-480.webp" type="image/webp">
+            <img src="/assets/images/book-proof/consent-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
+    </div>
+    <div class="conversion-offer__body">
+        <p class="conversion-offer__eyebrow">Continue with Chapter 12</p>
+        <h2 class="conversion-offer__title" data-offer-title>Read the response and respect it</h2>
+        <p class="conversion-offer__chapter">The Magic Words</p>
+        <p class="conversion-offer__copy" data-offer-copy>Chapter 12 makes intent clear and leaves room for a real answer. Chapter 14 adds the habits that protect comfort and connection.</p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-quarter&amp;offer_key=boundaries#boundaries" data-offer-link="true" data-offer-placement="article-quarter" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" class="conversion-button conversion-offer__link" data-offer-label>Preview the boundaries path</a>
+        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+    </div>
+</aside>
+<!-- PROOF_LED_QUARTER_END -->
+
 <h2 id="5-ways-to-ask-for-a-kiss-that-actually-work">5 Ways to Ask for a Kiss That Actually Work</h2>
 
 <p>Not all asks are created equal. Here are five approaches, ranked from direct to subtle, that create connection instead of killing it.</p>
@@ -395,15 +425,7 @@
 
 <p>The playful approach is perfect if your natural vibe is more witty than intense. Not everyone can pull off the smoldering declaration. Some people's superpower is making the other person laugh. Use yours.</p>
 
-<p><aside class="my-12 p-8 bg-wine/20 border border-gold/20 rounded-xl"> <p class="text-lg text-gray-300 mb-4"> The art of reading the moment, building tension, and creating kisses that feel inevitable is covered in depth in <span class="text-gold">Kiss Perfect Now</span>.</p>
-
-</p>
-
-<p><a href="/#preview" class="text-gold hover:underline"> See what's inside &rarr;</p>
-
-</a>
-
-</aside>
+<p>
 
 <h2 id="what-to-do-when-they-say-no">What to Do When They Say No</h2>
 
@@ -505,18 +527,16 @@
                         loading="lazy"></iframe>
                 </div>
             </div>
-
-            <!-- CTA Box -->
-            <div class="js-offer mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center" data-offer-placement="post-cta">
-                <h3 class="font-serif text-2xl text-cream mb-4">Put the Full System in Your Hands</h3>
-                <p class="text-gray-400 mb-6">Go from one article to a clear guide for pressure, pace, hands, breath, confidence, and connection.</p>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_cta" data-offer-link data-offer-placement="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
-                    Get Kiss Perfect Now: $4.95
-                </a>
-            </div>
-
-
-                </div><!-- end max-w-3xl -->
+            <!-- PROOF_LED_FINAL_START -->
+            <aside class="conversion-final js-offer" data-offer-placement="article-final" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" aria-label="Book offer">
+                <p class="conversion-offer__eyebrow">The complete guide</p>
+                <h2 class="conversion-final__title" data-offer-title>Read the response and respect it</h2>
+                <p class="conversion-final__copy" data-offer-copy>Chapter 12 makes intent clear and leaves room for a real answer. Chapter 14 adds the habits that protect comfort and connection.</p>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-final&amp;offer_key=boundaries#boundaries" data-offer-link="true" data-offer-placement="article-final" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" class="conversion-button" data-offer-label>Preview the boundaries path</a>
+                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+            </aside>
+            <!-- PROOF_LED_FINAL_END -->
+</div><!-- end max-w-3xl -->
 
                 <!-- TOC Sidebar -->
                 <aside class="hidden lg:block">
@@ -647,6 +667,14 @@
     <script>
         // Load related posts
     </script>
-    <script src="/assets/conversion.js" defer></script>
+    <!-- PROOF_LED_MOBILE_START -->
+    <aside class="mobile-buy-bar js-offer" data-offer-placement="mobile-buy-bar" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" aria-label="Book preview" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>Chapter 12</strong><span data-mobile-offer-copy>See a real page</span></p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=mobile-buy-bar&amp;offer_key=boundaries#boundaries" data-offer-link="true" data-offer-placement="mobile-buy-bar" data-offer-key="boundaries" data-offer-variant="A" data-article-slug="how-to-ask-for-a-kiss" data-chapter-id="chapter-12" class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+    </aside>
+    <!-- PROOF_LED_MOBILE_END -->
+
+    <script src="/assets/offer-catalog.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>

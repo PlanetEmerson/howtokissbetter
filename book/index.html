@@ -2,16 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
-        gtag("js", new Date());
-        gtag("config", "G-YNQ785TC90");
+        if (window.location.hostname === "howtokissbetter.com" || window.location.hostname === "www.howtokissbetter.com") {
+            var analyticsScript = document.createElement("script");
+            analyticsScript.async = true;
+            analyticsScript.src = "https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90";
+            document.head.appendChild(analyticsScript);
+            gtag("js", new Date());
+            gtag("config", "G-YNQ785TC90", {
+                linker: {
+                    domains: ["howtokissbetter.com", "payhip.com"],
+                    accept_incoming: true
+                }
+            });
+        } else {
+            window.__kpnGtagSpy = window.dataLayer;
+        }
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiss Perfect Now: A Master Class in Kissology | C.J. McKenna</title>
-    <meta name="description" content="A clear, practical guide to kissing with more skill, confidence, and care. Get the digital book by C.J. McKenna for $4.95.">
+    <title>Kiss Perfect Now: See Inside the 183-Page Kissing Guide</title>
+    <meta name="description" content="See real pages from Kiss Perfect Now before you buy. Get 16 practical chapters on pressure, pace, hands, confidence, consent, and connection for $4.95.">
     <meta name="author" content="C.J. McKenna">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://howtokissbetter.com/book/">
@@ -19,20 +31,20 @@
     <meta property="og:type" content="book">
     <meta property="og:url" content="https://howtokissbetter.com/book/">
     <meta property="og:title" content="Kiss Perfect Now: A Master Class in Kissology">
-    <meta property="og:description" content="A practical digital guide to pressure, pace, confidence, consent, and connection.">
-    <meta property="og:image" content="https://howtokissbetter.com/assets/images/book-cover.png">
+    <meta property="og:description" content="Look inside the 183-page guide to pressure, pace, hands, confidence, consent, and connection.">
+    <meta property="og:image" content="https://howtokissbetter.com/assets/images/book-cover.webp">
     <meta property="og:site_name" content="How to Kiss Better">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Kiss Perfect Now: A Master Class in Kissology">
-    <meta name="twitter:description" content="Get the digital book by C.J. McKenna for $4.95.">
-    <meta name="twitter:image" content="https://howtokissbetter.com/assets/images/book-cover.png">
+    <meta name="twitter:description" content="See real pages first. Get the 183-page digital book for $4.95.">
+    <meta name="twitter:image" content="https://howtokissbetter.com/assets/images/book-cover.webp">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
 
     <script type="application/ld+json">
     {
@@ -44,12 +56,14 @@
             "name": "C.J. McKenna"
         },
         "url": "https://howtokissbetter.com/book/",
-        "image": "https://howtokissbetter.com/assets/images/book-cover.png",
+        "image": "https://howtokissbetter.com/assets/images/book-cover.webp",
+        "description": "A 183-page digital guide with 16 chapters about kissing technique, confidence, consent, touch, and connection.",
+        "numberOfPages": 183,
         "inLanguage": "en",
         "bookFormat": "https://schema.org/EBook",
         "offers": {
             "@type": "Offer",
-            "url": "https://payhip.com/b/YyLMc",
+            "url": "https://payhip.com/b/dbMu6",
             "price": "4.95",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock"
@@ -58,192 +72,411 @@
     </script>
 </head>
 
-<body class="conversion-shell font-sans antialiased" data-page-kind="book">
-    <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10">
-        <div class="max-w-6xl mx-auto flex justify-between items-center gap-4">
-            <a href="/" class="font-serif text-lg sm:text-2xl text-cream hover:text-gold transition-colors whitespace-nowrap">
-                <span class="sm:hidden">Kiss <span class="text-gold">Better</span></span>
-                <span class="hidden sm:inline">How to <span class="text-gold">Kiss Better</span></span>
+<body class="conversion-shell font-sans antialiased" data-page-kind="book" data-book-offer-key="complete-guide">
+    <a class="skip-link" href="#main-content">Skip to the book</a>
+
+    <header class="book-site-header">
+        <div class="book-site-header__inner">
+            <a href="/" class="book-wordmark" aria-label="How to Kiss Better home">
+                How to <span>Kiss Better</span>
             </a>
-            <nav class="flex gap-4 sm:gap-8 items-center" aria-label="Primary navigation">
-                <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
-                <a href="#inside" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">Inside</a>
-                <a href="https://payhip.com/b/YyLMc" data-payhip-checkout data-checkout-placement="book-nav" class="conversion-button py-2 px-4 sm:px-6 text-sm sm:text-base whitespace-nowrap">Buy for $4.95</a>
+            <nav class="book-nav" aria-label="Primary navigation">
+                <a href="/blog/">Free guides</a>
+                <a href="#look-inside">Look inside</a>
+                <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="book-nav" class="conversion-button conversion-button--compact">Get it: $4.95</a>
             </nav>
         </div>
     </header>
 
-    <main>
-        <section class="px-6">
-            <div class="book-hero max-w-6xl mx-auto">
-                <div>
-                    <p class="conversion-kicker mb-5">The complete digital guide</p>
-                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-cream mb-6">
-                        Kiss Perfect Now:<br><span class="text-gold">A Master Class in Kissology</span>
-                    </h1>
-                    <p class="text-xl text-gray-300 leading-relaxed max-w-2xl mb-7">
-                        A clear guide to pressure, pace, hands, breathing, confidence, consent, and the small choices that make a kiss feel shared.
-                    </p>
-                    <div class="conversion-price mb-7">
-                        <span class="conversion-price__amount">$4.95</span>
-                        <span class="conversion-price__currency">USD<br>digital PDF</span>
+    <main id="main-content">
+        <section class="book-hero-section" aria-labelledby="book-hero-title">
+            <div class="book-hero">
+                <div class="book-hero__copy">
+                    <p class="conversion-kicker">Kiss Perfect Now: A Master Class in Kissology</p>
+                    <h1 id="book-hero-title">Stop guessing what to do next.</h1>
+                    <p class="book-hero__lede">Learn how to handle pressure, pace, hands, breath, confidence, consent, and connection with a clear 16-chapter guide you can use at your own pace.</p>
+
+                    <ul class="book-value-strip" aria-label="Book details">
+                        <li><strong>183</strong><span>pages</span></li>
+                        <li><strong>16</strong><span>chapters</span></li>
+                        <li><strong>PDF + EPUB</strong><span>two formats</span></li>
+                        <li><strong>Instant</strong><span>Payhip delivery</span></li>
+                    </ul>
+
+                    <div class="book-hero__actions">
+                        <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="book-hero" class="conversion-button" data-hero-checkout>Get the complete book: $4.95</a>
+                        <a href="/assets/images/book-proof/contents-one-768.webp" class="conversion-button conversion-button-secondary" data-preview-open="contents-one" data-preview-source="book-hero">Look inside first</a>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-3 mb-5">
-                        <a href="https://payhip.com/b/YyLMc" data-payhip-checkout data-checkout-placement="book-hero" class="conversion-button">Get the book from Payhip</a>
-                        <a href="#sample" class="conversion-button conversion-button-secondary">Read a sample lesson</a>
+
+                    <div class="book-hero__assurance" aria-label="Purchase assurance">
+                        <p>Secure Payhip checkout. Card, Google Pay, and PayPal.</p>
+                        <p>Not satisfied? Email me. I will make it right.</p>
                     </div>
-                    <p class="text-gray-500 text-sm">Payhip handles payment and gives you the download after checkout.</p>
                 </div>
 
-                <div class="book-cover-stage">
-                    <picture>
-                        <source srcset="/assets/images/book-cover.webp" type="image/webp">
-                        <img src="/assets/images/book-cover.png" alt="Cover of Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna" width="1024" height="1536" fetchpriority="high">
+                <div class="book-proof-stack" aria-label="The cover and real interior pages from Kiss Perfect Now">
+                    <picture class="book-proof-stack__page book-proof-stack__page--left">
+                        <source srcset="/assets/images/book-proof/commandments-title-480.avif" type="image/avif">
+                        <source srcset="/assets/images/book-proof/commandments-title-480.webp" type="image/webp">
+                        <img src="/assets/images/book-proof/commandments-title-480.webp" alt="Chapter Fourteen title page: The Kissing Commandments" width="480" height="600" decoding="async">
                     </picture>
+                    <picture class="book-proof-stack__page book-proof-stack__page--right">
+                        <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+                        <source srcset="/assets/images/book-proof/mirror-technique-480.webp" type="image/webp">
+                        <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="A real step-by-step page from The Mirror Technique" width="480" height="600" decoding="async">
+                    </picture>
+                    <picture class="book-proof-stack__cover">
+                        <source srcset="/assets/images/book-proof/cover-320.avif 320w, /assets/images/book-proof/cover-480.avif 480w" type="image/avif">
+                        <source srcset="/assets/images/book-proof/cover-320.webp 320w, /assets/images/book-proof/cover-480.webp 480w" type="image/webp">
+                        <img src="/assets/images/book-proof/cover-480.webp" alt="Cover of Kiss Perfect Now: A Master Class in Kissology by C.J. McKenna" width="480" height="720" fetchpriority="high">
+                    </picture>
+                    <p class="book-proof-stack__note"><strong>Real pages.</strong> Open them before you buy.</p>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 sm:py-24 px-6 border-y border-gold/10" id="inside">
-            <div class="max-w-6xl mx-auto">
-                <div class="max-w-3xl mb-10">
-                    <p class="conversion-kicker mb-3">Who it is for</p>
-                    <h2 class="font-serif text-3xl sm:text-5xl font-bold text-cream mb-4">Useful before a first kiss and after the hundredth</h2>
-                    <p class="text-gray-400 text-lg leading-relaxed">Start at the part that fits your life. The lessons build from calm, basic skills to touch, pace, variety, and keeping a long-term bond alive.</p>
+        <section class="book-section book-section--paper" aria-labelledby="choose-help-title">
+            <div class="book-section__inner">
+                <div class="book-section-heading">
+                    <p class="conversion-kicker">Start with your question</p>
+                    <h2 id="choose-help-title">What do you want help with?</h2>
+                    <p>Choose one. You will see the chapter path that fits it, plus a real page from the book.</p>
                 </div>
 
-                <div class="book-grid">
-                    <article class="book-card">
-                        <h3>You feel nervous or out of practice</h3>
-                        <p>Use a simple way to slow down, notice consent, breathe, and stop trying to plan every second.</p>
-                    </article>
-                    <article class="book-card">
-                        <h3>You want clear technique</h3>
-                        <p>Work on pressure, rhythm, hand placement, pauses, head position, and how to respond to another person.</p>
-                    </article>
-                    <article class="book-card">
-                        <h3>You want more spark together</h3>
-                        <p>Break old habits, add variety, and make kissing feel like its own part of the relationship again.</p>
-                    </article>
+                <nav class="book-pathways" aria-label="Book help topics">
+                    <a href="#practice" role="button" data-pathway="practice" data-chapter-id="chapter-02" aria-pressed="false"><span>01</span>Confidence and practice</a>
+                    <a href="#technique" role="button" data-pathway="technique" data-chapter-id="chapter-03" aria-pressed="false"><span>02</span>Pressure, pace, and rhythm</a>
+                    <a href="#touch" role="button" data-pathway="touch" data-chapter-id="chapter-06" aria-pressed="false"><span>03</span>Hands and body position</a>
+                    <a href="#chemistry" role="button" data-pathway="chemistry" data-chapter-id="chapter-12" aria-pressed="false"><span>04</span>Signals and first moves</a>
+                    <a href="#relationship" role="button" data-pathway="relationship" data-chapter-id="chapter-11" aria-pressed="false"><span>05</span>Partners and long-term spark</a>
+                    <a href="#boundaries" role="button" data-pathway="boundaries" data-chapter-id="chapter-12" aria-pressed="false"><span>06</span>Consent and preferences</a>
+                </nav>
+
+                <div class="book-pathway-panels">
+                    <section class="book-pathway-panel" id="practice" data-pathway-panel="practice">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapter 2</p>
+                            <h3>The Mirror, Mirror Technique</h3>
+                            <p>Begin with the most useful reset in the book. Match your partner before you try to lead.</p>
+                            <ul>
+                                <li>Start soft without freezing.</li>
+                                <li>Match pressure, mouth shape, and pace.</li>
+                                <li>Return to a clear home base when you feel lost.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/mirror-technique-768.webp" data-preview-open="mirror-technique" data-preview-source="pathway-practice">Read the real lesson page</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="The Mirror Technique step-by-step lesson" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
+
+                    <section class="book-pathway-panel" id="technique" data-pathway-panel="technique">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapters 2, 3, and 9</p>
+                            <h3>Pressure, restraint, rhythm, and breath</h3>
+                            <p>Build a kiss from simple parts so you can change one thing at a time and notice the response.</p>
+                            <ul>
+                                <li>Use a soft opening to find the shared pace.</li>
+                                <li>Add pauses and small changes without rushing.</li>
+                                <li>Breathe without breaking the moment.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/mirror-technique-768.webp" data-preview-open="mirror-technique" data-preview-source="pathway-technique">Read the step-by-step page</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="A practical page about pressure, pace, and rhythm" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
+
+                    <section class="book-pathway-panel" id="touch" data-pathway-panel="touch">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapters 6 and 13</p>
+                            <h3>In Good Hands and Touch</h3>
+                            <p>Learn what different placements communicate and how to use pressure that feels present, not heavy.</p>
+                            <ul>
+                                <li>Choose a hand placement with intent.</li>
+                                <li>Balance purposeful movement with stillness.</li>
+                                <li>Adjust pressure as the kiss changes.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/hand-pressure-768.webp" data-preview-open="hand-pressure" data-preview-source="pathway-touch">Read the hand-pressure page</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/hand-pressure-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/hand-pressure-480.webp" alt="A real lesson on hand placement and pressure" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
+
+                    <section class="book-pathway-panel" id="chemistry" data-pathway-panel="chemistry">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapter 12</p>
+                            <h3>The Magic Words</h3>
+                            <p>Make your intent clear, leave room for a response, and let the other person take part in the decision.</p>
+                            <ul>
+                                <li>Say what you want without a surprise move.</li>
+                                <li>Pause long enough to read the answer.</li>
+                                <li>Move forward only when the interest is mutual.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/consent-768.webp" data-preview-open="consent" data-preview-source="pathway-chemistry">Read the communication page</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/consent-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/consent-480.webp" alt="A real lesson about clear intent and mutual interest" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
+
+                    <section class="book-pathway-panel" id="relationship" data-pathway-panel="relationship">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapters 10 and 11</p>
+                            <h3>Attention, passion, and variety</h3>
+                            <p>Bring choice and attention back to kisses that have become quick or automatic.</p>
+                            <ul>
+                                <li>Notice the habits that put both people on autopilot.</li>
+                                <li>Use variety without turning the kiss into a routine.</li>
+                                <li>Talk about preferences without grading your partner.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/contents-two-768.webp" data-preview-open="contents-two" data-preview-source="pathway-relationship">See where these chapters fit</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/contents-two-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/contents-two-480.webp" alt="The contents page listing chapters 10 through 16" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
+
+                    <section class="book-pathway-panel" id="boundaries" data-pathway-panel="boundaries">
+                        <div>
+                            <p class="book-pathway-panel__chapter">Chapters 12 and 14</p>
+                            <h3>Clear intent and close attention</h3>
+                            <p>Say what you want, read what comes back, and stop when the other person is not comfortable.</p>
+                            <ul>
+                                <li>Create space for a real yes or no.</li>
+                                <li>Notice pulling back, stillness, or discomfort.</li>
+                                <li>Use feedback to make the kiss safer and more shared.</li>
+                            </ul>
+                            <a href="/assets/images/book-proof/consent-768.webp" data-preview-open="consent" data-preview-source="pathway-boundaries">Read the consent page</a>
+                        </div>
+                        <picture>
+                            <source srcset="/assets/images/book-proof/consent-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/consent-480.webp" alt="A real page about consent, response, and mutual interest" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                    </section>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 sm:py-24 px-6">
-            <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <section class="book-section book-section--proof" id="look-inside" aria-labelledby="look-inside-title">
+            <div class="book-section__inner">
+                <div class="book-section-heading book-section-heading--center">
+                    <p class="conversion-kicker">No mystery purchase</p>
+                    <h2 id="look-inside-title">Look inside the actual book.</h2>
+                    <p>These are real pages from the file you receive. Open any page, then swipe or use the arrow keys.</p>
+                </div>
+
+                <div class="book-preview-grid" aria-label="Book page previews">
+                    <a class="book-preview-card" href="/assets/images/book-proof/contents-one-768.webp" data-preview-item data-preview-open="contents-one" data-preview-title="Contents, chapters 1 through 9" data-preview-webp="/assets/images/book-proof/contents-one-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/contents-one-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/contents-one-480.webp" alt="Contents page with chapters 1 through 9" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>Contents, part one</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/contents-two-768.webp" data-preview-item data-preview-open="contents-two" data-preview-title="Contents, chapters 10 through 16" data-preview-webp="/assets/images/book-proof/contents-two-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/contents-two-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/contents-two-480.webp" alt="Contents page with chapters 10 through 16" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>Contents, part two</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/story-768.webp" data-preview-item data-preview-open="story" data-preview-title="A narrative page from the preface" data-preview-webp="/assets/images/book-proof/story-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/story-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/story-480.webp" alt="A narrative page from the book's preface" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>The writing style</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/mirror-technique-768.webp" data-preview-item data-preview-open="mirror-technique" data-preview-title="The Mirror Technique, step by step" data-preview-webp="/assets/images/book-proof/mirror-technique-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="The Mirror Technique, step by step" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>The Mirror Technique</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/hand-pressure-768.webp" data-preview-item data-preview-open="hand-pressure" data-preview-title="Hand placement and the pressure question" data-preview-webp="/assets/images/book-proof/hand-pressure-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/hand-pressure-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/hand-pressure-480.webp" alt="A lesson about hands and pressure" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>Hands and pressure</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/consent-768.webp" data-preview-item data-preview-open="consent" data-preview-title="Clear intent, consent, and response" data-preview-webp="/assets/images/book-proof/consent-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/consent-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/consent-480.webp" alt="A lesson about clear intent, consent, and response" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>Consent and response</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/commandments-title-768.webp" data-preview-item data-preview-open="commandments-title" data-preview-title="The Kissing Commandments" data-preview-webp="/assets/images/book-proof/commandments-title-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/commandments-title-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/commandments-title-480.webp" alt="Chapter title page for The Kissing Commandments" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>The Commandments</span>
+                    </a>
+                    <a class="book-preview-card" href="/assets/images/book-proof/commandments-summary-768.webp" data-preview-item data-preview-open="commandments-summary" data-preview-title="The Kissing Commandments summary" data-preview-webp="/assets/images/book-proof/commandments-summary-768.webp">
+                        <picture>
+                            <source srcset="/assets/images/book-proof/commandments-summary-480.avif" type="image/avif">
+                            <img src="/assets/images/book-proof/commandments-summary-480.webp" alt="Summary page from The Kissing Commandments" width="480" height="600" loading="lazy" decoding="async">
+                        </picture>
+                        <span>The summary</span>
+                    </a>
+                </div>
+
+                <div class="book-section-cta">
+                    <p>You have seen the pages. Get the full 183-page book in PDF and EPUB.</p>
+                    <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="after-look-inside" class="conversion-button">Get all 16 chapters: $4.95</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="book-section book-section--paper" aria-labelledby="toc-title">
+            <div class="book-section__inner book-toc-layout">
+                <div class="book-section-heading">
+                    <p class="conversion-kicker">The full route</p>
+                    <h2 id="toc-title">Sixteen chapters. No filler list of loose tips.</h2>
+                    <p>Read in order or jump to the skill you need. The chapters move from the basic mechanics into touch, communication, variety, and long-term connection.</p>
+                    <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="chapter-map" class="conversion-button">Get the complete chapter map: $4.95</a>
+                </div>
+
+                <ol class="book-toc">
+                    <li id="chapter-01"><span>01</span><strong>Much Ado About Kissing</strong></li>
+                    <li id="chapter-02"><span>02</span><strong>The Mirror, Mirror Technique</strong></li>
+                    <li id="chapter-03"><span>03</span><strong>The Art of Discipline</strong></li>
+                    <li id="chapter-04"><span>04</span><strong>Shut Up and Dance With Me</strong></li>
+                    <li id="chapter-05"><span>05</span><strong>Kissing in La La Land</strong></li>
+                    <li id="chapter-06"><span>06</span><strong>In Good Hands</strong></li>
+                    <li id="chapter-07"><span>07</span><strong>The Body's Secret Playground</strong></li>
+                    <li id="chapter-08"><span>08</span><strong>"X" Marks the Spot</strong></li>
+                    <li id="chapter-09"><span>09</span><strong>All Hail the Inhale, Exhale!</strong></li>
+                    <li id="chapter-10"><span>10</span><strong>Oh For the Love of You</strong></li>
+                    <li id="chapter-11"><span>11</span><strong>Passion Is as Passion Does</strong></li>
+                    <li id="chapter-12"><span>12</span><strong>The Magic Words</strong></li>
+                    <li id="chapter-13"><span>13</span><strong>Touch</strong></li>
+                    <li id="chapter-14"><span>14</span><strong>The Kissing Commandments</strong></li>
+                    <li id="chapter-15"><span>15</span><strong>The Long Kiss Goodbye</strong></li>
+                    <li id="chapter-16"><span>16</span><strong>Your Mission</strong></li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="book-section" aria-labelledby="author-title">
+            <div class="book-section__inner book-author">
                 <div>
-                    <p class="conversion-kicker mb-3">Sixteen chapters</p>
-                    <h2 class="font-serif text-3xl sm:text-5xl font-bold text-cream mb-5">A full path, not a list of loose tips</h2>
-                    <p class="text-gray-400 text-lg leading-relaxed mb-8">Each chapter takes one part of kissing and gives it a clear role. You can read in order or jump to the skill you need.</p>
-                    <a href="https://payhip.com/b/YyLMc" data-payhip-checkout data-checkout-placement="book-chapters" class="conversion-button">Get all 16 chapters for $4.95</a>
+                    <p class="conversion-kicker">About the author</p>
+                    <h2 id="author-title">C.J. McKenna</h2>
                 </div>
-                <div class="conversion-panel p-6 sm:p-8">
-                    <ol class="space-y-4 text-gray-300">
-                        <li><span class="text-gold font-semibold">Chapter 2</span><br><span class="text-cream">The Mirror, Mirror Technique</span> for matching before you lead.</li>
-                        <li><span class="text-gold font-semibold">Chapter 3</span><br><span class="text-cream">The Art of Discipline</span> for pauses, restraint, and tension.</li>
-                        <li><span class="text-gold font-semibold">Chapter 6</span><br><span class="text-cream">In Good Hands</span> for touch and hand placement.</li>
-                        <li><span class="text-gold font-semibold">Chapter 9</span><br><span class="text-cream">All Hail the Inhale, Exhale!</span> for breath and pace.</li>
-                        <li><span class="text-gold font-semibold">Chapter 12</span><br><span class="text-cream">The Magic Words</span> for a clear, confident first move.</li>
-                        <li><span class="text-gold font-semibold">Chapter 14</span><br><span class="text-cream">The Kissing Commandments</span> for the habits to keep and avoid.</li>
-                    </ol>
+                <div>
+                    <p>C.J. McKenna writes How to Kiss Better and is the author of <em>Kiss Perfect Now: A Master Class in Kissology</em>.</p>
+                    <p>The book treats kissing as a skill adults can understand, practice, and adapt with a partner. It is direct, detailed, and built for readers who want useful guidance without shame or guesswork.</p>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 sm:py-24 px-6 bg-wine/10 border-y border-gold/10" id="sample">
-            <div class="max-w-4xl mx-auto">
-                <p class="conversion-kicker mb-3">A sample lesson</p>
-                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-cream mb-8">The Mirror Technique, in brief</h2>
-                <p class="book-sample">
-                    Start by matching before you lead. If your partner softens the pressure, soften. If they pause, pause. Once the rhythm feels shared, make one small change and notice the response. Good kissing depends less on showing what you know and more on noticing what happens next.
-                </p>
-                <p class="text-gray-400 leading-relaxed mt-8">
-                    The book expands this into a practical method, then applies the same habit of attention to hands, breath, pace, first-kiss nerves, and long-term intimacy.
-                </p>
+        <section class="book-section book-section--paper" aria-labelledby="faq-title">
+            <div class="book-section__inner book-faq-layout">
+                <div class="book-section-heading">
+                    <p class="conversion-kicker">Before you buy</p>
+                    <h2 id="faq-title">What you receive and how it works.</h2>
+                    <div class="book-delivery-card">
+                        <p><strong>Files:</strong> PDF and EPUB</p>
+                        <p><strong>Delivery:</strong> Instant Payhip download page and receipt email</p>
+                        <p><strong>Devices:</strong> Phone, tablet, computer, and common EPUB readers</p>
+                        <p><strong>Support:</strong> contact@howtokissbetter.com</p>
+                    </div>
+                </div>
+
+                <div class="book-faq">
+                    <details>
+                        <summary>What exactly do I receive?</summary>
+                        <p>You receive the complete 183-page digital book in PDF and EPUB. Payhip shows the download page after checkout and sends a receipt email with access to your files.</p>
+                    </details>
+                    <details>
+                        <summary>Can I read it on my phone?</summary>
+                        <p>Yes. Open the PDF in a browser or PDF reader. Open the EPUB in Apple Books, Google Play Books, Kobo, or another EPUB reader.</p>
+                    </details>
+                    <details>
+                        <summary>Is it only for first kisses?</summary>
+                        <p>No. It starts with core skills and also covers hands, breath, first moves, consent, variety, and keeping connection alive with a long-term partner.</p>
+                    </details>
+                    <details>
+                        <summary>Does it work for any gender or orientation?</summary>
+                        <p>The main lessons focus on attention, pressure, pace, consent, and response. Those skills do not depend on the reader's gender or orientation.</p>
+                    </details>
+                    <details>
+                        <summary>What if something goes wrong with my order?</summary>
+                        <p>Email <a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a>. Not satisfied? Email me. I will make it right.</p>
+                    </details>
+                    <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="after-faq" class="conversion-button">Get Kiss Perfect Now: $4.95</a>
+                </div>
             </div>
         </section>
 
-        <section class="py-16 sm:py-24 px-6">
-            <div class="max-w-6xl mx-auto grid md:grid-cols-[220px_1fr] gap-8 sm:gap-12 items-center">
+        <section class="book-final" aria-labelledby="book-final-title">
+            <div class="book-final__inner">
                 <picture>
-                    <source srcset="/assets/images/author-silhouette.webp" type="image/webp">
-                    <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-gold/30 object-cover mx-auto" width="1024" height="1024" loading="lazy">
+                    <source srcset="/assets/images/book-proof/cover-320.avif" type="image/avif">
+                    <img src="/assets/images/book-proof/cover-320.webp" alt="Kiss Perfect Now book cover" width="320" height="480" loading="lazy" decoding="async">
                 </picture>
                 <div>
-                    <p class="conversion-kicker mb-3">About the author</p>
-                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-cream mb-4">C.J. McKenna</h2>
-                    <p class="text-gray-300 text-lg leading-relaxed mb-4">C.J. McKenna writes How to Kiss Better and is the author of <em>Kiss Perfect Now</em>. The book turns a broad, personal topic into skills a reader can understand, practice, and adapt with a partner.</p>
-                    <p class="text-gray-400 leading-relaxed">It is direct, detailed, and written for adults who want useful guidance without shame or guesswork.</p>
+                    <p class="conversion-kicker">Ready when you are</p>
+                    <h2 id="book-final-title">Learn the skill instead of hoping it appears.</h2>
+                    <p>Get all 183 pages and 16 chapters in PDF and EPUB. Pay once. Download through Payhip.</p>
+                    <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="book-final" class="conversion-button">Get the book now: $4.95</a>
+                    <p class="book-final__assurance">Not satisfied? Email me. I will make it right.</p>
                 </div>
-            </div>
-        </section>
-
-        <section class="py-16 sm:py-24 px-6 bg-wine/10 border-y border-gold/10">
-            <div class="max-w-4xl mx-auto book-faq">
-                <p class="conversion-kicker mb-3">Before you buy</p>
-                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-cream mb-6">Common questions</h2>
-                <details>
-                    <summary>What do I receive?</summary>
-                    <p>You receive the digital book as a PDF. Payhip shows the download page after checkout and also sends the order email.</p>
-                </details>
-                <details>
-                    <summary>Can I read it on my phone?</summary>
-                    <p>Yes. You can open the PDF on a phone, tablet, or computer. You can also save a copy for your own use.</p>
-                </details>
-                <details>
-                    <summary>Is it only for first kisses?</summary>
-                    <p>No. The book starts with core skills and also covers variety, touch, confidence, and long-term relationships.</p>
-                </details>
-                <details>
-                    <summary>Does it work for any gender or orientation?</summary>
-                    <p>The lessons focus on consent, attention, pressure, pace, and response. They do not depend on a reader's gender or orientation.</p>
-                </details>
-                <details>
-                    <summary>What if I have a problem with the order?</summary>
-                    <p>Email <a class="text-gold hover:underline" href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a>. Not satisfied? Email me. I'll make it right.</p>
-                </details>
-            </div>
-        </section>
-
-        <section class="py-16 sm:py-24 px-6">
-            <div class="max-w-3xl mx-auto conversion-panel p-7 sm:p-10 text-center">
-                <p class="conversion-kicker mb-3">Ready when you are</p>
-                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-cream mb-4">Get Kiss Perfect Now for $4.95</h2>
-                <p class="text-gray-400 text-lg mb-7">One digital book. Payhip checkout. Download after purchase.</p>
-                <a href="https://payhip.com/b/YyLMc" data-payhip-checkout data-checkout-placement="book-final" class="conversion-button">Buy the digital book</a>
-                <p class="text-gray-500 text-sm mt-5">Not satisfied? Email me. I'll make it right.</p>
             </div>
         </section>
     </main>
 
-    <footer class="py-12 px-4 sm:px-6 border-t border-gold/10">
-        <div class="max-w-4xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                <a href="/" class="font-serif text-xl text-cream hover:text-gold transition-colors">How to <span class="text-gold">Kiss Better</span></a>
-                <nav class="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-sm text-gray-500">
-                    <a href="/" class="hover:text-gold transition-colors">Home</a>
-                    <a href="/blog/" class="hover:text-gold transition-colors">Blog</a>
-                    <a href="/privacy/" class="hover:text-gold transition-colors">Privacy</a>
-                    <a href="/terms/" class="hover:text-gold transition-colors">Terms</a>
-                </nav>
-            </div>
-            <div class="site-footer-meta">
-                <p class="site-footer-copyright">&copy; 2026 C.J. McKenna. All rights reserved.</p>
-                <a class="blynk-footer-badge" href="https://www.blynk.studio/" target="_blank" rel="noopener noreferrer" aria-label="Visit Blynk Studio, the team that crafted this website (opens in a new tab)">
-                    <span class="blynk-footer-copy">
-                        <span class="blynk-footer-kicker">Proudly crafted by</span>
-                        <span class="blynk-footer-services">Strategy · design · development</span>
-                    </span>
-                    <span class="blynk-footer-brand" aria-hidden="true">
-                        <img class="blynk-footer-logo" src="/assets/images/blynk-wordmark-nav.avif" alt="" width="96" height="41" loading="lazy" decoding="async">
-                        <span class="blynk-footer-arrow">↗</span>
-                    </span>
-                </a>
-            </div>
+    <footer class="book-footer">
+        <div class="book-footer__inner">
+            <a href="/" class="book-wordmark">How to <span>Kiss Better</span></a>
+            <nav aria-label="Footer navigation">
+                <a href="/">Home</a>
+                <a href="/blog/">Free guides</a>
+                <a href="/privacy/">Privacy</a>
+                <a href="/terms/">Terms</a>
+            </nav>
+            <p>&copy; 2026 C.J. McKenna. All rights reserved.</p>
         </div>
     </footer>
 
+    <aside class="book-sticky-buy" data-book-sticky aria-label="Buy Kiss Perfect Now" aria-hidden="true">
+        <p><strong>183 pages, 16 chapters</strong><span>PDF + EPUB</span></p>
+        <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="book-mobile-sticky" tabindex="-1">Get it: $4.95</a>
+    </aside>
+
+    <dialog class="book-preview-dialog" data-preview-viewer aria-labelledby="preview-dialog-title">
+        <div class="book-preview-dialog__shell">
+            <div class="book-preview-dialog__header">
+                <div>
+                    <p>Look inside</p>
+                    <h2 id="preview-dialog-title" data-preview-caption>Real book page</h2>
+                </div>
+                <button type="button" data-preview-close aria-label="Close book preview">Close</button>
+            </div>
+            <figure class="book-preview-dialog__figure" data-preview-stage>
+                <img data-preview-image src="/assets/images/book-proof/contents-one-768.webp" alt="Contents page from Kiss Perfect Now" width="768" height="960">
+            </figure>
+            <div class="book-preview-dialog__controls">
+                <button type="button" data-preview-prev aria-label="Previous book page">Previous</button>
+                <p><span data-preview-index>1</span> of <span data-preview-total>8</span></p>
+                <button type="button" data-preview-next aria-label="Next book page">Next</button>
+            </div>
+        </div>
+    </dialog>
+
     <script src="https://payhip.com/payhip.js" defer></script>
-    <script src="/assets/conversion.js" defer></script>
+    <script src="/assets/book-preview.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>

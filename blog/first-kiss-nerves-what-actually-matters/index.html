@@ -2,15 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90"></script>
+    <!-- Google tag (gtag.js), with a localhost event spy for clean QA -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-YNQ785TC90');
+      if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
+        var analyticsScript = document.createElement('script');
+        analyticsScript.async = true;
+        analyticsScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90';
+        document.head.appendChild(analyticsScript);
+        gtag('js', new Date());
+        gtag('config', 'G-YNQ785TC90', {
+          linker: {
+            domains: ['howtokissbetter.com', 'payhip.com'],
+            accept_incoming: true
+          }
+        });
+      } else {
+        window.__kpnGtagSpy = window.dataLayer;
+      }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Why Do People Get Nervous When Kissing? (First Kiss Nerves, Explained)</title>
     <meta name="description" content="Adrenaline, high stakes, and a brain treating the kiss like a performance. Why first kiss nerves happen, and the 5 fixes that actually calm them.">
     <meta name="keywords" content="first kiss nerves, first kiss anxiety, nervous about first kiss, first kiss tips, how to kiss for the first time">
@@ -36,7 +48,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260813">
     <style>
         html { scroll-behavior: smooth; font-size: 18px; }
         .gradient-text { background: linear-gradient(135deg, #D4AF37, #B8860B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -77,13 +89,13 @@
     ]}
     </script>
 </head>
-<body class="bg-charcoal text-off-white font-sans antialiased">
+<body class="bg-charcoal text-off-white font-sans antialiased" data-page-kind="article" data-article-slug="first-kiss-nerves-what-actually-matters" data-offer-key="practice" data-chapter-id="chapter-02">
     <header class="py-4 sm:py-6 px-4 sm:px-6 border-b border-gold/10 sticky top-0 bg-charcoal/95 backdrop-blur-sm z-50">
         <div class="max-w-6xl mx-auto flex justify-between items-center gap-4">
             <a href="/" class="font-serif text-lg sm:text-2xl text-cream hover:text-gold transition-colors whitespace-nowrap"><span class="sm:hidden">Kiss <span class="gradient-text">Better</span></span><span class="hidden sm:inline">How to <span class="gradient-text">Kiss Better</span></span></a>
             <nav class="flex gap-4 sm:gap-8 items-center">
                 <a href="/blog/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Blog</a>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_nav" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap"><span class="sm:hidden">Get Book</span><span class="hidden sm:inline">Get the Book</span></a>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav&amp;offer_key=practice#practice" data-offer-link data-offer-placement="post-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap"><span class="sm:hidden">Get Book</span><span class="hidden sm:inline">Get the Book</span></a>
             </nav>
         </div>
     </header>
@@ -130,48 +142,7 @@
 
                     <div class="article-content">
                         <h2 id="why-do-people-get-nervous-when-kissing">Why Do People Get Nervous When Kissing?</h2>
-                        <aside class="not-prose mb-10 p-6 sm:p-7 bg-wine/20 border border-gold/20 rounded-xl">
-                            <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Quick Answer</p>
-                            <p class="text-cream/90 leading-relaxed mb-0">People get nervous when kissing because the brain treats vulnerability like a threat: adrenaline spikes, your heart races, and your chest tightens even though nothing is wrong. It happens to almost everyone, and it fades fastest when you focus on the other person instead of your own performance.</p>
-                        </aside>
-                        <p>I almost didn't kiss her.</p>
-                        <p>We were standing outside a coffee shop in the rain, one of those moments that felt like it belonged in a movie. The conversation had gone perfectly. The eye contact lingered a beat too long. Everything was right.</p>
-                        <p>And I was frozen.</p>
-                        <p>My brain was running calculations I couldn't keep up with. <em>Is this the moment? Does she want this? What if I read it wrong?</em> The internal monologue was so loud I almost missed the fact that she was leaning in slightly. Waiting.</p>
-                        <p>I went for it. And it was one of the best first kisses of my life.</p>
-                        <p>Here's what I've learned in the years since: the nerves never fully go away. You just get better at moving through them. And the people who seem naturally confident? They're nervous too. They've just learned that nervousness isn't a stop sign. It's a green light.</p>
-                        <p>Let me show you what I mean.</p>
-                        <h2 id="everyone-is-nervous">Everyone Is Nervous (Yes, Even Them)</h2>
-                        <p>Here's what nobody tells you about first kisses: the other person is just as terrified as you are.</p>
-                        <p>Think about it. They're wondering if <em>you</em> want to kiss <em>them</em>. They're worried about their breath. They're calculating the angle of approach and panicking about which way to tilt their head. They're experiencing the exact same cascade of adrenaline and anticipation that's flooding your system right now.</p>
-                        <p>This is actually a good sign.</p>
-                        <p>Nervousness means you care. It means this matters. The kisses that feel electric? They start with two people who are both a little scared of wanting something this much.</p>
-                        <p>The problem isn't the nerves. The problem is when nerves become paralysis. When you wait so long for the "perfect moment" that the moment passes entirely. When you talk yourself out of something that both of you wanted.</p>
-                        <p>So let's fix that.</p>
-                        <h2 id="reading-the-room">Reading the Room (The Signals That Matter)</h2>
-                        <p>You don't need to be a mind reader. You just need to know what to look for.</p>
-                        <h3>The Three Green Lights</h3>
-                        <p><strong>1. Physical proximity keeps shrinking.</strong></p>
-                        <p>If someone is interested in kissing you, they'll find reasons to get closer. They'll lean in when you're talking. Their hand might find your arm. The space between you will slowly, almost imperceptibly, disappear. Watch for this. When someone wants to be kissed, they make themselves easier to reach.</p>
-                        <p><strong>2. Eye contact gets weird in the best way.</strong></p>
-                        <p>There's a specific kind of eye contact that signals romantic interest. It lingers too long. It drops to your lips. It creates a charge that makes normal conversation suddenly feel intense. If you catch them looking at your mouth and then quickly looking away, that's not an accident. That's an invitation.</p>
-                        <p><strong>3. The conversation creates pockets of silence.</strong></p>
-                        <p>This sounds counterintuitive, but the best first kiss signals often come in the pauses. When the conversation trails off and neither of you moves to fill the silence. When you're just looking at each other, aware that something is about to shift. That silence is the moment asking you to step into it.</p>
-                        <h3>When to Wait</h3>
-                        <p>Not every connection leads to a first kiss, and that's okay. If someone keeps their physical distance, avoids prolonged eye contact, or keeps the conversation strictly friendly, trust those signals. Respecting boundaries is attractive. Forcing a moment that isn't there is the opposite. If you're unsure whether the timing is right at all, our guide on <a href="/blog/when-to-kiss-on-a-date/">when to kiss on a date</a> breaks down the moments that actually work.</p>
-                        <h2 id="the-approach">The Approach (Make It Feel Inevitable)</h2>
-                        <p>The best first kisses don't happen suddenly. They build.</p>
-                        <h3>The Touch Escalation Ladder</h3>
-                        <p>Physical connection should progress naturally before a kiss. Start small: a touch on the arm during conversation, a hand on the small of their back as you walk, fingers brushing against theirs. Each touch that lands well gives you permission for the next.</p>
-                        <p>By the time you lean in for the kiss, it should feel like the logical next step in a conversation your bodies have already been having. That lean-in is just the last rung of the ladder, and we cover the whole climb in our guide on <a href="/blog/how-to-initiate-a-kiss/">how to initiate a kiss</a>.</p>
-                        <h3>The Power of the Pause</h3>
-                        <p>When the moment is right, don't rush.</p>
-                        <p>Move closer. Slower than you think you should. Let the anticipation build. There's a scene in <em>Hitch</em> where Will Smith talks about going ninety percent of the way and letting the other person come the remaining ten. That's the pause. That's giving them space to meet you.</p>
-                        <p>The pause does something magical: it takes the pressure off both of you. You're not ambushing anyone. You're creating an invitation that they can accept.</p>
-                        <aside class="my-12 p-8 bg-wine/20 border border-gold/20 rounded-xl">
-                            <p class="text-lg text-gray-300 mb-4">The full psychology of approaching a first kiss is covered in Chapter 9 of <span class="text-gold">Kiss Perfect Now</span>.</p>
-                            <a href="/#preview" class="text-gold hover:underline">See what's inside →</a>
-                        </aside>
+
                         <h3>Eye Contact That Speaks</h3>
                         <p>Right before a kiss, look at them. Not at your shoes. Not over their shoulder. At them. Let them see that you want this. Confidence isn't about having no fear. It's about letting another person see your desire anyway.</p>
                         <h2 id="magic-words">The Magic Words (When in Doubt, Ask)</h2>
@@ -181,7 +152,28 @@
                         <p>"I've been thinking about kissing you all night."</p>
                         <p>Some people think asking kills the spontaneity. Those people are wrong. Asking, done right, doesn't break the tension. It heightens it. You're naming what's already in the air. You're giving them the opportunity to say yes out loud, which often feels as intimate as the kiss itself.</p>
                         <p>The key is delivery. Say it like you mean it. Not as a question seeking permission, but as a statement of desire that includes an invitation. The difference is confidence. "Can I maybe kiss you possibly?" is weak. "I want to kiss you right now" is magnetic.</p>
-                        <h2 id="when-it-happens">When It Finally Happens</h2>
+
+<!-- PROOF_LED_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" data-offer-placement="article-quarter" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" aria-label="Book preview">
+    <div class="conversion-offer__proof" aria-hidden="true">
+        <picture>
+            <source srcset="/assets/images/book-proof/mirror-technique-480.avif" type="image/avif">
+            <source srcset="/assets/images/book-proof/mirror-technique-480.webp" type="image/webp">
+            <img src="/assets/images/book-proof/mirror-technique-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
+    </div>
+    <div class="conversion-offer__body">
+        <p class="conversion-offer__eyebrow">Continue with Chapter 2</p>
+        <h2 class="conversion-offer__title" data-offer-title>Practice the part that makes everything else easier</h2>
+        <p class="conversion-offer__chapter">The Mirror, Mirror Technique</p>
+        <p class="conversion-offer__copy" data-offer-copy>Chapter 2 gives you a clear way to match pressure, pace, and rhythm so you have somewhere useful to begin when nerves take over.</p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-quarter&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="article-quarter" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" class="conversion-button conversion-offer__link" data-offer-label>Preview the practice path</a>
+        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+    </div>
+</aside>
+<!-- PROOF_LED_QUARTER_END -->
+
+<h2 id="when-it-happens">When It Finally Happens</h2>
                         <p>You've read the signals. You've closed the distance. The moment is here.</p>
                         <p>Now what?</p>
                         <h3>Start Softer Than You Think</h3>
@@ -257,17 +249,16 @@
                         loading="lazy"></iframe>
                 </div>
             </div>
-
-            <!-- CTA Box -->
-            <div class="js-offer mt-10 p-8 bg-gradient-to-r from-wine/30 to-burgundy/20 border border-gold/30 rounded-xl text-center" data-offer-placement="post-cta">
-                <h3 class="font-serif text-2xl text-cream mb-4">Put the Full System in Your Hands</h3>
-                <p class="text-gray-400 mb-6">Go from one article to a clear guide for pressure, pace, hands, breath, confidence, and connection.</p>
-                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=conversion_repair&amp;utm_content=post_cta" data-offer-link data-offer-placement="post-cta" class="inline-block bg-gradient-to-r from-gold to-gold-dark text-charcoal font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-sm sm:text-base hover:opacity-90 transition-opacity">
-                    Get Kiss Perfect Now: $4.95
-                </a>
-            </div>
-
-                </div>
+            <!-- PROOF_LED_FINAL_START -->
+            <aside class="conversion-final js-offer" data-offer-placement="article-final" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" aria-label="Book offer">
+                <p class="conversion-offer__eyebrow">The complete guide</p>
+                <h2 class="conversion-final__title" data-offer-title>Practice the part that makes everything else easier</h2>
+                <p class="conversion-final__copy" data-offer-copy>Chapter 2 gives you a clear way to match pressure, pace, and rhythm so you have somewhere useful to begin when nerves take over.</p>
+                <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=article-final&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="article-final" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" class="conversion-button" data-offer-label>Preview the practice path</a>
+                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+            </aside>
+            <!-- PROOF_LED_FINAL_END -->
+</div>
                 <aside class="hidden lg:block">
                     <div class="toc">
                         <p class="text-gold text-sm font-medium uppercase tracking-wider mb-4">In This Article</p>
@@ -405,6 +396,14 @@
         }, { rootMargin: '-100px 0px -66%' });
         document.querySelectorAll('.article-content h2[id]').forEach(h2 => observer.observe(h2));
     </script>
-    <script src="/assets/conversion.js" defer></script>
+    <!-- PROOF_LED_MOBILE_START -->
+    <aside class="mobile-buy-bar js-offer" data-offer-placement="mobile-buy-bar" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" aria-label="Book preview" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>Chapter 2</strong><span data-mobile-offer-copy>See a real page</span></p>
+        <a href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=proof_led_rebuild&amp;utm_content=mobile-buy-bar&amp;offer_key=practice#practice" data-offer-link="true" data-offer-placement="mobile-buy-bar" data-offer-key="practice" data-offer-variant="A" data-article-slug="first-kiss-nerves-what-actually-matters" data-chapter-id="chapter-02" class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+    </aside>
+    <!-- PROOF_LED_MOBILE_END -->
+
+    <script src="/assets/offer-catalog.js?v=20260813" defer></script>
+    <script src="/assets/conversion.js?v=20260813" defer></script>
 </body>
 </html>
