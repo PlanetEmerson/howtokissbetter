@@ -368,6 +368,7 @@ body {
 
 .book-wordmark span {
     color: var(--conversion-gold);
+    margin-inline-start: 0.28em;
 }
 
 .book-nav {

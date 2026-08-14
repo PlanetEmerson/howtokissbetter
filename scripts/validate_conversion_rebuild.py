@@ -280,6 +280,7 @@ def validate_book(validation: Validation) -> Path:
     validation.require("countdown" not in page_html.lower(), "book page contains fake urgency")
     validation.require("payhip.com/b/dbMu6" in page_html, "book page is missing the Payhip product")
     validation.require("payhip.com/b/YyLMc" not in page_html, "book page still links to the retired Payhip product")
+    validation.require('<link rel="stylesheet" href="/assets/conversion.css?v=20260814a">' in page_html, "book stylesheet is missing")
     validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "book preview script is missing")
     validation.require('<script src="/assets/conversion.js?v=20260814" defer></script>' in page_html, "book conversion script is missing")
 
@@ -337,7 +338,8 @@ def validate_home(validation: Validation) -> Path:
     validation.require("payhip.com/b/YyLMc" not in page_html, "homepage still links to the retired Payhip product")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
     validation.require("PDF and EPUB" in page_html, "homepage FAQ schema is missing both delivery formats")
-    validation.require('<link rel="stylesheet" href="/assets/home.css?v=20260814">' in page_html, "homepage stylesheet is missing")
+    validation.require('<link rel="stylesheet" href="/assets/conversion.css?v=20260814a">' in page_html, "homepage conversion stylesheet is missing")
+    validation.require('<link rel="stylesheet" href="/assets/home.css?v=20260814a">' in page_html, "homepage stylesheet is missing")
     validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "homepage preview script is missing")
     validation.require('<script src="/assets/conversion.js?v=20260814" defer></script>' in page_html, "homepage conversion script is missing")
 

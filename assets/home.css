@@ -94,6 +94,7 @@ html {
 
 .home-wordmark span {
     color: var(--home-gold-light);
+    margin-inline-start: 0.28em;
 }
 
 .home-nav {
