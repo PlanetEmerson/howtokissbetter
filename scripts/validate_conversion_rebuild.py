@@ -392,7 +392,8 @@ def validate_site_safety(validation: Validation) -> None:
 
     forbidden = (
         "xkey" + "sib-",
-        "/Users/murph/howtokissbetter/" + "_pri" + "vate",
+        "/Us" + "ers/",
+        "/Us" + "ers/murph/howtokissbetter/" + "_pri" + "vate",
         "_pri" + "vate/keys.txt",
     )
     non_public_dirs = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}

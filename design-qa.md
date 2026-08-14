@@ -6,15 +6,15 @@ Final result: `passed`
 
 ### Source and implementation
 
-- Selected mobile direction: `/Users/murph/.codex/generated_images/019f811a-729d-7562-aa33-76e4ddd5beaa/exec-09775478-3c54-462f-98d2-e4c398d8e68c.png`
-- Final mobile implementation: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/01-home-mobile-390x844.png`
-- Exact side-by-side comparison: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/14-side-by-side-comparison.png`
-- Small-phone implementation: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/11-home-mobile-360x800.png`
-- Tablet implementation: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/12-home-tablet-768x1024.png`
-- Desktop implementation: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/09-home-desktop-1280x720.png`
-- Mobile look-inside viewer: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/03-preview-mobile-390x844.png`
-- Mobile pathway and sticky-control state: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/05-pathways-mobile-390x844.png`
-- Mobile final-sale and footer state: `/Users/murph/.codex/visualizations/2026/08/14/howtokissbetter-homepage-rebuild/08-final-mobile-390x844.png`
+- Selected mobile direction: `generated_images/019f811a-729d-7562-aa33-76e4ddd5beaa/exec-09775478-3c54-462f-98d2-e4c398d8e68c.png`
+- Final mobile implementation: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/01-home-mobile-390x844.png`
+- Exact side-by-side comparison: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/14-side-by-side-comparison.png`
+- Small-phone implementation: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/11-home-mobile-360x800.png`
+- Tablet implementation: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/12-home-tablet-768x1024.png`
+- Desktop implementation: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/09-home-desktop-1280x720.png`
+- Mobile look-inside viewer: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/03-preview-mobile-390x844.png`
+- Mobile pathway and sticky-control state: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/05-pathways-mobile-390x844.png`
+- Mobile final-sale and footer state: `visualizations/2026/08/14/howtokissbetter-homepage-rebuild/08-final-mobile-390x844.png`
 
 ### Comparison history
 
@@ -37,16 +37,16 @@ Final result: `passed`
 
 ## Source and implementation
 
-- Source mobile: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-conversion-audit/03-book-mobile-top.png`
-- Implementation mobile: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-390x844.png`
-- Combined mobile comparison: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/compare-mobile-old-new.png`
-- Source desktop: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-conversion-audit/07-book-desktop-top.png`
-- Implementation desktop: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-desktop-1440x900.png`
-- Combined desktop comparison: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/compare-desktop-old-new.png`
-- Article-offer implementation: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/article-offer-mobile-390x844.png`
-- Small-phone implementation: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-360x800.png`
-- Tablet implementation: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-tablet-768x1024.png`
-- Mobile sticky-control implementation: `/Users/murph/.codex/visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-sticky-390x844.png`
+- Source mobile: `visualizations/2026/08/13/howtokissbetter-conversion-audit/03-book-mobile-top.png`
+- Implementation mobile: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-390x844.png`
+- Combined mobile comparison: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/compare-mobile-old-new.png`
+- Source desktop: `visualizations/2026/08/13/howtokissbetter-conversion-audit/07-book-desktop-top.png`
+- Implementation desktop: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-desktop-1440x900.png`
+- Combined desktop comparison: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/compare-desktop-old-new.png`
+- Article-offer implementation: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/article-offer-mobile-390x844.png`
+- Small-phone implementation: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-360x800.png`
+- Tablet implementation: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-tablet-768x1024.png`
+- Mobile sticky-control implementation: `visualizations/2026/08/13/howtokissbetter-proof-led-rebuild/book-mobile-sticky-390x844.png`
 
 ## Review surface
 
