@@ -25,6 +25,7 @@ VALID_CLUSTERS = {
 VALID_CHAPTERS = {f"chapter-{number:02d}" for number in range(1, 17)}
 VALID_ANCHORS = VALID_CLUSTERS | {"look-inside"}
 BOOK_ANCHORS = (VALID_CLUSTERS - {"complete-guide"}) | {"look-inside"}
+HOME_ANCHORS = {"moment", "look-inside", "preview", "find-your-path", "pricing", "faq"}
 REQUIRED_OFFER_ATTRIBUTES = (
     "data-offer-placement",
     "data-offer-key",
@@ -204,8 +205,8 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
             f"{slug} canonical URL changed",
         )
         validation.require(
-            '<script src="/assets/offer-catalog.js?v=20260813" defer></script>' in page_html
-            and '<script src="/assets/conversion.js?v=20260813" defer></script>' in page_html,
+            '<script src="/assets/offer-catalog.js?v=20260814" defer></script>' in page_html
+            and '<script src="/assets/conversion.js?v=20260814" defer></script>' in page_html,
             f"{slug} conversion scripts are incomplete",
         )
 
@@ -279,8 +280,8 @@ def validate_book(validation: Validation) -> Path:
     validation.require("countdown" not in page_html.lower(), "book page contains fake urgency")
     validation.require("payhip.com/b/dbMu6" in page_html, "book page is missing the Payhip product")
     validation.require("payhip.com/b/YyLMc" not in page_html, "book page still links to the retired Payhip product")
-    validation.require('<script src="/assets/book-preview.js?v=20260813" defer></script>' in page_html, "book preview script is missing")
-    validation.require('<script src="/assets/conversion.js?v=20260813" defer></script>' in page_html, "book conversion script is missing")
+    validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "book preview script is missing")
+    validation.require('<script src="/assets/conversion.js?v=20260814" defer></script>' in page_html, "book conversion script is missing")
 
     hero_media = [
         ROOT / "assets/images/book-proof/cover-320.avif",
@@ -297,6 +298,64 @@ def validate_book(validation: Validation) -> Path:
     return page
 
 
+def validate_home(validation: Validation) -> Path:
+    page = ROOT / "index.html"
+    page_html = page.read_text()
+    collector = LinkCollector()
+    collector.feed(page_html)
+    anchors = set(collector.ids)
+
+    for anchor in HOME_ANCHORS:
+        validation.require(anchor in anchors, f"homepage is missing stable anchor #{anchor}")
+    validation.require(
+        '<body class="home-shell" data-page-kind="home" data-article-slug="homepage" data-offer-key="chemistry" data-chapter-id="chapter-12">'
+        in page_html,
+        "homepage analytics body contract is incomplete",
+    )
+    validation.require(
+        "Make the moment happen." in page_html and "Kiss better" in page_html,
+        "homepage hero promise changed",
+    )
+    validation.require("Look inside the $4.95 guide" in page_html, "homepage hero CTA is missing")
+    validation.equal(page_html.count('class="home-preview-card"'), 6, "homepage real preview card count")
+    validation.equal(page_html.count('data-home-pathway="'), 6, "homepage need-based pathway count")
+    validation.equal(page_html.count('class="moment-steps__number"'), 4, "homepage first-kiss step count")
+    validation.require(page_html.count("js-offer") >= 4, "homepage tracked offer surface count is incomplete")
+    validation.require("data-home-sticky" in page_html, "homepage mobile sticky purchase control is missing")
+    validation.require("data-home-hero-cta" in page_html, "homepage hero CTA marker is missing")
+    validation.require("homepage_moment_proof" in page_html, "homepage conversion campaign is missing")
+    validation.require("conversion_repair" not in page_html, "homepage still uses the stale conversion campaign")
+    validation.require("$9.99" not in page_html, "homepage contains the stale $9.99 price")
+    validation.require("exit-popup" not in page_html, "homepage still contains the automatic exit popup")
+    validation.require("section-fade" not in page_html, "homepage still contains opacity-gated sections")
+    validation.require("hero-bg-v2" not in page_html, "homepage still loads the old decorative hero image")
+    validation.require("data:image/svg+xml" not in page_html, "homepage still contains the emoji SVG favicon")
+    validation.require("Hollywood's kissing coach" not in page_html, "homepage contains an unsupported authority claim")
+    validation.require("reader said" not in page_html.lower(), "homepage contains an unsupported reader quote")
+    validation.require("data-countdown" not in page_html.lower(), "homepage contains fake urgency")
+    validation.require("payhip.com/b/dbMu6" in page_html, "homepage is missing the Payhip product")
+    validation.require("payhip.com/b/YyLMc" not in page_html, "homepage still links to the retired Payhip product")
+    validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
+    validation.require("PDF and EPUB" in page_html, "homepage FAQ schema is missing both delivery formats")
+    validation.require('<link rel="stylesheet" href="/assets/home.css?v=20260814">' in page_html, "homepage stylesheet is missing")
+    validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "homepage preview script is missing")
+    validation.require('<script src="/assets/conversion.js?v=20260814" defer></script>' in page_html, "homepage conversion script is missing")
+
+    hero_media = [
+        ROOT / "assets/images/book-proof/cover-320.avif",
+        ROOT / "assets/images/book-proof/commandments-title-480.avif",
+        ROOT / "assets/images/book-proof/mirror-technique-480.avif",
+    ]
+    for asset in hero_media:
+        validation.require(asset.exists(), f"missing homepage hero proof asset {asset.relative_to(ROOT)}")
+    existing = [asset for asset in hero_media if asset.exists()]
+    validation.require(sum(asset.stat().st_size for asset in existing) < 500_000, "initial homepage proof media exceeds 500 KB")
+    cover = ROOT / "assets/images/book-proof/cover-320.avif"
+    if cover.exists():
+        validation.require(cover.stat().st_size < 200_000, "homepage mobile hero cover exceeds 200 KB")
+    return page
+
+
 def validate_tracking_contract(validation: Validation) -> None:
     source = (ROOT / "assets" / "conversion.js").read_text()
     validation.require('id: "dbMu6"' in source, "tracking script has the wrong Payhip product ID")
@@ -307,6 +366,7 @@ def validate_tracking_contract(validation: Validation) -> None:
         "view_item",
         "preview_open",
         "book_pathway_select",
+        "home_pathway_select",
         "begin_checkout",
         "generate_lead",
     ):
@@ -318,7 +378,9 @@ def validate_tracking_contract(validation: Validation) -> None:
     validation.require('window.localStorage' in source, "persistent first-party storage is missing")
     validation.require('window.sessionStorage' in source, "session impression dedupe is missing")
     validation.require('classList.contains("mobile-buy-bar")' in source, "mobile buy bar impression branch is missing")
+    validation.require('classList.contains("home-sticky-buy")' in source, "homepage sticky impression branch is missing")
     validation.require('document.body.classList.toggle("has-book-sticky", visible)' in source, "book sticky body state is missing")
+    validation.require('document.body.classList.toggle("has-home-sticky", visible)' in source, "homepage sticky body state is missing")
     mobile_function = source[source.index("function setupMobileBuyBar"):source.index("function requestedOfferKey")]
     validation.require("has-book-sticky" not in mobile_function, "article mobile bar leaks the book sticky body state")
 
@@ -371,6 +433,7 @@ def main() -> None:
     catalog = load_catalog()
     article_pages = validate_articles(validation, catalog)
     book_page = validate_book(validation)
+    home_page = validate_home(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)
     validate_override_failures(validation)
@@ -379,6 +442,7 @@ def main() -> None:
         article_pages
         + [
             book_page,
+            home_page,
             ROOT / "free-chapter-confirmed/index.html",
             ROOT / "blog/index.html",
         ],

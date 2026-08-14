@@ -155,7 +155,7 @@
         }, { threshold: [0.35] });
 
         offers.forEach(function (offer) {
-            if (!offer.classList.contains("mobile-buy-bar")) {
+            if (!offer.classList.contains("mobile-buy-bar") && !offer.classList.contains("home-sticky-buy")) {
                 observer.observe(offer);
             }
         });
@@ -236,6 +236,30 @@
         });
     }
 
+    function bindPayhipCheckouts(offerKey) {
+        document.querySelectorAll("[data-payhip-checkout]").forEach(function (button) {
+            if (button.dataset.checkoutBound === "true") {
+                return;
+            }
+            button.dataset.checkoutBound = "true";
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                sendEvent("begin_checkout", {
+                    currency: PRODUCT.currency,
+                    value: PRODUCT.price,
+                    button_placement: button.dataset.checkoutPlacement || "book-page",
+                    offer_key: button.dataset.offerKey || offerKey,
+                    items: productItems()
+                });
+                if (window.Payhip && window.Payhip.Checkout) {
+                    window.Payhip.Checkout.open({ product: PRODUCT.id });
+                } else {
+                    window.location.href = button.href;
+                }
+            });
+        });
+    }
+
     function setupBookPage() {
         if (document.body.dataset.pageKind !== "book") {
             return;
@@ -262,23 +286,7 @@
             items: productItems()
         });
 
-        document.querySelectorAll("[data-payhip-checkout]").forEach(function (button) {
-            button.addEventListener("click", function (event) {
-                event.preventDefault();
-                sendEvent("begin_checkout", {
-                    currency: PRODUCT.currency,
-                    value: PRODUCT.price,
-                    button_placement: button.dataset.checkoutPlacement || "book-page",
-                    offer_key: offerKey,
-                    items: productItems()
-                });
-                if (window.Payhip && window.Payhip.Checkout) {
-                    window.Payhip.Checkout.open({ product: PRODUCT.id });
-                } else {
-                    window.location.href = button.href;
-                }
-            });
-        });
+        bindPayhipCheckouts(offerKey);
 
         document.querySelectorAll("[data-preview-open]").forEach(function (button) {
             button.addEventListener("click", function (event) {
@@ -306,6 +314,80 @@
                     chapter_id: button.dataset.chapterId || "chapter-01"
                 });
             });
+        });
+    }
+
+    function setupHomePage() {
+        if (document.body.dataset.pageKind !== "home") {
+            return;
+        }
+
+        var offerKey = document.body.dataset.offerKey || "complete-guide";
+        document.body.classList.add("is-enhanced");
+        bindPayhipCheckouts("complete-guide");
+
+        document.querySelectorAll("[data-preview-open]").forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                openPreview(
+                    button.dataset.previewOpen || "contents-one",
+                    button.dataset.previewSource || "home-page",
+                    offerKey
+                );
+            });
+        });
+
+        document.querySelectorAll("[data-home-pathway]").forEach(function (link) {
+            link.addEventListener("click", function () {
+                sendEvent("home_pathway_select", {
+                    offer_key: link.dataset.homePathway,
+                    chapter_id: link.dataset.chapterId || "chapter-01"
+                });
+            });
+        });
+    }
+
+    function setupHomeStickyBar() {
+        if (document.body.dataset.pageKind !== "home") {
+            return;
+        }
+        var bar = document.querySelector("[data-home-sticky]");
+        var heroButton = document.querySelector("[data-home-hero-cta]");
+        var link = bar && bar.querySelector("a");
+        var visibleBefore = false;
+        if (!bar || !heroButton || !link) {
+            return;
+        }
+
+        function updateStickyBar() {
+            var mobileViewport = window.matchMedia("(max-width: 767px)").matches;
+            var heroPassed = heroButton.getBoundingClientRect().bottom < 0;
+            var footer = document.querySelector(".home-footer");
+            var footerNear = footer && footer.getBoundingClientRect().top < window.innerHeight + 72;
+            var previewOpen = Boolean(document.querySelector("[data-preview-viewer][open]"));
+            var visible = mobileViewport && heroPassed && !footerNear && !previewOpen;
+
+            bar.classList.toggle("is-visible", visible);
+            document.body.classList.toggle("has-home-sticky", visible);
+            bar.setAttribute("aria-hidden", visible ? "false" : "true");
+            link.tabIndex = visible ? 0 : -1;
+            if (visible && !visibleBefore) {
+                trackOfferView(bar);
+            }
+            visibleBefore = visible;
+        }
+
+        updateStickyBar();
+        window.addEventListener("scroll", updateStickyBar, { passive: true });
+        window.addEventListener("resize", updateStickyBar);
+        var preview = document.querySelector("[data-preview-viewer]");
+        if (preview) {
+            preview.addEventListener("close", updateStickyBar);
+        }
+        document.addEventListener("click", function (event) {
+            if (event.target.closest("[data-preview-open], [data-preview-close]")) {
+                window.setTimeout(updateStickyBar, 0);
+            }
         });
     }
 
@@ -420,6 +502,8 @@
         setupMobileBuyBar();
         setupBookPage();
         setupBookStickyBar();
+        setupHomePage();
+        setupHomeStickyBar();
         trackConfirmedLead();
         rememberFormSource();
         setupExitPopup();

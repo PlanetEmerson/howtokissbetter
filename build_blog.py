@@ -30,7 +30,7 @@ SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
-ASSET_VERSION = "20260813"
+ASSET_VERSION = "20260814"
 
 VALID_CHAPTER_IDS = {f"chapter-{chapter:02d}" for chapter in range(1, 17)}
 CHAPTER_TITLES = {
