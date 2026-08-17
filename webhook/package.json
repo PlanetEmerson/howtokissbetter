@@ -1,0 +1,12 @@
+{
+  "name": "how-to-kiss-better-payhip-ga4-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
