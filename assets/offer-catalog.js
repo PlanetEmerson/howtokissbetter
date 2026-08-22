@@ -638,6 +638,28 @@ window.KPN_OFFER_CATALOG = {
       "title": "Turn one useful answer into a complete system"
     }
   },
+  "/blog/how-to-kiss-with-a-tongue-piercing/": {
+    "article_slug": "how-to-kiss-with-a-tongue-piercing",
+    "article_title": "How to Kiss With a Tongue Piercing (Without the Clack)",
+    "chapter_id": "chapter-03",
+    "chapter_label": "Chapter 3",
+    "chapter_title": "The Art of Discipline",
+    "image": "/assets/images/book-proof/mirror-technique-480.webp",
+    "image_alt": "A real technique lesson from Kiss Perfect Now",
+    "offer_key": "technique",
+    "preview_anchor": "technique",
+    "preview_id": "mirror-technique",
+    "variant_a": {
+      "copy": "Chapter 3 turns restraint, pauses, and small changes in pressure into a method you can follow instead of a list of loose tips.",
+      "label": "Preview the technique path",
+      "title": "See how pressure, pace, and rhythm fit together"
+    },
+    "variant_b": {
+      "copy": "Get 183 pages and 16 chapters on pressure, pace, hands, confidence, consent, and connection. PDF and EPUB arrive through Payhip after checkout.",
+      "label": "See everything in the $4.95 book",
+      "title": "Turn one useful answer into a complete system"
+    }
+  },
   "/blog/how-to-kiss-with-braces/": {
     "article_slug": "how-to-kiss-with-braces",
     "article_title": "How to Kiss with Braces: The Complete Guide (No Awkwardness Required)",
@@ -1455,6 +1477,28 @@ window.KPN_OFFER_CATALOG = {
   "/blog/what-does-a-kiss-on-the-head-mean/": {
     "article_slug": "what-does-a-kiss-on-the-head-mean",
     "article_title": "What Does a Kiss on the Head Mean? (The Quietest I Love You)",
+    "chapter_id": "chapter-11",
+    "chapter_label": "Chapter 11",
+    "chapter_title": "Passion Is as Passion Does",
+    "image": "/assets/images/book-proof/contents-two-480.webp",
+    "image_alt": "The second contents page from Kiss Perfect Now",
+    "offer_key": "relationship",
+    "preview_anchor": "relationship",
+    "preview_id": "contents-two",
+    "variant_a": {
+      "copy": "Chapter 11 focuses on attention, variety, and the small choices that keep kissing from turning into an automatic part of the day.",
+      "label": "Preview the relationship path",
+      "title": "Bring intent back to familiar kisses"
+    },
+    "variant_b": {
+      "copy": "Get 183 pages and 16 chapters on pressure, pace, hands, confidence, consent, and connection. PDF and EPUB arrive through Payhip after checkout.",
+      "label": "See everything in the $4.95 book",
+      "title": "Turn one useful answer into a complete system"
+    }
+  },
+  "/blog/what-does-a-lingering-kiss-mean/": {
+    "article_slug": "what-does-a-lingering-kiss-mean",
+    "article_title": "What Does a Lingering Kiss Mean? (And How to Give One)",
     "chapter_id": "chapter-11",
     "chapter_label": "Chapter 11",
     "chapter_title": "Passion Is as Passion Does",

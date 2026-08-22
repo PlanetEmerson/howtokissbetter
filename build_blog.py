@@ -1422,6 +1422,7 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
             "slug": slug,
             "date": date_formatted,
             "category": category,
+            "category_slug": slugify_category(category),
             "tags": tags if isinstance(tags, list) else [tags],
         },
     )

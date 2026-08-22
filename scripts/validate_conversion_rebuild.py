@@ -166,9 +166,16 @@ def validate_local_links(validation: Validation, pages: list[Path]) -> None:
 def validate_articles(validation: Validation, catalog: dict[str, dict[str, object]]) -> list[Path]:
     posts = json.loads((BLOG / "posts.json").read_text())
     routes = [f"/blog/{post['slug']}/" for post in posts]
-    validation.equal(len(posts), 85, "article manifest count")
-    validation.equal(len(set(routes)), 85, "unique article route count")
+    validation.equal(len(posts), 87, "article manifest count")
+    validation.equal(len(set(routes)), 87, "unique article route count")
     validation.equal(set(catalog), set(routes), "offer catalog route set")
+    for post in posts:
+        expected_category_slug = str(post["category"]).lower().replace(" ", "-")
+        validation.equal(
+            post.get("category_slug"),
+            expected_category_slug,
+            f"{post['slug']} manifest category slug",
+        )
 
     article_pages: list[Path] = []
     for post in posts:
