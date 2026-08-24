@@ -13,7 +13,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (87 posts)
+- /blog/ — Full article index (88 posts)
 
 ## Techniques (17 articles)
 
@@ -56,10 +56,11 @@ Initiating, timing, nerves, reading signals, and first-kiss mechanics.
 - /blog/how-to-kiss-someone-for-the-first-time/ — How to Kiss Someone for the First Time: The Only Guide You'll Need
 - /blog/first-kiss-nerves-what-actually-matters/ — First Kiss Nerves Are Normal: Here's What Actually Matters
 
-## Relationships (18 articles)
+## Relationships (19 articles)
 
 Kissing inside real relationships, kiss meanings, and keeping chemistry alive.
 
+- /blog/what-does-a-kiss-on-the-lips-mean/ — What Does a Kiss on the Lips Mean? Read the Context
 - /blog/what-does-a-lingering-kiss-mean/ — What Does a Lingering Kiss Mean? (And How to Give One)
 - /blog/what-does-a-neck-kiss-mean/ — What Does a Neck Kiss Mean? (It's Never Just Friendly)
 - /blog/what-does-a-kiss-on-the-head-mean/ — What Does a Kiss on the Head Mean? (The Quietest I Love You)
