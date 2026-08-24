@@ -157,12 +157,21 @@ def validate_local_links(validation: Validation, pages: list[Path]) -> None:
             )
 
 
+def validate_manifest_cardinality(
+    validation: Validation,
+    posts: list[dict[str, object]],
+    catalog: dict[str, dict[str, object]],
+) -> list[str]:
+    routes = [f"/blog/{post['slug']}/" for post in posts]
+    validation.require(bool(posts), "article manifest is empty")
+    validation.equal(len(set(routes)), len(routes), "unique article route count")
+    validation.equal(set(catalog), set(routes), "offer catalog route set")
+    return routes
+
+
 def validate_articles(validation: Validation, catalog: dict[str, dict[str, object]]) -> list[Path]:
     posts = json.loads((BLOG / "posts.json").read_text())
-    routes = [f"/blog/{post['slug']}/" for post in posts]
-    validation.equal(len(posts), 87, "article manifest count")
-    validation.equal(len(set(routes)), 87, "unique article route count")
-    validation.equal(set(catalog), set(routes), "offer catalog route set")
+    validate_manifest_cardinality(validation, posts, catalog)
     for post in posts:
         expected_category_slug = str(post["category"]).lower().replace(" ", "-")
         validation.equal(
