@@ -7,7 +7,7 @@
         price: 4.95,
         currency: "USD"
     };
-    var OFFER_VARIANT_KEY = "kpn_offer_variant_v1";
+    var MOBILE_OFFER_VARIANT_KEY = "kpn_mobile_offer_variant_v1";
     var LEAD_EVENT_KEY = "kpn_generate_lead_v2";
     var OFFER_IMPRESSION_PREFIX = "kpn_offer_impression_v2:";
     var VALID_OFFER_KEYS = [
@@ -50,56 +50,61 @@
     }
 
     function assignedVariant() {
-        var existing = safeStorage(window.localStorage, "getItem", OFFER_VARIANT_KEY);
-        if (existing === "A" || existing === "B") {
+        var existing = safeStorage(window.localStorage, "getItem", MOBILE_OFFER_VARIANT_KEY);
+        if (existing === "control" || existing === "treatment") {
             return existing;
         }
 
-        var generated = "A";
+        var generated = "control";
         if (window.crypto && window.crypto.getRandomValues) {
             var randomValue = new Uint32Array(1);
             window.crypto.getRandomValues(randomValue);
-            generated = randomValue[0] % 2 === 0 ? "A" : "B";
+            generated = randomValue[0] % 2 === 0 ? "control" : "treatment";
         } else {
-            generated = Math.random() < 0.5 ? "A" : "B";
+            generated = Math.random() < 0.5 ? "control" : "treatment";
         }
-        safeStorage(window.localStorage, "setItem", OFFER_VARIANT_KEY, generated);
+        safeStorage(window.localStorage, "setItem", MOBILE_OFFER_VARIANT_KEY, generated);
         return generated;
     }
 
-    function currentCatalogOffer() {
-        var catalog = window.KPN_OFFER_CATALOG || {};
-        return catalog[window.location.pathname] || null;
-    }
-
-    function applyVariantToArticles() {
+    function applyMobileOfferExperiment() {
         if (document.body.dataset.pageKind !== "article") {
             return;
         }
-        var offer = currentCatalogOffer();
         var variant = assignedVariant();
-        if (!offer) {
-            return;
-        }
-
-        var content = variant === "B" ? offer.variant_b : offer.variant_a;
-        document.querySelectorAll("[data-offer-title]").forEach(function (node) {
-            node.textContent = content.title;
-        });
-        document.querySelectorAll("[data-offer-copy]").forEach(function (node) {
-            node.textContent = content.copy;
-        });
-        document.querySelectorAll("[data-offer-label]").forEach(function (node) {
-            node.textContent = content.label;
-        });
         document.querySelectorAll("[data-offer-variant]").forEach(function (node) {
-            node.dataset.offerVariant = variant;
+            if (node.closest(".mobile-buy-bar")) {
+                node.dataset.offerVariant = variant;
+            } else {
+                node.dataset.offerVariant = "not-applicable";
+            }
         });
 
+        var mobileBar = document.querySelector(".mobile-buy-bar");
+        var mobileTitle = document.querySelector("[data-mobile-offer-title]");
         var mobileCopy = document.querySelector("[data-mobile-offer-copy]");
-        if (mobileCopy && variant === "B") {
-            mobileCopy.textContent = "183 pages for $4.95";
+        var mobileLink = mobileBar && mobileBar.querySelector("a");
+        if (variant === "treatment") {
+            if (mobileBar) {
+                mobileBar.setAttribute("aria-label", "Book offer");
+            }
+            if (mobileTitle) {
+                mobileTitle.textContent = "183-page kissing guide";
+            }
+            if (mobileCopy) {
+                mobileCopy.textContent = "PDF + EPUB · $4.95";
+            }
+            if (mobileLink) {
+                mobileLink.textContent = "See the guide";
+            }
         }
+    }
+
+    function offerVariant(element) {
+        if (element.dataset.offerPlacement !== "mobile-buy-bar") {
+            return "not-applicable";
+        }
+        return element.dataset.offerVariant || assignedVariant();
     }
 
     function offerPayload(element) {
@@ -111,7 +116,7 @@
             placement: element.dataset.offerPlacement || "unknown",
             offer_key: element.dataset.offerKey || document.body.dataset.offerKey || "complete-guide",
             chapter_id: element.dataset.chapterId || document.body.dataset.chapterId || "chapter-01",
-            variant: element.dataset.offerVariant || assignedVariant()
+            variant: offerVariant(element)
         };
     }
 
@@ -496,7 +501,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        applyVariantToArticles();
+        applyMobileOfferExperiment();
         bindOfferClicks();
         trackOfferViews();
         setupMobileBuyBar();
