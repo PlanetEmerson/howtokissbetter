@@ -1,8 +1,9 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
+
+import { clientIdFor, postGaEvents, validGaEnvironment } from "./ga4.js";
 
 const MAX_BODY_BYTES = 65_536;
 const MAX_ITEMS = 50;
-const GA_ENDPOINT = "https://www.google-analytics.com/mp/collect";
 
 class SaleValidationError extends Error {
   constructor(status) {
@@ -80,11 +81,6 @@ export function validatePayhipSale(payload, expectedSignature) {
   };
 }
 
-function clientIdFor(transactionId) {
-  const digest = createHash("sha256").update(transactionId, "utf8").digest();
-  return `${digest.readUInt32BE(0)}.${digest.readUInt32BE(4)}`;
-}
-
 export function buildGaPurchase(sale) {
   return {
     client_id: clientIdFor(sale.id),
@@ -105,13 +101,7 @@ export function buildGaPurchase(sale) {
 }
 
 function validEnvironment(env) {
-  return (
-    env
-    && /^G-[A-Z0-9]+$/.test(env.GA_MEASUREMENT_ID || "")
-    && typeof env.GA_API_SECRET === "string"
-    && env.GA_API_SECRET.length > 0
-    && isHexSignature(env.PAYHIP_SIGNATURE_SHA256)
-  );
+  return validGaEnvironment(env) && isHexSignature(env.PAYHIP_SIGNATURE_SHA256);
 }
 
 export function createPayhipHandler({ env, fetchImpl = fetch }) {
@@ -144,22 +134,7 @@ export function createPayhipHandler({ env, fetchImpl = fetch }) {
       return { status, body: { ok: false } };
     }
 
-    const query = new URLSearchParams({
-      measurement_id: env.GA_MEASUREMENT_ID,
-      api_secret: env.GA_API_SECRET,
-    });
-
-    try {
-      const response = await fetchImpl(`${GA_ENDPOINT}?${query}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(buildGaPurchase(sale)),
-        signal: AbortSignal.timeout(8_000),
-      });
-      if (!response.ok) {
-        return { status: 502, body: { ok: false } };
-      }
-    } catch {
+    if (!(await postGaEvents(env, fetchImpl, buildGaPurchase(sale)))) {
       return { status: 502, body: { ok: false } };
     }
 
