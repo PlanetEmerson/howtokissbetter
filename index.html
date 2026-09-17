@@ -24,7 +24,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>How to Be a Better Kisser | First Kiss Help and Practical Kissing Advice</title>
-    <meta name="description" content="Learn how to make a first kiss happen, read the signal, move closer, and kiss with better pressure, pace, hands, and rhythm. Read free guides or look inside the $4.95 book.">
+    <meta name="description" content="Learn how to make a first kiss happen, read the signal, move closer, and kiss with better pressure, pace, hands, and rhythm. Read free guides or look inside the $9.99 book.">
     <meta name="keywords" content="how to kiss, how to make the first kiss happen, first kiss tips, how to be a better kisser, kissing techniques, kissing guide, kissing book">
     <meta name="author" content="C.J. McKenna">
     <meta name="robots" content="index, follow">
@@ -47,8 +47,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css?v=20260814a">
-    <link rel="stylesheet" href="/assets/home.css?v=20260814a">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260918">
+    <link rel="stylesheet" href="/assets/home.css?v=20260918">
 
     <script type="application/ld+json">
     {
@@ -77,8 +77,8 @@
                 "bookFormat": "https://schema.org/EBook",
                 "offers": {
                     "@type": "Offer",
-                    "url": "https://payhip.com/b/dbMu6",
-                    "price": "4.95",
+                    "url": "https://howtokissbetter.com/book/",
+                    "price": "9.99",
                     "priceCurrency": "USD",
                     "availability": "https://schema.org/InStock"
                 }
@@ -104,7 +104,7 @@
                 "name": "Can I read the book on my phone?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. You receive PDF and EPUB files through Payhip and can read them on a phone, tablet, e-reader app, or computer."
+                    "text": "Yes. You receive PDF and EPUB files on your download page and by email, and can read them on a phone, tablet, e-reader app, or computer."
                 }
             },
             {
@@ -128,7 +128,7 @@
                 "name": "How does delivery work?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Payhip provides the PDF and EPUB on the download page after checkout and sends a receipt email with access to the files."
+                    "text": "Instant download page after payment, plus an email with your permanent link. Checkout is handled by Stripe."
                 }
             }
         ]
@@ -146,7 +146,14 @@
                 <a href="#moment">First-kiss help</a>
                 <a href="#look-inside">Look inside</a>
                 <a href="/blog/">Free guides</a>
-                <a class="home-nav__buy" href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="home-nav">Get the book: $4.95</a>
+                <form method="post" action="https://how-to-kiss-better-payhip-ga4.vercel.app/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="home-nav" data-offer-key="complete-guide" data-offer-variant="not-applicable" data-article-slug="homepage" data-chapter-id="chapter-01">
+                    <input type="hidden" name="product" value="book">
+                    <input type="hidden" name="src" value="homepage">
+                    <input type="hidden" name="placement" value="home-nav">
+                    <input type="hidden" name="entry" value="home">
+                    <input type="hidden" name="cancel" value="/">
+                    <button type="submit" class="home-nav__buy">Get the book · $9.99</button>
+                </form>
             </nav>
             <details class="home-menu">
                 <summary>Menu</summary>
@@ -154,7 +161,14 @@
                     <a href="#moment">First-kiss help</a>
                     <a href="#look-inside">Look inside</a>
                     <a href="/blog/">Free guides</a>
-                    <a href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="home-mobile-menu">Get the book: $4.95</a>
+                    <form method="post" action="https://how-to-kiss-better-payhip-ga4.vercel.app/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="home-menu" data-offer-key="complete-guide" data-offer-variant="not-applicable" data-article-slug="homepage" data-chapter-id="chapter-01">
+                        <input type="hidden" name="product" value="book">
+                        <input type="hidden" name="src" value="homepage">
+                        <input type="hidden" name="placement" value="home-menu">
+                        <input type="hidden" name="entry" value="home">
+                        <input type="hidden" name="cancel" value="/">
+                        <button type="submit">Get the book · $9.99</button>
+                    </form>
                 </nav>
             </details>
         </div>
@@ -182,7 +196,7 @@
                             data-offer-key="chemistry"
                             data-offer-variant="moment-proof"
                             data-article-slug="homepage"
-                            data-chapter-id="chapter-12">Look inside the $4.95 guide</a>
+                            data-chapter-id="chapter-12">Look inside the $9.99 guide</a>
                         <a class="home-text-link" href="#moment">Start with first-kiss help</a>
                     </div>
 
@@ -214,7 +228,7 @@
                     </picture>
                 </div>
 
-                <p class="home-hero__assurance">Secure Payhip checkout <span aria-hidden="true">·</span> Read on any device</p>
+                <p class="home-hero__assurance">Secure checkout by Stripe <span aria-hidden="true">·</span> Read on any device</p>
             </div>
         </section>
 
@@ -418,15 +432,23 @@
                     <p class="book-facts-copy__lede">You do not need a hundred moves to memorize. You need a clear way to read the moment and respond to the person in front of you.</p>
                     <dl class="book-facts-list">
                         <div><dt>What you get</dt><dd>183 pages, 16 chapters, PDF and EPUB</dd></div>
-                        <div><dt>How it arrives</dt><dd>Instant download page and receipt email from Payhip</dd></div>
+                        <div><dt>How it arrives</dt><dd>Instant download page after payment, plus an email with your permanent link</dd></div>
                         <div><dt>Where it works</dt><dd>Phone, tablet, e-reader app, or computer</dd></div>
                         <div><dt>If it is not right</dt><dd>Email me. I will make it right.</dd></div>
                     </dl>
                     <div class="book-facts-actions">
-                        <a class="home-button home-button--primary" href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="home-book-facts">Get the complete book: $4.95</a>
+                        <form method="post" action="https://how-to-kiss-better-payhip-ga4.vercel.app/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="home-book-facts" data-offer-key="complete-guide" data-offer-variant="not-applicable" data-article-slug="homepage" data-chapter-id="chapter-01">
+                            <input type="hidden" name="product" value="book">
+                            <input type="hidden" name="src" value="homepage">
+                            <input type="hidden" name="placement" value="home-book-facts">
+                            <input type="hidden" name="entry" value="home">
+                            <input type="hidden" name="cancel" value="/">
+                            <button type="submit" class="home-button home-button--primary">Get the complete book · $9.99</button>
+                        </form>
                         <a class="home-text-link" href="/book/?utm_source=howtokissbetter&amp;utm_medium=site&amp;utm_campaign=homepage_moment_proof&amp;utm_content=book_facts&amp;offer_key=complete-guide#look-inside"
                             data-offer-link data-offer-placement="home-book-facts" data-offer-key="complete-guide" data-offer-variant="moment-proof" data-article-slug="homepage" data-chapter-id="chapter-01">Read the full book page</a>
                     </div>
+                    <p class="author-note">Secure checkout by Stripe. Apple Pay, Google Pay, Link, or card. Sold by Blynk Studio, the studio behind How to Kiss Better.</p>
                     <p class="author-note"><strong>About the author:</strong> C.J. McKenna wrote <cite>Kiss Perfect Now</cite> around one idea: a kiss feels better when you pay close attention to the person in front of you.</p>
                 </div>
             </div>
@@ -468,7 +490,7 @@
                     </details>
                     <details>
                         <summary>Can I read it on my phone?</summary>
-                        <p>Yes. You receive PDF and EPUB files through Payhip and can read them on a phone, tablet, e-reader app, or computer.</p>
+                        <p>Yes. You receive PDF and EPUB files on your download page and by email, and can read them on a phone, tablet, e-reader app, or computer.</p>
                     </details>
                     <details>
                         <summary>Is the guide only for a first kiss?</summary>
@@ -480,7 +502,7 @@
                     </details>
                     <details>
                         <summary>How does delivery work?</summary>
-                        <p>Payhip provides the PDF and EPUB on the download page after checkout and sends a receipt email with access to the files.</p>
+                        <p>Instant download page after payment, plus an email with your permanent link. Checkout is handled by Stripe.</p>
                     </details>
                 </div>
             </div>
@@ -496,8 +518,16 @@
                 <p class="home-kicker">Ready when you are</p>
                 <h2 id="final-title">The next kiss does not need to feel like a test.</h2>
                 <p>Read it before the date. Revisit it before the moment. Keep the parts that help you stay present when you are this close.</p>
-                <a class="home-button home-button--primary" href="https://payhip.com/b/dbMu6" data-payhip-checkout data-checkout-placement="home-final">Get Kiss Perfect Now: $4.95</a>
-                <p class="home-final__assurance">183 pages <span aria-hidden="true">·</span> 16 chapters <span aria-hidden="true">·</span> PDF + EPUB <span aria-hidden="true">·</span> Instant Payhip delivery</p>
+                <form method="post" action="https://how-to-kiss-better-payhip-ga4.vercel.app/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="home-final" data-offer-key="complete-guide" data-offer-variant="not-applicable" data-article-slug="homepage" data-chapter-id="chapter-01">
+                    <input type="hidden" name="product" value="book">
+                    <input type="hidden" name="src" value="homepage">
+                    <input type="hidden" name="placement" value="home-final">
+                    <input type="hidden" name="entry" value="home">
+                    <input type="hidden" name="cancel" value="/">
+                    <button type="submit" class="home-button home-button--primary">Get Kiss Perfect Now · $9.99</button>
+                </form>
+                <p class="home-final__assurance">183 pages <span aria-hidden="true">·</span> 16 chapters <span aria-hidden="true">·</span> PDF + EPUB <span aria-hidden="true">·</span> Instant download</p>
+                <p class="home-final__assurance">Secure checkout by Stripe. Apple Pay, Google Pay, Link, or card. Sold by Blynk Studio, the studio behind How to Kiss Better.</p>
             </div>
         </section>
     </main>
@@ -541,16 +571,14 @@
         data-chapter-id="chapter-01"
         aria-hidden="true">
         <p><strong>Kiss Perfect Now</strong><span>PDF + EPUB</span></p>
-        <a href="https://payhip.com/b/dbMu6"
-            data-payhip-checkout
-            data-checkout-placement="home-mobile-sticky"
-            data-offer-link
-            data-offer-placement="home-mobile-sticky"
-            data-offer-key="complete-guide"
-            data-offer-variant="moment-proof"
-            data-article-slug="homepage"
-            data-chapter-id="chapter-01"
-            tabindex="-1">Get it: $4.95</a>
+        <form method="post" action="https://how-to-kiss-better-payhip-ga4.vercel.app/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="home-mobile-sticky" data-offer-key="complete-guide" data-offer-variant="not-applicable" data-article-slug="homepage" data-chapter-id="chapter-01">
+            <input type="hidden" name="product" value="book">
+            <input type="hidden" name="src" value="homepage">
+            <input type="hidden" name="placement" value="home-mobile-sticky">
+            <input type="hidden" name="entry" value="home">
+            <input type="hidden" name="cancel" value="/">
+            <button type="submit" tabindex="-1">Get it · $9.99</button>
+        </form>
     </aside>
 
     <dialog class="book-preview-dialog" data-preview-viewer aria-labelledby="preview-dialog-title">
@@ -573,8 +601,7 @@
         </div>
     </dialog>
 
-    <script src="https://payhip.com/payhip.js" defer></script>
     <script src="/assets/book-preview.js?v=20260814" defer></script>
-    <script src="/assets/conversion.js?v=20260824" defer></script>
+    <script src="/assets/conversion.js?v=20260918" defer></script>
 </body>
 </html>

@@ -97,7 +97,7 @@
             "name": "How to Kiss Better",
             "url": "https://howtokissbetter.com"
         },
-        "dateModified": "2026-07-26"
+        "dateModified": "2026-09-18"
     }
     </script>
 </head>
@@ -129,7 +129,7 @@
             </div>
 
             <h1 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-cream mb-4">Privacy Policy</h1>
-            <p class="text-gray-400 mb-8">Last updated: July 26, 2026</p>
+            <p class="text-gray-400 mb-8">Last updated: September 18, 2026</p>
 
             <div class="legal-content">
                 <p>This Privacy Policy explains how How to Kiss Better collects and uses information when you visit the site, join the email list, or purchase <a href="/book/">Kiss Perfect Now</a> by C.J. McKenna.</p>
@@ -137,7 +137,8 @@
                 <h2>Information We Collect</h2>
                 <p>We collect information you provide directly to us, including:</p>
                 <ul>
-                    <li><strong>Purchase Information:</strong> When you buy Kiss Perfect Now, our payment processor (Payhip) collects your name, email address, and payment details. We receive your name and email to deliver your purchase.</li>
+                    <li><strong>Purchase Information:</strong> When you buy Kiss Perfect Now, our payment processor (Stripe) collects your email address and payment details at checkout. We keep no copy of your card data. We receive your email address to send your download link. The order record on Stripe carries a short letter code for quiz answers when applicable. Orders placed through Payhip before September 2026 stay with Payhip, which collected your name, email address, and payment details.</li>
+                    <li><strong>Download Access:</strong> After a purchase, your browser keeps an unlock token in local storage so your download page can reopen without the payment link. Clearing your browser storage removes it; the link in your email keeps working.</li>
                     <li><strong>Email List Information:</strong> When you request the free chapter, Brevo collects your email address. You must click the confirmation link before Brevo adds you to the list.</li>
                     <li><strong>Contact Information:</strong> If you email us or contact us through the website, we collect your email address and any information you choose to provide.</li>
                 </ul>
@@ -156,7 +157,8 @@
                 <h2>Information Sharing</h2>
                 <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:</p>
                 <ul>
-                    <li><strong>Payment Processing:</strong> We use Payhip to process payments. Their privacy policy governs how they handle your payment information.</li>
+                    <li><strong>Payment Processing:</strong> We use Stripe to process payments. Their privacy policy governs how they handle your payment information. Payhip remains the processor for orders placed before September 2026 while those download links stay live.</li>
+                    <li><strong>Download Service:</strong> We use Vercel to host the download service and to store the book files privately. It receives your order id when you open your download page and nothing else about you.</li>
                     <li><strong>Email Delivery:</strong> We use Brevo to collect confirmed email signups, send the free chapter, and send email updates. Every marketing email includes an unsubscribe link.</li>
                     <li><strong>Site Analytics:</strong> We use Google Analytics to understand page visits, book offer clicks, confirmed leads, checkout starts, and purchases. This data helps us find broken steps and improve the site.</li>
                     <li><strong>Legal Requirements:</strong> We may disclose information if required by law or to protect our rights.</li>
@@ -166,7 +168,7 @@
                 <p>We implement appropriate security measures to protect your personal information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.</p>
 
                 <h2>Cookies and Analytics</h2>
-                <p>Google Analytics may use cookies or similar storage to measure site use. Brevo and Payhip may use their own storage when you open a form or checkout. You can limit cookies in your browser settings.</p>
+                <p>Google Analytics may use cookies or similar storage to measure site use. Brevo may use its own storage when you open a form, and Stripe when you open checkout. Your download page keeps an unlock token in your browser's local storage. You can limit cookies in your browser settings.</p>
 
                 <h2>Your Rights</h2>
                 <p>You have the right to:</p>
@@ -233,6 +235,6 @@
         </div>
     </footer>
 
-    <script src="/assets/conversion.js?v=20260824" defer></script>
+    <script src="/assets/conversion.js?v=20260918" defer></script>
 </body>
 </html>

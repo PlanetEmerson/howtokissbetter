@@ -29,7 +29,20 @@ SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
-ASSET_VERSION = "20260824"
+ASSET_VERSION = "20260918"
+BOOK_PRICE = "9.99"
+CHECKOUT_API = "https://how-to-kiss-better-payhip-ga4.vercel.app"
+# Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".
+DEFAULT_SURFACE = "buy"
+BUY_BUTTON_LABEL = f"Get the book · ${BOOK_PRICE}"
+BUY_BAR_LABEL = f"Get it · ${BOOK_PRICE}"
+BUY_FINAL_EYEBROW = "Before you go"
+BUY_FINAL_COPY = "Every chapter, from the first move to the long kiss goodbye. PDF and EPUB, read on your phone tonight."
+BUY_META = (
+    "Secure checkout by Stripe. Apple Pay, Google Pay, Link, or card. "
+    "Sold by Blynk Studio, the studio behind How to Kiss Better. "
+    "Not satisfied? Email me. I will make it right."
+)
 
 VALID_CHAPTER_IDS = {f"chapter-{chapter:02d}" for chapter in range(1, 17)}
 CHAPTER_TITLES = {
@@ -149,6 +162,84 @@ OFFER_CLUSTERS: dict[str, dict[str, Any]] = {
             "copy": "Start with the contents and real interior pages, then choose the skill you want help with before you decide whether to buy.",
             "label": "Look inside the book",
         },
+    },
+}
+
+BUY_HOOKS: dict[str, dict[str, str]] = {
+    "practice": {
+        "eyebrow": "Before your first one",
+        "title": "Practice with a plan, not a pillow.",
+        "copy": "Kiss Perfect Now walks you from the first move to the last look. 183 pages on your phone tonight. No partner required to start.",
+        "bar_title": "Kiss Perfect Now · PDF + EPUB",
+        "bar_copy": "One tap. Apple Pay, Google Pay, or card.",
+    },
+    "technique": {
+        "eyebrow": "The full technique, not the tip",
+        "title": "Know exactly what to do with your mouth, your hands, and the next two minutes.",
+        "copy": "Pressure, pace, tongue, breath, and the moves nobody teaches. Kiss Perfect Now, 16 chapters, PDF and EPUB, read on your phone tonight.",
+        "bar_title": "Kiss Perfect Now · PDF + EPUB",
+        "bar_copy": "One tap. Apple Pay, Google Pay, or card.",
+    },
+    "touch": {
+        "eyebrow": "Hands, neck, and everything below the jaw",
+        "title": "Make them forget their own name.",
+        "copy": "The neck map, the face cradle, the pressure point almost nobody knows. Kiss Perfect Now, 183 pages, on your phone tonight.",
+        "bar_title": "The neck map is chapter 7",
+        "bar_copy": "Kiss Perfect Now · one tap",
+    },
+    "chemistry": {
+        "eyebrow": "For the moment it actually happens",
+        "title": "Read the moment. Then own it.",
+        "copy": "How to tell they want it, how to start it, and what to do when it lands. Kiss Perfect Now, 16 chapters for the moments that matter.",
+        "bar_title": "Kiss Perfect Now · PDF + EPUB",
+        "bar_copy": "One tap. Apple Pay, Google Pay, or card.",
+    },
+    "relationship": {
+        "eyebrow": "For the thousandth kiss",
+        "title": "Make the thousandth kiss feel like the second.",
+        "copy": "Bring back the tension, the teasing, and the kisses that stop a conversation. Kiss Perfect Now, 183 pages, read tonight.",
+        "bar_title": "Make the thousandth kiss feel like the second",
+        "bar_copy": "Kiss Perfect Now · one tap",
+    },
+    "boundaries": {
+        "eyebrow": "Say it, ask it, fix it",
+        "title": "The words that make a kiss better instead of awkward.",
+        "copy": "How to ask, how to tell someone kindly, and how to fix the thing nobody mentions. Kiss Perfect Now, 16 chapters.",
+        "bar_title": "Kiss Perfect Now · PDF + EPUB",
+        "bar_copy": "One tap. Apple Pay, Google Pay, or card.",
+    },
+    "complete-guide": {
+        "eyebrow": "The whole system",
+        "title": "Stop collecting tips. Learn the system.",
+        "copy": "Every chapter, from the first move to the long kiss goodbye. Kiss Perfect Now, 183 pages, PDF and EPUB, on your phone tonight.",
+        "bar_title": "Kiss Perfect Now · PDF + EPUB",
+        "bar_copy": "One tap. Apple Pay, Google Pay, or card.",
+    },
+}
+
+# Per-slug copy for the biggest posts; any field left out falls back to the cluster hook.
+BUY_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
+    "how-to-kiss-someones-neck": {
+        "eyebrow": "You're on the neck post, so",
+        "title": "Know exactly where, how hard, and how long.",
+        "copy": "Chapter 7 is the neck map: under the ear, the side strip, the nape, and the pace that makes them wait for it. Kiss Perfect Now, 183 pages, on your phone tonight.",
+        "bar_title": "The neck map is chapter 7",
+        "bar_copy": "Kiss Perfect Now · one tap",
+    },
+    "how-to-kiss-slowly": {
+        "eyebrow": "Slow is a superpower",
+        "title": "Slow is a superpower. Here is the whole system.",
+        "copy": "The pause, the push, the stare, the dive. Chapter 3 turns slow into devastating. Kiss Perfect Now, 16 chapters, read tonight.",
+    },
+    "how-to-kiss-your-boyfriend": {
+        "eyebrow": "For the kiss he still thinks about",
+        "title": "Be the one he never sees coming.",
+        "copy": "The magic words, the neck, the kiss that starts mid-sentence. Kiss Perfect Now, 183 pages, read tonight.",
+    },
+    "what-does-a-kiss-on-the-cheek-mean": {
+        "eyebrow": "Whatever that cheek kiss meant",
+        "title": "The next one might not be on the cheek. Be ready.",
+        "copy": "From the first move to the kiss they will remember. Kiss Perfect Now, 16 chapters, on your phone tonight.",
     },
 }
 
@@ -630,6 +721,13 @@ def classify_conversion_cluster(post: dict[str, Any], source: dict[str, Any]) ->
     return next(cluster for cluster in tie_order if scores[cluster] == highest)
 
 
+def buy_hook_for_post(slug: str, cluster: str) -> dict[str, str]:
+    """Merge the cluster buy copy with any per-slug override."""
+    hook = dict(BUY_HOOKS[cluster])
+    hook.update(BUY_HOOK_OVERRIDES.get(slug, {}))
+    return hook
+
+
 def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
     """Create a complete conversion offer record for one article."""
     slug = str(post["slug"])
@@ -644,6 +742,7 @@ def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> d
         "article_slug": slug,
         "article_title": str(post["title"]),
         "offer_key": cluster,
+        "surface": DEFAULT_SURFACE,
         "chapter_id": chapter_id,
         "chapter_label": f"Chapter {chapter_number}",
         "chapter_title": CHAPTER_TITLES[chapter_id],
@@ -652,6 +751,7 @@ def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> d
         "image": str(base["image"]),
         "image_alt": str(base["image_alt"]),
         "variant_a": dict(base["variant_a"]),
+        "buy": buy_hook_for_post(slug, cluster),
     }
 
 
@@ -695,16 +795,43 @@ def offer_data_attributes(offer: dict[str, Any], placement: str, variant: str = 
     )
 
 
-def render_article_quarter_offer(offer: dict[str, Any]) -> str:
-    """Render the progressive-enhancement version of the topic-matched article offer."""
-    variant = offer["variant_a"]
+def render_checkout_form(
+    offer: dict[str, Any],
+    placement: str,
+    label: str,
+    button_class: str,
+    indent: str = "",
+    button_extra: str = "",
+) -> str:
+    """Render the Stripe Checkout form shared by the article buy surfaces.
+
+    It is a real POST form so the buy works with JavaScript off; conversion.js adds the
+    GA client and session ids and fires begin_checkout before submitting.
+    """
+    slug = html.escape(str(offer["article_slug"]), quote=True)
+    lines = [
+        f'<form method="post" action="{CHECKOUT_API}/api/checkout" class="buy-form" {offer_data_attributes(offer, placement)} data-checkout-form data-price="{BOOK_PRICE}">',
+        '    <input type="hidden" name="product" value="book">',
+        f'    <input type="hidden" name="src" value="{slug}">',
+        f'    <input type="hidden" name="placement" value="{html.escape(placement, quote=True)}">',
+        '    <input type="hidden" name="entry" value="article">',
+        f'    <input type="hidden" name="cancel" value="/blog/{slug}/">',
+        f'    <button type="submit" class="{button_class}"{button_extra}>{html.escape(label)}</button>',
+        "</form>",
+    ]
+    return "\n".join(f"{indent}{line}" for line in lines)
+
+
+def render_article_buy_card(offer: dict[str, Any]) -> str:
+    """Render the in-article buy card: real page, desire-framed copy, one-tap checkout."""
+    hook = offer["buy"]
     image_stem = Path(str(offer["image"])).stem.replace("-480", "")
     image_root = "/assets/images/book-proof"
-    placement = "article-quarter"
+    placement = "buy-article-quarter"
     surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
-    link_attributes = offer_data_attributes(offer, placement)
-    return f"""<!-- PROOF_LED_QUARTER_START -->
-<aside class="conversion-offer conversion-offer--proof js-offer" id="article-book-preview" {surface_attributes} aria-label="Book preview">
+    form = render_checkout_form(offer, placement, BUY_BUTTON_LABEL, "conversion-button conversion-offer__link", indent="        ")
+    return f"""<!-- BUY_RAIL_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--proof conversion-offer--buy js-offer" id="article-book-buy" {surface_attributes} aria-labelledby="article-book-buy-title">
     <div class="conversion-offer__proof" aria-hidden="true">
         <picture>
             <source srcset="{image_root}/{image_stem}-480.avif" type="image/avif">
@@ -713,60 +840,58 @@ def render_article_quarter_offer(offer: dict[str, Any]) -> str:
         </picture>
     </div>
     <div class="conversion-offer__body">
-        <p class="conversion-offer__eyebrow">Continue with {html.escape(str(offer['chapter_label']))}</p>
-        <h2 class="conversion-offer__title" data-offer-title>{html.escape(str(variant['title']))}</h2>
-        <p class="conversion-offer__chapter">{html.escape(str(offer['chapter_title']))}</p>
-        <p class="conversion-offer__copy" data-offer-copy>{html.escape(str(variant['copy']))}</p>
-        <a href="{book_offer_href(offer, placement)}" {link_attributes} class="conversion-button conversion-offer__link" data-offer-label>{html.escape(str(variant['label']))}</a>
-        <p class="conversion-offer__meta">Real pages first. The full 183-page PDF and EPUB are $4.95.</p>
+        <p class="conversion-offer__eyebrow">{html.escape(str(hook['eyebrow']))}</p>
+        <h2 class="conversion-offer__title" id="article-book-buy-title">{html.escape(str(hook['title']))}</h2>
+        <p class="conversion-offer__copy">{html.escape(str(hook['copy']))}</p>
+{form}
+        <p class="conversion-offer__meta">{html.escape(BUY_META)}</p>
     </div>
 </aside>
-<!-- PROOF_LED_QUARTER_END -->"""
+<!-- BUY_RAIL_QUARTER_END -->"""
 
 
-def render_article_final_offer(offer: dict[str, Any]) -> str:
-    """Render the clustered post-article offer."""
-    placement = "article-final"
+def render_article_buy_final(offer: dict[str, Any]) -> str:
+    """Render the end-of-article buy card."""
+    hook = offer["buy"]
+    placement = "buy-article-final"
     surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
-    link_attributes = offer_data_attributes(offer, placement)
-    return f"""            <!-- PROOF_LED_FINAL_START -->
-            <aside class="conversion-final js-offer" {surface_attributes} aria-label="Book offer">
-                <p class="conversion-offer__eyebrow">The complete guide</p>
-                <h2 class="conversion-final__title" data-offer-title>{html.escape(str(offer['variant_a']['title']))}</h2>
-                <p class="conversion-final__copy" data-offer-copy>{html.escape(str(offer['variant_a']['copy']))}</p>
-                <a href="{book_offer_href(offer, placement)}" {link_attributes} class="conversion-button" data-offer-label>{html.escape(str(offer['variant_a']['label']))}</a>
-                <p class="conversion-final__meta">See real pages before you choose. Get all 16 chapters for $4.95.</p>
+    form = render_checkout_form(offer, placement, BUY_BUTTON_LABEL, "conversion-button", indent="                ")
+    return f"""            <!-- BUY_RAIL_FINAL_START -->
+            <aside class="conversion-final conversion-final--buy js-offer" {surface_attributes} aria-labelledby="article-book-final-title">
+                <p class="conversion-offer__eyebrow">{html.escape(BUY_FINAL_EYEBROW)}</p>
+                <h2 class="conversion-final__title" id="article-book-final-title">{html.escape(str(hook['title']))}</h2>
+                <p class="conversion-final__copy">{html.escape(BUY_FINAL_COPY)}</p>
+{form}
+                <p class="conversion-final__meta">{html.escape(BUY_META)}</p>
             </aside>
-            <!-- PROOF_LED_FINAL_END -->"""
+            <!-- BUY_RAIL_FINAL_END -->"""
 
 
-def render_article_mobile_bar(offer: dict[str, Any]) -> str:
-    """Render the mobile offer bar in the static page so every article owns the surface."""
-    placement = "mobile-buy-bar"
-    surface_attributes = offer_data_attributes(offer, placement, "control").replace('data-offer-link="true" ', "")
-    link_attributes = offer_data_attributes(offer, placement, "control")
-    return f"""    <!-- PROOF_LED_MOBILE_START -->
-    <aside class="mobile-buy-bar js-offer" {surface_attributes} aria-label="Book preview" aria-hidden="true">
-        <p class="mobile-buy-bar__copy"><strong data-mobile-offer-title>{html.escape(str(offer['chapter_label']))}</strong><span data-mobile-offer-copy>See a real page</span></p>
-        <a href="{book_offer_href(offer, placement)}" {link_attributes} class="mobile-buy-bar__link" tabindex="-1">Preview</a>
+def render_article_buy_bar(offer: dict[str, Any]) -> str:
+    """Render the mobile buy bar in the static page so every article owns the surface."""
+    hook = offer["buy"]
+    placement = "buy-mobile-bar"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    form = render_checkout_form(
+        offer, placement, BUY_BAR_LABEL, "mobile-buy-bar__link", indent="        ", button_extra=' tabindex="-1"'
+    )
+    return f"""    <!-- BUY_RAIL_BAR_START -->
+    <aside class="mobile-buy-bar mobile-buy-bar--buy js-offer" {surface_attributes} aria-label="Buy Kiss Perfect Now" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>{html.escape(str(hook['bar_title']))}</strong><span>{html.escape(str(hook['bar_copy']))}</span></p>
+{form}
     </aside>
-    <!-- PROOF_LED_MOBILE_END -->"""
+    <!-- BUY_RAIL_BAR_END -->"""
 
 
 def strip_generated_conversion_markup(page_html: str) -> str:
-    """Remove this builder's conversion blocks so regeneration stays idempotent."""
-    page_html = re.sub(
-        r"\s*<!-- PROOF_LED_QUARTER_START -->.*?<!-- PROOF_LED_QUARTER_END -->\s*",
-        "\n",
-        page_html,
-        flags=re.DOTALL,
-    )
-    page_html = re.sub(
-        r"\s*<!-- PROOF_LED_MOBILE_START -->.*?<!-- PROOF_LED_MOBILE_END -->\s*",
-        "\n",
-        page_html,
-        flags=re.DOTALL,
-    )
+    """Remove this builder's conversion blocks, old and new, so regeneration stays idempotent."""
+    for marker in ("PROOF_LED_QUARTER", "PROOF_LED_MOBILE", "BUY_RAIL_QUARTER", "BUY_RAIL_BAR"):
+        page_html = re.sub(
+            rf"\s*<!-- {marker}_START -->.*?<!-- {marker}_END -->\s*",
+            "\n",
+            page_html,
+            flags=re.DOTALL,
+        )
     return page_html
 
 
@@ -830,7 +955,7 @@ def insert_offer_after_complete_section(content_html: str, offer_html: str) -> s
 
 
 def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> str:
-    """Apply all proof-led conversion surfaces to one generated article page."""
+    """Apply all buy-rail conversion surfaces to one generated article page."""
     page_html = strip_generated_conversion_markup(page_html)
     page_html = re.sub(
         r"\s*<!-- Google tag \(gtag\.js\).*?</script>\s*<script>.*?</script>\s*",
@@ -864,13 +989,14 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     content_start = content_open_start + len(content_open)
     content_end, _ = matching_div_close(page_html, content_open_start)
     content_html = strip_legacy_book_asides(page_html[content_start:content_end])
-    content_html = insert_offer_after_complete_section(content_html, render_article_quarter_offer(offer))
+    content_html = insert_offer_after_complete_section(content_html, render_article_buy_card(offer))
     page_html = f"{page_html[:content_start]}{content_html}{page_html[content_end:]}"
 
-    if "<!-- PROOF_LED_FINAL_START -->" in page_html:
+    final_markers = r"(?:PROOF_LED|BUY_RAIL)_FINAL"
+    if re.search(rf"<!-- {final_markers}_START -->", page_html):
         page_html = re.sub(
-            r"\s*<!-- PROOF_LED_FINAL_START -->.*?<!-- PROOF_LED_FINAL_END -->\s*",
-            f"\n{render_article_final_offer(offer)}\n",
+            rf"\s*<!-- {final_markers}_START -->.*?<!-- {final_markers}_END -->\s*",
+            f"\n{render_article_buy_final(offer)}\n",
             page_html,
             count=1,
             flags=re.DOTALL,
@@ -881,7 +1007,7 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         if final_start < 0 or final_div_start < 0:
             raise ValueError(f"{offer['article_slug']}: final offer boundary not found")
         _, final_div_end = matching_div_close(page_html, final_div_start)
-        page_html = f"{page_html[:final_start]}{render_article_final_offer(offer)}{page_html[final_div_end:]}"
+        page_html = f"{page_html[:final_start]}{render_article_buy_final(offer)}{page_html[final_div_end:]}"
 
     page_html = page_html.replace(
         '            "jobTitle": "Author and Intimacy Expert",\n'
@@ -889,11 +1015,17 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         '            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."',
         '            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."',
     )
+    # The header button is the look-inside path to /book/; the one-tap buys are the three surfaces.
     page_html = re.sub(
-        r'href="/book/\?[^\"]*utm_content=post_nav[^\"]*"',
+        r'href="/book/\?[^\"]*utm_content=post[-_]nav[^\"]*"',
         f'href="{book_offer_href(offer, "post-nav")}"',
         page_html,
         count=1,
+    )
+    page_html = page_html.replace(
+        '<span class="hidden sm:inline">Get the Book</span>',
+        '<span class="hidden sm:inline">Get the book</span>',
+        1,
     )
     page_html = re.sub(
         r"\s*<script src=\"/assets/offer-catalog\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
@@ -903,7 +1035,7 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     page_html = re.sub(
         r"\s*<script src=\"/assets/conversion\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
         (
-            f"\n{render_article_mobile_bar(offer)}\n\n"
+            f"\n{render_article_buy_bar(offer)}\n\n"
             f'    <script src="/assets/conversion.js?v={ASSET_VERSION}" defer></script>\n'
         ),
         page_html,
@@ -923,7 +1055,7 @@ def rebuild_conversion_surfaces() -> None:
         if not page_path.exists():
             raise FileNotFoundError(f"Missing generated article page: {page_path}")
         page_path.write_text(apply_conversion_to_article_page(page_path.read_text(), offer))
-    print(f"Rebuilt proof-led conversion surfaces for {len(catalog)} article routes.")
+    print(f"Rebuilt buy-rail conversion surfaces for {len(catalog)} article routes.")
 
 
 def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:

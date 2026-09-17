@@ -1,15 +1,17 @@
 (function () {
     "use strict";
 
+    var MEASUREMENT_ID = "G-YNQ785TC90";
     var PRODUCT = {
-        id: "dbMu6",
-        title: "Kiss Perfect Now: A Master Class in Kissology",
-        price: 4.95,
+        id: "kiss-book",
+        title: "Kiss Perfect Now",
+        price: 9.99,
         currency: "USD"
     };
-    var MOBILE_OFFER_VARIANT_KEY = "kpn_mobile_offer_variant_v1";
     var LEAD_EVENT_KEY = "kpn_generate_lead_v2";
     var OFFER_IMPRESSION_PREFIX = "kpn_offer_impression_v2:";
+    var BOOK_TOKEN_KEY = "kt_book_token_v1";
+    var SUPPORT_EMAIL = "contact@howtokissbetter.com";
     var VALID_OFFER_KEYS = [
         "practice",
         "technique",
@@ -19,6 +21,10 @@
         "boundaries",
         "complete-guide"
     ];
+    // The checkout API rejects the whole form when these fields are malformed, so only
+    // values in GA's own shape are forwarded.
+    var GA_ID_SHAPES = { client_id: /^\d{1,12}\.\d{1,12}$/, session_id: /^\d{1,16}$/ };
+    var gaIds = { client_id: "", session_id: "" };
 
     function safeStorage(storage, method, key, value) {
         try {
@@ -49,62 +55,8 @@
         return heading ? heading.textContent.trim() : document.title;
     }
 
-    function assignedVariant() {
-        var existing = safeStorage(window.localStorage, "getItem", MOBILE_OFFER_VARIANT_KEY);
-        if (existing === "control" || existing === "treatment") {
-            return existing;
-        }
-
-        var generated = "control";
-        if (window.crypto && window.crypto.getRandomValues) {
-            var randomValue = new Uint32Array(1);
-            window.crypto.getRandomValues(randomValue);
-            generated = randomValue[0] % 2 === 0 ? "control" : "treatment";
-        } else {
-            generated = Math.random() < 0.5 ? "control" : "treatment";
-        }
-        safeStorage(window.localStorage, "setItem", MOBILE_OFFER_VARIANT_KEY, generated);
-        return generated;
-    }
-
-    function applyMobileOfferExperiment() {
-        if (document.body.dataset.pageKind !== "article") {
-            return;
-        }
-        var variant = assignedVariant();
-        document.querySelectorAll("[data-offer-variant]").forEach(function (node) {
-            if (node.closest(".mobile-buy-bar")) {
-                node.dataset.offerVariant = variant;
-            } else {
-                node.dataset.offerVariant = "not-applicable";
-            }
-        });
-
-        var mobileBar = document.querySelector(".mobile-buy-bar");
-        var mobileTitle = document.querySelector("[data-mobile-offer-title]");
-        var mobileCopy = document.querySelector("[data-mobile-offer-copy]");
-        var mobileLink = mobileBar && mobileBar.querySelector("a");
-        if (variant === "treatment") {
-            if (mobileBar) {
-                mobileBar.setAttribute("aria-label", "Book offer");
-            }
-            if (mobileTitle) {
-                mobileTitle.textContent = "183-page kissing guide";
-            }
-            if (mobileCopy) {
-                mobileCopy.textContent = "PDF + EPUB · $4.95";
-            }
-            if (mobileLink) {
-                mobileLink.textContent = "See the guide";
-            }
-        }
-    }
-
     function offerVariant(element) {
-        if (element.dataset.offerPlacement !== "mobile-buy-bar") {
-            return "not-applicable";
-        }
-        return element.dataset.offerVariant || assignedVariant();
+        return element.dataset.offerVariant || "not-applicable";
     }
 
     function offerPayload(element) {
@@ -176,6 +128,79 @@
         });
     }
 
+    function captureGaIds() {
+        if (typeof window.gtag !== "function") {
+            return;
+        }
+        Object.keys(gaIds).forEach(function (field) {
+            window.gtag("get", MEASUREMENT_ID, field, function (value) {
+                if (GA_ID_SHAPES[field].test(String(value))) {
+                    gaIds[field] = String(value);
+                }
+            });
+        });
+    }
+
+    function setHiddenField(form, name, value) {
+        var input = form.querySelector('input[name="' + name + '"]');
+        if (!input) {
+            input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            form.appendChild(input);
+        }
+        input.value = value;
+    }
+
+    function bindCheckoutForms() {
+        var forms = document.querySelectorAll("form[data-checkout-form]");
+        if (!forms.length) {
+            return;
+        }
+        captureGaIds();
+        forms.forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                if (form.dataset.checkoutSubmitted === "true") {
+                    event.preventDefault();
+                    return;
+                }
+                form.dataset.checkoutSubmitted = "true";
+                if (gaIds.client_id) {
+                    setHiddenField(form, "ga_cid", gaIds.client_id);
+                }
+                if (gaIds.session_id) {
+                    setHiddenField(form, "ga_sid", gaIds.session_id);
+                }
+                if (typeof window.gtag !== "function") {
+                    return;
+                }
+
+                event.preventDefault();
+                var submitted = false;
+                function submitOnce() {
+                    if (submitted) {
+                        return;
+                    }
+                    submitted = true;
+                    form.submit();
+                }
+                var payload = offerPayload(form);
+                sendEvent("begin_checkout", {
+                    currency: PRODUCT.currency,
+                    value: Number(form.dataset.price) || PRODUCT.price,
+                    product: "book",
+                    placement: payload.placement,
+                    article: payload.article,
+                    offer_key: payload.offer_key,
+                    items: productItems(),
+                    event_callback: submitOnce,
+                    event_timeout: 400
+                });
+                window.setTimeout(submitOnce, 500);
+            });
+        });
+    }
+
     function setupMobileBuyBar() {
         var bar = document.querySelector(".mobile-buy-bar");
         var articleHeader = document.querySelector("article header");
@@ -183,7 +208,7 @@
             return;
         }
 
-        var link = bar.querySelector("a");
+        var link = bar.querySelector("a, button");
         var visibleBefore = false;
         document.body.classList.add("has-mobile-buy-bar");
 
@@ -241,30 +266,6 @@
         });
     }
 
-    function bindPayhipCheckouts(offerKey) {
-        document.querySelectorAll("[data-payhip-checkout]").forEach(function (button) {
-            if (button.dataset.checkoutBound === "true") {
-                return;
-            }
-            button.dataset.checkoutBound = "true";
-            button.addEventListener("click", function (event) {
-                event.preventDefault();
-                sendEvent("begin_checkout", {
-                    currency: PRODUCT.currency,
-                    value: PRODUCT.price,
-                    button_placement: button.dataset.checkoutPlacement || "book-page",
-                    offer_key: button.dataset.offerKey || offerKey,
-                    items: productItems()
-                });
-                if (window.Payhip && window.Payhip.Checkout) {
-                    window.Payhip.Checkout.open({ product: PRODUCT.id });
-                } else {
-                    window.location.href = button.href;
-                }
-            });
-        });
-    }
-
     function setupBookPage() {
         if (document.body.dataset.pageKind !== "book") {
             return;
@@ -290,8 +291,6 @@
             offer_key: offerKey,
             items: productItems()
         });
-
-        bindPayhipCheckouts(offerKey);
 
         document.querySelectorAll("[data-preview-open]").forEach(function (button) {
             button.addEventListener("click", function (event) {
@@ -329,7 +328,6 @@
 
         var offerKey = document.body.dataset.offerKey || "complete-guide";
         document.body.classList.add("is-enhanced");
-        bindPayhipCheckouts("complete-guide");
 
         document.querySelectorAll("[data-preview-open]").forEach(function (button) {
             button.addEventListener("click", function (event) {
@@ -358,7 +356,7 @@
         }
         var bar = document.querySelector("[data-home-sticky]");
         var heroButton = document.querySelector("[data-home-hero-cta]");
-        var link = bar && bar.querySelector("a");
+        var link = bar && bar.querySelector("a, button");
         var visibleBefore = false;
         if (!bar || !heroButton || !link) {
             return;
@@ -402,7 +400,7 @@
         }
         var bar = document.querySelector("[data-book-sticky]");
         var heroButton = document.querySelector("[data-hero-checkout]");
-        var link = bar && bar.querySelector("a");
+        var link = bar && bar.querySelector("a, button");
         if (!bar || !heroButton || !link) {
             return;
         }
@@ -430,6 +428,111 @@
         });
     }
 
+    function setupThanksPage() {
+        if (document.body.dataset.pageKind !== "book-thanks") {
+            return;
+        }
+        var api = document.body.dataset.kissApi || "";
+        var status = document.querySelector("[data-thanks-status]");
+        var downloads = document.querySelector("[data-thanks-downloads]");
+        if (!api || !status || !downloads) {
+            return;
+        }
+        var sessionId = new URLSearchParams(window.location.search).get("session_id") || "";
+        var token = safeStorage(window.localStorage, "getItem", BOOK_TOKEN_KEY) || "";
+
+        function setStatus(text, state) {
+            status.textContent = text;
+            status.dataset.state = state;
+        }
+
+        function clearDownloads() {
+            while (downloads.firstChild) {
+                downloads.removeChild(downloads.firstChild);
+            }
+        }
+
+        // Every value here comes from the server; it is written through DOM properties, never as HTML.
+        function renderDownloads(items) {
+            clearDownloads();
+            items.forEach(function (item) {
+                if (!item || typeof item.url !== "string" || item.url.indexOf("https://") !== 0) {
+                    return;
+                }
+                var link = document.createElement("a");
+                link.className = "conversion-button book-thanks__download";
+                link.href = item.url;
+                link.setAttribute("download", "");
+                link.textContent = String(item.label || "Download");
+                downloads.appendChild(link);
+            });
+        }
+
+        function showRetry() {
+            clearDownloads();
+            var button = document.createElement("button");
+            button.type = "button";
+            button.className = "conversion-button conversion-button-secondary book-thanks__retry";
+            button.textContent = "Retry";
+            button.addEventListener("click", verify);
+            downloads.appendChild(button);
+        }
+
+        function showNetworkError() {
+            setStatus("Could not reach the download service. Check your connection and try again.", "error");
+            showRetry();
+        }
+
+        function handleVerifyResult(result) {
+            var data = result.data || {};
+            if (result.status === 200 && data.ok === true) {
+                if (typeof data.token === "string" && data.token) {
+                    token = data.token;
+                    safeStorage(window.localStorage, "setItem", BOOK_TOKEN_KEY, token);
+                }
+                renderDownloads((data.payload && data.payload.downloads) || []);
+                if (!downloads.firstChild) {
+                    setStatus("Your order is confirmed, but the files are not ready yet. Try again in a minute, or email " + SUPPORT_EMAIL + ".", "error");
+                    showRetry();
+                    return;
+                }
+                setStatus("Links are good for an hour; reopen this page any time for fresh ones. Check your email too.", "ready");
+                sendEvent("unlock_view", { product: "book" });
+                return;
+            }
+            if (result.status === 401) {
+                // The stored token no longer verifies; forget it so the email link is the way back in.
+                token = "";
+                safeStorage(window.localStorage, "removeItem", BOOK_TOKEN_KEY);
+            }
+            if (result.status === 401 || result.status === 402 || result.status === 404) {
+                clearDownloads();
+                setStatus("This link has not been paid yet or has expired. If you paid, email " + SUPPORT_EMAIL + ".", "unpaid");
+                return;
+            }
+            showNetworkError();
+        }
+
+        function verify() {
+            if (!sessionId && !token) {
+                setStatus("No order found on this device. Open the link from your email, or write to " + SUPPORT_EMAIL + ".", "missing");
+                return;
+            }
+            setStatus("Checking your order...", "pending");
+            window.fetch(api + "/api/verify", {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(sessionId ? { session_id: sessionId } : { token: token })
+            }).then(function (response) {
+                return response.json().then(function (data) {
+                    return { status: response.status, data: data };
+                });
+            }).then(handleVerifyResult).catch(showNetworkError);
+        }
+
+        verify();
+    }
+
     function trackConfirmedLead() {
         if (document.body.dataset.pageKind !== "confirmed") {
             return;
@@ -451,66 +554,17 @@
         safeStorage(window.localStorage, "setItem", "kiss_free_chapter_source", window.location.pathname);
     }
 
-    function setupExitPopup() {
-        var popup = document.getElementById("exit-popup");
-        if (!popup) {
-            return;
-        }
-
-        var seenKey = "kiss_popup_seen";
-        var shown = false;
-        function show() {
-            if (shown || safeStorage(window.localStorage, "getItem", seenKey)) {
-                return;
-            }
-            shown = true;
-            popup.classList.add("active");
-            sendEvent("offer_view", {
-                article: document.title,
-                page: window.location.pathname,
-                placement: "free-chapter-popup",
-                offer_key: "free-chapter",
-                chapter_id: "chapter-14",
-                variant: "not-applicable"
-            });
-        }
-        function hide() {
-            popup.classList.remove("active");
-            safeStorage(window.localStorage, "setItem", seenKey, "1");
-        }
-
-        popup.querySelectorAll("[data-popup-close]").forEach(function (button) {
-            button.addEventListener("click", hide);
-        });
-        popup.addEventListener("click", function (event) {
-            if (event.target === popup) {
-                hide();
-            }
-        });
-        document.addEventListener("keydown", function (event) {
-            if (event.key === "Escape" && popup.classList.contains("active")) {
-                hide();
-            }
-        });
-        document.addEventListener("mouseleave", function (event) {
-            if (event.clientY < 0) {
-                show();
-            }
-        });
-        window.setTimeout(show, 45000);
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
-        applyMobileOfferExperiment();
         bindOfferClicks();
         trackOfferViews();
+        bindCheckoutForms();
         setupMobileBuyBar();
         setupBookPage();
         setupBookStickyBar();
         setupHomePage();
         setupHomeStickyBar();
+        setupThanksPage();
         trackConfirmedLead();
         rememberFormSource();
-        setupExitPopup();
     });
 })();

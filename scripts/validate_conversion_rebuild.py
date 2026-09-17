@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Deterministic release checks for the proof-led conversion rebuild."""
+"""Deterministic release checks for the buy-rail conversion surfaces."""
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import sys
@@ -13,6 +14,16 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
+CONVERSION_ASSET_VERSION = "20260918"
+BOOK_PRICE = "9.99"
+RETIRED_PRICE = "$4.95"
+CHECKOUT_API = "https://how-to-kiss-better-payhip-ga4.vercel.app"
+CHECKOUT_ACTION = f"{CHECKOUT_API}/api/checkout"
+SUPPORT_EMAIL = "contact@howtokissbetter.com"
+CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CONVERSION_ASSET_VERSION}">'
+HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={CONVERSION_ASSET_VERSION}">'
+CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
+PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
 VALID_CLUSTERS = {
     "practice",
     "technique",
@@ -26,6 +37,18 @@ VALID_CHAPTERS = {f"chapter-{number:02d}" for number in range(1, 17)}
 VALID_ANCHORS = VALID_CLUSTERS | {"look-inside"}
 BOOK_ANCHORS = (VALID_CLUSTERS - {"complete-guide"}) | {"look-inside"}
 HOME_ANCHORS = {"moment", "look-inside", "preview", "find-your-path", "pricing", "faq"}
+ARTICLE_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
+BOOK_PLACEMENTS = {
+    "book-nav",
+    "book-hero",
+    "book-after-look-inside",
+    "book-chapter-map",
+    "book-after-faq",
+    "book-final",
+    "book-mobile-sticky",
+}
+HOME_PLACEMENTS = {"home-nav", "home-menu", "home-book-facts", "home-final", "home-mobile-sticky"}
+BUY_HOOK_FIELDS = ("eyebrow", "title", "copy", "bar_title", "bar_copy")
 REQUIRED_OFFER_ATTRIBUTES = (
     "data-offer-placement",
     "data-offer-key",
@@ -33,6 +56,19 @@ REQUIRED_OFFER_ATTRIBUTES = (
     "data-article-slug",
     "data-chapter-id",
 )
+FORM_BLOCK = re.compile(r"<form\b[^>]*>.*?</form>", re.DOTALL)
+# Sales copy ("Payhip delivery"), product links, and checkout hooks. The GA linker domain list and
+# the API host name (which carries "-payhip-") stay, so lowercase "payhip.com" alone is not enough.
+PAYHIP_COPY = re.compile(r"\bPayhip\b")
+
+
+def mentions_payhip(page_html: str) -> bool:
+    return (
+        bool(PAYHIP_COPY.search(page_html))
+        or "payhip.com/b/" in page_html
+        or "data-payhip-checkout" in page_html
+        or "payhip.js" in page_html
+    )
 
 
 class LinkCollector(HTMLParser):
@@ -79,14 +115,18 @@ class Validation:
             for error in self.errors:
                 print(f"  - {error}", file=sys.stderr)
             raise SystemExit(1)
-        print(f"PASS: {self.checks} proof-led conversion checks")
+        print(f"PASS: {self.checks} buy-rail conversion checks")
 
 
-def load_catalog() -> dict[str, dict[str, object]]:
+def load_build_blog():
     sys.path.insert(0, str(ROOT))
     import build_blog  # pylint: disable=import-outside-toplevel
 
-    return build_blog.build_offer_catalog()
+    return build_blog
+
+
+def load_catalog() -> dict[str, dict[str, object]]:
+    return load_build_blog().build_offer_catalog()
 
 
 def matching_div_close(html_text: str, opening_start: int) -> int:
@@ -169,6 +209,45 @@ def validate_manifest_cardinality(
     return routes
 
 
+def checkout_forms(page_html: str) -> list[str]:
+    """Return every checkout form block, opening tag through </form>."""
+    return [block for block in FORM_BLOCK.findall(page_html) if "data-checkout-form" in block.split(">", 1)[0]]
+
+
+def form_placement(block: str) -> str:
+    match = re.search(r'data-offer-placement="([^"]+)"', block.split(">", 1)[0])
+    return match.group(1) if match else ""
+
+
+def validate_checkout_form(
+    validation: Validation,
+    label: str,
+    block: str,
+    src: str,
+    placement: str,
+    entry: str,
+    cancel: str,
+) -> None:
+    """Assert one form matches the /api/checkout contract and works with JavaScript off."""
+    opening = block.split(">", 1)[0] + ">"
+    validation.require(opening.startswith(f'<form method="post" action="{CHECKOUT_ACTION}"'), f"{label} form method or action is wrong")
+    validation.require('class="buy-form"' in opening, f"{label} form is missing the buy-form class")
+    validation.require(f'data-price="{BOOK_PRICE}"' in opening, f"{label} form price attribute is wrong")
+    validation.require("data-offer-link" in opening, f"{label} form is not tracked as an offer link")
+    validation.require(f'data-offer-placement="{placement}"' in opening, f"{label} form placement is wrong")
+    validation.require('data-offer-variant="not-applicable"' in opening, f"{label} form variant is not retired")
+    for name, value in (("product", "book"), ("src", src), ("placement", placement), ("entry", entry), ("cancel", cancel)):
+        validation.equal(
+            block.count(f'<input type="hidden" name="{name}" value="{value}">'),
+            1,
+            f"{label} hidden field {name}",
+        )
+    validation.equal(block.count("<input"), 5, f"{label} hidden field count")
+    validation.equal(block.count('<button type="submit"'), 1, f"{label} submit button count")
+    validation.require(f"· ${BOOK_PRICE}</button>" in block, f"{label} button label is missing the price")
+    validation.require("payhip.com" not in block and "data-payhip-checkout" not in block, f"{label} form still routes through Payhip")
+
+
 def validate_articles(validation: Validation, catalog: dict[str, dict[str, object]]) -> list[Path]:
     posts = json.loads((BLOG / "posts.json").read_text())
     validate_manifest_cardinality(validation, posts, catalog)
@@ -194,17 +273,24 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         cluster = str(offer.get("offer_key"))
         chapter = str(offer.get("chapter_id"))
         anchor = str(offer.get("preview_anchor"))
+        hook = offer.get("buy") or {}
 
         validation.require(cluster in VALID_CLUSTERS, f"{slug} has invalid cluster {cluster}")
         validation.require(chapter in VALID_CHAPTERS, f"{slug} has invalid chapter {chapter}")
         validation.require(anchor in VALID_ANCHORS, f"{slug} has invalid preview anchor {anchor}")
         validation.equal(offer.get("article_slug"), slug, f"{slug} catalog slug")
-        validation.equal(page_html.count("<!-- PROOF_LED_QUARTER_START -->"), 1, f"{slug} quarter offer count")
-        validation.equal(page_html.count("<!-- PROOF_LED_FINAL_START -->"), 1, f"{slug} final offer count")
-        validation.equal(page_html.count("<!-- PROOF_LED_MOBILE_START -->"), 1, f"{slug} mobile bar count")
-        validation.equal(page_html.count('id="article-book-preview"'), 1, f"{slug} quarter offer ID count")
-        validation.equal(page_html.count('class="mobile-buy-bar js-offer"'), 1, f"{slug} mobile bar surface count")
-        validation.require('$9.99' not in page_html, f"{slug} still contains the stale $9.99 price")
+        validation.equal(offer.get("surface"), "buy", f"{slug} conversion surface")
+        validation.equal(page_html.count("<!-- BUY_RAIL_QUARTER_START -->"), 1, f"{slug} buy card count")
+        validation.equal(page_html.count("<!-- BUY_RAIL_FINAL_START -->"), 1, f"{slug} final buy card count")
+        validation.equal(page_html.count("<!-- BUY_RAIL_BAR_START -->"), 1, f"{slug} mobile buy bar count")
+        validation.equal(page_html.count("PROOF_LED_"), 0, f"{slug} still carries proof-led markers")
+        validation.equal(page_html.count('id="article-book-buy"'), 1, f"{slug} buy card ID count")
+        validation.equal(page_html.count('id="article-book-buy-title"'), 1, f"{slug} buy card title ID count")
+        validation.equal(page_html.count('id="article-book-final-title"'), 1, f"{slug} final card title ID count")
+        validation.equal(page_html.count('class="mobile-buy-bar mobile-buy-bar--buy js-offer"'), 1, f"{slug} mobile bar surface count")
+        validation.equal(page_html.count("data-mobile-offer-title"), 0, f"{slug} still carries the retired mobile experiment hook")
+        validation.require(RETIRED_PRICE not in page_html, f"{slug} still contains the retired {RETIRED_PRICE} price")
+        validation.require(not mentions_payhip(page_html), f"{slug} still mentions Payhip")
         validation.require(
             f'data-page-kind="article" data-article-slug="{slug}" data-offer-key="{cluster}" data-chapter-id="{chapter}"'
             in page_html,
@@ -215,46 +301,74 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
             f"{slug} canonical URL changed",
         )
         validation.require('/assets/offer-catalog.js' not in page_html, f"{slug} still loads the retired runtime offer catalog")
-        validation.require(
-            '<script src="/assets/conversion.js?v=20260824" defer></script>' in page_html,
-            f"{slug} conversion script is incomplete or stale",
-        )
+        validation.require(CONVERSION_CSS_TAG in page_html, f"{slug} conversion stylesheet is missing or stale")
+        validation.require(CONVERSION_JS_TAG in page_html, f"{slug} conversion script is incomplete or stale")
 
-        for placement in ("article-quarter", "article-final", "mobile-buy-bar"):
-            expected_variant = "control" if placement == "mobile-buy-bar" else "not-applicable"
+        forms = checkout_forms(page_html)
+        validation.equal(len(forms), 3, f"{slug} checkout form count")
+        for placement in ARTICLE_PLACEMENTS:
             placement_matches = re.findall(
-                rf'<(?:aside|a)\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>',
+                rf'<(?:aside|form)\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>',
                 page_html,
                 re.DOTALL,
             )
-            validation.equal(len(placement_matches), 2, f"{slug} {placement} surface and link count")
+            validation.equal(len(placement_matches), 2, f"{slug} {placement} surface and form count")
             for tag in placement_matches:
                 for attribute in REQUIRED_OFFER_ATTRIBUTES:
                     validation.require(attribute in tag, f"{slug} {placement} tag missing {attribute}")
-                validation.require(f'data-offer-variant="{expected_variant}"' in tag, f"{slug} {placement} static experiment assignment is wrong")
+                validation.require('data-offer-variant="not-applicable"' in tag, f"{slug} {placement} variant is not retired")
                 validation.require(f'data-offer-key="{cluster}"' in tag, f"{slug} {placement} cluster mismatch")
                 validation.require(f'data-chapter-id="{chapter}"' in tag, f"{slug} {placement} chapter mismatch")
                 validation.require(f'data-article-slug="{slug}"' in tag, f"{slug} {placement} article mismatch")
 
-            href_match = re.search(
-                rf'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>',
-                page_html,
-                re.DOTALL,
-            )
-            validation.require(href_match is not None, f"{slug} {placement} is missing its offer link")
-            if href_match:
-                expected = (
-                    "/book/?utm_source=howtokissbetter&amp;utm_medium=site"
-                    f"&amp;utm_campaign=proof_led_rebuild&amp;utm_content={placement}"
-                    f"&amp;offer_key={cluster}#{anchor}"
+            placement_forms = [block for block in forms if form_placement(block) == placement]
+            validation.equal(len(placement_forms), 1, f"{slug} {placement} checkout form count")
+            for block in placement_forms:
+                validate_checkout_form(
+                    validation,
+                    f"{slug} {placement}",
+                    block,
+                    src=slug,
+                    placement=placement,
+                    entry="article",
+                    cancel=f"/blog/{slug}/",
                 )
-                validation.equal(href_match.group(1), expected, f"{slug} {placement} URL contract")
 
-        validation.equal(page_html.count("data-mobile-offer-title"), 1, f"{slug} mobile treatment title hook count")
+        title = html.escape(str(hook.get("title", "")))
+        validation.equal(
+            page_html.count(f'<h2 class="conversion-offer__title" id="article-book-buy-title">{title}</h2>'),
+            1,
+            f"{slug} buy card title",
+        )
+        validation.equal(
+            page_html.count(f'<h2 class="conversion-final__title" id="article-book-final-title">{title}</h2>'),
+            1,
+            f"{slug} final card title",
+        )
+        validation.equal(
+            page_html.count(f"<strong>{html.escape(str(hook.get('bar_title', '')))}</strong><span>{html.escape(str(hook.get('bar_copy', '')))}</span>"),
+            1,
+            f"{slug} buy bar copy",
+        )
+        validation.equal(page_html.count(f"Get the book · ${BOOK_PRICE}</button>"), 2, f"{slug} buy button count")
+        validation.equal(page_html.count(f"Get it · ${BOOK_PRICE}</button>"), 1, f"{slug} buy bar button count")
+        validation.equal(page_html.count("Secure checkout by Stripe."), 2, f"{slug} checkout disclosure count")
+
+        nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
+        validation.require(nav_match is not None, f"{slug} post-nav book link is missing")
+        if nav_match:
+            expected = (
+                "/book/?utm_source=howtokissbetter&amp;utm_medium=site"
+                "&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav"
+                f"&amp;offer_key={cluster}#{anchor}"
+            )
+            validation.equal(nav_match.group(1), expected, f"{slug} post-nav URL contract")
+        validation.equal(page_html.count('data-offer-placement="post-nav"'), 1, f"{slug} post-nav link count")
+        validation.require('<span class="hidden sm:inline">Get the book</span>' in page_html, f"{slug} post-nav label is stale")
 
         content_open = page_html.find('<div class="article-content">')
-        quarter_start = page_html.find('<!-- PROOF_LED_QUARTER_START -->', content_open)
-        quarter_end = page_html.find('<!-- PROOF_LED_QUARTER_END -->', quarter_start)
+        quarter_start = page_html.find('<!-- BUY_RAIL_QUARTER_START -->', content_open)
+        quarter_end = page_html.find('<!-- BUY_RAIL_QUARTER_END -->', quarter_start)
         content_close = matching_div_close(page_html, content_open)
         validation.require(
             content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start and content_close > quarter_end,
@@ -262,12 +376,40 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         )
         if content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start:
             before = page_html[content_open:quarter_start]
-            after = page_html[quarter_end + len('<!-- PROOF_LED_QUARTER_END -->'):content_close]
+            after = page_html[quarter_end + len('<!-- BUY_RAIL_QUARTER_END -->'):content_close]
             base_length = len(before) + len(after)
             ratio = len(before) / base_length if base_length else 0
-            validation.require(0.20 <= ratio <= 0.305, f"{slug} quarter offer ratio is {ratio:.1%}")
+            validation.require(0.20 <= ratio <= 0.305, f"{slug} buy card ratio is {ratio:.1%}")
 
     return article_pages
+
+
+def validate_buy_hooks(validation: Validation, catalog: dict[str, dict[str, object]]) -> None:
+    build_blog = load_build_blog()
+    validation.equal(set(build_blog.BUY_HOOKS), VALID_CLUSTERS, "buy hook cluster set")
+    for cluster, hook in build_blog.BUY_HOOKS.items():
+        validation.equal(set(hook), set(BUY_HOOK_FIELDS), f"{cluster} buy hook fields")
+        for field, value in hook.items():
+            validation.require(bool(value.strip()) and value == value.strip(), f"{cluster} buy hook {field} is empty or padded")
+            validation.require("—" not in value, f"{cluster} buy hook {field} contains an em dash")
+            validation.require("$" not in value, f"{cluster} buy hook {field} carries a price; the button owns the price")
+    known_slugs = {str(offer["article_slug"]) for offer in catalog.values()}
+    for slug, override in build_blog.BUY_HOOK_OVERRIDES.items():
+        validation.require(slug in known_slugs, f"buy hook override targets unknown post {slug}")
+        validation.require(set(override) <= set(BUY_HOOK_FIELDS), f"{slug} buy hook override has unknown fields")
+        for field, value in override.items():
+            validation.require("—" not in value and "$" not in value, f"{slug} buy hook override {field} breaks the copy rules")
+    for name in ("BUY_META", "BUY_FINAL_COPY", "BUY_BUTTON_LABEL", "BUY_BAR_LABEL"):
+        validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
+    validation.require("Sold by Blynk Studio" in build_blog.BUY_META, "buy meta line is missing the seller disclosure")
+
+
+def validate_build_constants(validation: Validation) -> None:
+    build_blog = load_build_blog()
+    validation.equal(build_blog.ASSET_VERSION, CONVERSION_ASSET_VERSION, "builder asset version")
+    validation.equal(build_blog.BOOK_PRICE, BOOK_PRICE, "builder book price")
+    validation.equal(build_blog.CHECKOUT_API, CHECKOUT_API, "builder checkout API origin")
+    validation.equal(build_blog.DEFAULT_SURFACE, "buy", "builder default surface")
 
 
 def validate_book(validation: Validation) -> Path:
@@ -284,19 +426,28 @@ def validate_book(validation: Validation) -> Path:
     validation.equal(page_html.count('data-pathway="'), 6, "book pathway control count")
     validation.require('data-preview-viewer' in page_html, "book preview dialog is missing")
     validation.require('data-book-sticky' in page_html, "book mobile sticky purchase control is missing")
-    validation.require('data-hero-checkout' in page_html, "book hero CTA marker is missing")
+    validation.require('<button type="submit" class="conversion-button" data-hero-checkout>' in page_html, "book hero checkout button is missing")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/">' in page_html, "book canonical URL changed")
     validation.require('"numberOfPages": 183' in page_html, "book page schema is missing 183 pages")
-    validation.require('"price": "4.95"' in page_html, "book page schema has the wrong price")
-    validation.require("$9.99" not in page_html, "book page contains the stale $9.99 price")
+    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "book page schema has the wrong price")
+    validation.require('"url": "https://howtokissbetter.com/book/"' in page_html, "book page schema offer URL is wrong")
+    validation.require(RETIRED_PRICE not in page_html, f"book page contains the retired {RETIRED_PRICE} price")
+    validation.require(not mentions_payhip(page_html), "book page still mentions Payhip")
     validation.require("Hollywood's kissing coach" not in page_html, "book page contains an unsupported authority claim")
     validation.require("star rating" not in page_html.lower(), "book page contains an unsupported rating claim")
     validation.require("countdown" not in page_html.lower(), "book page contains fake urgency")
-    validation.require("payhip.com/b/dbMu6" in page_html, "book page is missing the Payhip product")
-    validation.require("payhip.com/b/YyLMc" not in page_html, "book page still links to the retired Payhip product")
-    validation.require('<link rel="stylesheet" href="/assets/conversion.css?v=20260814a">' in page_html, "book stylesheet is missing")
-    validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "book preview script is missing")
-    validation.require('<script src="/assets/conversion.js?v=20260824" defer></script>' in page_html, "book conversion script is missing or stale")
+    validation.require("Secure checkout by Stripe." in page_html, "book page is missing the Stripe disclosure")
+    validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "book page is missing the seller disclosure")
+    validation.require(CONVERSION_CSS_TAG in page_html, "book stylesheet is missing or stale")
+    validation.require(PREVIEW_JS_TAG in page_html, "book preview script is missing")
+    validation.require(CONVERSION_JS_TAG in page_html, "book conversion script is missing or stale")
+
+    forms = checkout_forms(page_html)
+    validation.equal({form_placement(block) for block in forms}, BOOK_PLACEMENTS, "book checkout placement set")
+    validation.equal(len(forms), len(BOOK_PLACEMENTS), "book checkout form count")
+    for block in forms:
+        placement = form_placement(block)
+        validate_checkout_form(validation, f"book {placement}", block, src="book", placement=placement, entry="book", cancel="/book/")
 
     hero_media = [
         ROOT / "assets/images/book-proof/cover-320.avif",
@@ -331,7 +482,7 @@ def validate_home(validation: Validation) -> Path:
         "Make the moment happen." in page_html and "Kiss better" in page_html,
         "homepage hero promise changed",
     )
-    validation.require("Look inside the $4.95 guide" in page_html, "homepage hero CTA is missing")
+    validation.require(f"Look inside the ${BOOK_PRICE} guide" in page_html, "homepage hero CTA is missing")
     validation.equal(page_html.count('class="home-preview-card"'), 6, "homepage real preview card count")
     validation.equal(page_html.count('data-home-pathway="'), 6, "homepage need-based pathway count")
     validation.equal(page_html.count('class="moment-steps__number"'), 4, "homepage first-kiss step count")
@@ -340,7 +491,8 @@ def validate_home(validation: Validation) -> Path:
     validation.require("data-home-hero-cta" in page_html, "homepage hero CTA marker is missing")
     validation.require("homepage_moment_proof" in page_html, "homepage conversion campaign is missing")
     validation.require("conversion_repair" not in page_html, "homepage still uses the stale conversion campaign")
-    validation.require("$9.99" not in page_html, "homepage contains the stale $9.99 price")
+    validation.require(RETIRED_PRICE not in page_html, f"homepage contains the retired {RETIRED_PRICE} price")
+    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "homepage schema has the wrong price")
     validation.require("exit-popup" not in page_html, "homepage still contains the automatic exit popup")
     validation.require("section-fade" not in page_html, "homepage still contains opacity-gated sections")
     validation.require("hero-bg-v2" not in page_html, "homepage still loads the old decorative hero image")
@@ -348,14 +500,22 @@ def validate_home(validation: Validation) -> Path:
     validation.require("Hollywood's kissing coach" not in page_html, "homepage contains an unsupported authority claim")
     validation.require("reader said" not in page_html.lower(), "homepage contains an unsupported reader quote")
     validation.require("data-countdown" not in page_html.lower(), "homepage contains fake urgency")
-    validation.require("payhip.com/b/dbMu6" in page_html, "homepage is missing the Payhip product")
-    validation.require("payhip.com/b/YyLMc" not in page_html, "homepage still links to the retired Payhip product")
+    validation.require(not mentions_payhip(page_html), "homepage still mentions Payhip")
+    validation.require("Secure checkout by Stripe" in page_html, "homepage is missing the Stripe disclosure")
+    validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "homepage is missing the seller disclosure")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
     validation.require("PDF and EPUB" in page_html, "homepage FAQ schema is missing both delivery formats")
-    validation.require('<link rel="stylesheet" href="/assets/conversion.css?v=20260814a">' in page_html, "homepage conversion stylesheet is missing")
-    validation.require('<link rel="stylesheet" href="/assets/home.css?v=20260814a">' in page_html, "homepage stylesheet is missing")
-    validation.require('<script src="/assets/book-preview.js?v=20260814" defer></script>' in page_html, "homepage preview script is missing")
-    validation.require('<script src="/assets/conversion.js?v=20260824" defer></script>' in page_html, "homepage conversion script is missing or stale")
+    validation.require(CONVERSION_CSS_TAG in page_html, "homepage conversion stylesheet is missing or stale")
+    validation.require(HOME_CSS_TAG in page_html, "homepage stylesheet is missing or stale")
+    validation.require(PREVIEW_JS_TAG in page_html, "homepage preview script is missing")
+    validation.require(CONVERSION_JS_TAG in page_html, "homepage conversion script is missing or stale")
+
+    forms = checkout_forms(page_html)
+    validation.equal({form_placement(block) for block in forms}, HOME_PLACEMENTS, "homepage checkout placement set")
+    validation.equal(len(forms), len(HOME_PLACEMENTS), "homepage checkout form count")
+    for block in forms:
+        placement = form_placement(block)
+        validate_checkout_form(validation, f"homepage {placement}", block, src="homepage", placement=placement, entry="home", cancel="/")
 
     hero_media = [
         ROOT / "assets/images/book-proof/cover-320.avif",
@@ -372,11 +532,58 @@ def validate_home(validation: Validation) -> Path:
     return page
 
 
+def validate_thanks_page(validation: Validation) -> Path:
+    page = ROOT / "book" / "thanks" / "index.html"
+    validation.require(page.exists(), "book download page is missing")
+    if not page.exists():
+        return page
+    page_html = page.read_text()
+    validation.require('<meta name="robots" content="noindex, follow">' in page_html, "book download page must be noindex")
+    validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/thanks/">' in page_html, "book download page canonical is wrong")
+    validation.require('data-page-kind="book-thanks"' in page_html, "book download page kind is missing")
+    validation.require(f'data-kiss-api="{CHECKOUT_API}"' in page_html, "book download page API origin is missing or stale")
+    validation.require("data-thanks-status" in page_html and "data-thanks-downloads" in page_html, "book download page is missing its status or download regions")
+    validation.require(SUPPORT_EMAIL in page_html, "book download page is missing the support email")
+    validation.require("Your copy of Kiss Perfect Now" in page_html, "book download page heading changed")
+    validation.require(RETIRED_PRICE not in page_html and not mentions_payhip(page_html), "book download page carries retired sales copy")
+    validation.require(CONVERSION_CSS_TAG in page_html, "book download page stylesheet is missing or stale")
+    validation.require(CONVERSION_JS_TAG in page_html, "book download page script is missing or stale")
+    return page
+
+
+def validate_secondary_pages(validation: Validation) -> list[Path]:
+    confirmed = ROOT / "free-chapter-confirmed/index.html"
+    confirmed_html = confirmed.read_text()
+    validation.require(RETIRED_PRICE not in confirmed_html, f"confirmed page contains the retired {RETIRED_PRICE} price")
+    validation.require(f"See the full ${BOOK_PRICE} book" in confirmed_html, "confirmed page book link label is stale")
+    validation.require(CONVERSION_CSS_TAG in confirmed_html and CONVERSION_JS_TAG in confirmed_html, "confirmed page assets are stale")
+
+    template_html = (BLOG / "_template.html").read_text()
+    validation.require(RETIRED_PRICE not in template_html, f"article template contains the retired {RETIRED_PRICE} price")
+    validation.require("<!-- CTA Box -->" in template_html, "article template lost the first-build final offer anchor")
+    validation.require(CONVERSION_CSS_TAG in template_html and CONVERSION_JS_TAG in template_html, "article template assets are stale")
+    validation.require('<span class="hidden sm:inline">Get the book</span>' in template_html, "article template post-nav label is stale")
+
+    privacy = ROOT / "privacy/index.html"
+    privacy_html = privacy.read_text()
+    for needle in ("Stripe", "Vercel", "local storage", "Brevo", "Google Analytics"):
+        validation.require(needle in privacy_html, f"privacy policy does not mention {needle}")
+    validation.require(CONVERSION_JS_TAG in privacy_html, "privacy page script is stale")
+
+    terms = ROOT / "terms/index.html"
+    terms_html = terms.read_text()
+    for needle in ("Stripe", "one-time charge", "18 or older", "I will make it right"):
+        validation.require(needle in terms_html, f"terms of service do not mention {needle}")
+    validation.require(CONVERSION_JS_TAG in terms_html, "terms page script is stale")
+    return [confirmed, privacy, terms]
+
+
 def validate_tracking_contract(validation: Validation) -> None:
     source = (ROOT / "assets" / "conversion.js").read_text()
     builder_source = (ROOT / "build_blog.py").read_text()
-    validation.require('id: "dbMu6"' in source, "tracking script has the wrong Payhip product ID")
-    validation.require('id: "YyLMc"' not in source, "tracking script still uses the retired Payhip product ID")
+    validation.require('id: "kiss-book"' in source, "tracking script has the wrong product item id")
+    validation.require('id: "dbMu6"' not in source, "tracking script still carries the Payhip product ID")
+    validation.require(f"price: {BOOK_PRICE}," in source, "tracking script has the wrong product price")
     for event in (
         "offer_view",
         "offer_click",
@@ -386,19 +593,33 @@ def validate_tracking_contract(validation: Validation) -> None:
         "home_pathway_select",
         "begin_checkout",
         "generate_lead",
+        "unlock_view",
     ):
         validation.require(f'"{event}"' in source, f"tracking script is missing {event}")
     for field in ("page", "article", "placement", "offer_key", "chapter_id", "variant"):
         validation.require(f"{field}:" in source, f"offer event payload is missing {field}")
-    validation.require('"kpn_mobile_offer_variant_v1"' in source, "persistent mobile offer variant key is missing")
-    validation.require('"kpn_offer_variant_v1"' not in source, "retired broad offer variant key is still active")
-    validation.require('"183-page kissing guide"' in source, "mobile treatment title is missing")
-    validation.require('"PDF + EPUB · $4.95"' in source, "mobile treatment value copy is missing")
-    validation.require('"See the guide"' in source, "mobile treatment CTA is missing")
-    validation.require('node.dataset.offerVariant = "not-applicable"' in source, "non-mobile offer assignment is not retired")
+    for retired in (
+        '"kpn_mobile_offer_variant_v1"',
+        "applyMobileOfferExperiment",
+        "assignedVariant",
+        '"183-page kissing guide"',
+        "setupExitPopup",
+        "data-payhip-checkout",
+        "Payhip.Checkout",
+        "payhip.js",
+    ):
+        validation.require(retired not in source, f"tracking script still contains retired code: {retired}")
+    validation.require('element.dataset.offerVariant || "not-applicable"' in source, "offer variant fallback is wrong")
+    validation.require('"form[data-checkout-form]"' in source, "checkout form binding is missing")
+    validation.require("event_callback: submitOnce" in source, "begin_checkout does not gate the submit")
+    validation.require('product: "book"' in source, "begin_checkout is missing the product dimension")
+    validation.require('"ga_cid"' in source and '"ga_sid"' in source, "checkout forms do not carry the GA ids")
+    validation.require('"/api/verify"' in source, "download page verify endpoint is missing")
+    validation.require('"kt_book_token_v1"' in source, "download page unlock token key is missing")
+    validation.require('"kpn_generate_lead_v2"' in source, "persistent lead guard key is missing")
     validation.require("VALUE_STACK_VARIANT" not in builder_source, "retired broad-test value stack is still generated")
     validation.require('"variant_b"' not in builder_source, "retired broad-test B variant is still generated")
-    validation.require('"kpn_generate_lead_v2"' in source, "persistent lead guard key is missing")
+    validation.require("PROOF_LED_" in builder_source, "builder no longer strips the proof-led markers on rebuild")
     validation.require('window.localStorage' in source, "persistent first-party storage is missing")
     validation.require('window.sessionStorage' in source, "session impression dedupe is missing")
     validation.require('classList.contains("mobile-buy-bar")' in source, "mobile buy bar impression branch is missing")
@@ -407,18 +628,24 @@ def validate_tracking_contract(validation: Validation) -> None:
     validation.require('document.body.classList.toggle("has-home-sticky", visible)' in source, "homepage sticky body state is missing")
     mobile_function = source[source.index("function setupMobileBuyBar"):source.index("function requestedOfferKey")]
     validation.require("has-book-sticky" not in mobile_function, "article mobile bar leaks the book sticky body state")
+    validation.require('bar.querySelector("a, button")' in mobile_function, "article mobile bar does not manage the form button")
 
 
 def validate_site_safety(validation: Validation) -> None:
     sitemap = (ROOT / "sitemap.xml").read_text()
     validation.require("/book/?" not in sitemap and "offer_key=" not in sitemap, "query-string book variants entered the sitemap")
     validation.equal(sitemap.count("https://howtokissbetter.com/book/"), 1, "canonical book sitemap entry count")
+    validation.require("/book/thanks/" not in sitemap, "noindex download page entered the sitemap")
 
     forbidden = (
         "xkey" + "sib-",
         "/Us" + "ers/",
         "/Us" + "ers/murph/howtokissbetter/" + "_pri" + "vate",
         "_pri" + "vate/keys.txt",
+        "sk_" + "live_",
+        "sk_" + "test_",
+        "rk_" + "live_",
+        "whsec" + "_",
     )
     non_public_dirs = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
     public_files = [
@@ -435,8 +662,7 @@ def validate_site_safety(validation: Validation) -> None:
 
 
 def validate_override_failures(validation: Validation) -> None:
-    sys.path.insert(0, str(ROOT))
-    import build_blog  # pylint: disable=import-outside-toplevel
+    build_blog = load_build_blog()
 
     invalid_cases = (
         {"cluster": "not-a-cluster"},
@@ -457,9 +683,14 @@ def main() -> None:
     validation = Validation()
     catalog = load_catalog()
     validation.require(not (ROOT / "assets" / "offer-catalog.js").exists(), "retired public offer catalog still exists")
+    validation.require(not (ROOT / "scripts" / "test_conversion_mobile_offer.mjs").exists(), "retired mobile offer experiment test still exists")
+    validate_build_constants(validation)
+    validate_buy_hooks(validation, catalog)
     article_pages = validate_articles(validation, catalog)
     book_page = validate_book(validation)
     home_page = validate_home(validation)
+    thanks_page = validate_thanks_page(validation)
+    secondary_pages = validate_secondary_pages(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)
     validate_override_failures(validation)
@@ -469,9 +700,10 @@ def main() -> None:
         + [
             book_page,
             home_page,
-            ROOT / "free-chapter-confirmed/index.html",
+            thanks_page,
             ROOT / "blog/index.html",
-        ],
+        ]
+        + secondary_pages,
     )
     validation.finish()
 

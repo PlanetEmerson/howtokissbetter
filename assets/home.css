@@ -103,7 +103,8 @@ html {
     gap: 1.55rem;
 }
 
-.home-nav a {
+.home-nav a,
+.home-nav button {
     align-items: center;
     color: rgba(253, 248, 243, 0.78);
     display: inline-flex;
@@ -113,16 +114,20 @@ html {
     text-decoration: none;
 }
 
-.home-nav a:hover {
+.home-nav a:hover,
+.home-nav button:hover {
     color: var(--home-gold-light);
 }
 
 .home-nav .home-nav__buy {
+    background: transparent;
     border: 1px solid rgba(212, 175, 55, 0.6);
     border-radius: 0.3rem;
     color: var(--home-gold-light);
+    cursor: pointer;
     min-height: 2.75rem;
     padding: 0.78rem 1rem;
+    white-space: nowrap;
 }
 
 .home-menu {
@@ -160,7 +165,8 @@ html {
     top: calc(100% + 0.5rem);
 }
 
-.home-menu nav a {
+.home-menu nav a,
+.home-menu nav button {
     color: var(--home-cream);
     font-size: 0.85rem;
     min-height: 2.75rem;
@@ -168,7 +174,16 @@ html {
     text-decoration: none;
 }
 
-.home-menu nav a + a {
+.home-menu nav button {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+}
+
+.home-menu nav a + a,
+.home-menu nav a + .buy-form {
     border-top: 1px solid rgba(212, 175, 55, 0.16);
 }
 
@@ -1045,17 +1060,27 @@ html {
     margin-top: 0.1rem;
 }
 
-.home-sticky-buy a {
+.home-sticky-buy .buy-form {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.home-sticky-buy a,
+.home-sticky-buy button {
     align-items: center;
     background: var(--home-gold-light);
+    border: 0;
     border-radius: 0.3rem;
     color: #21150b;
+    cursor: pointer;
     display: inline-flex;
     font-size: 0.78rem;
     font-weight: 800;
+    line-height: 1.2;
     min-height: 2.75rem;
     padding: 0.75rem 0.95rem;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 body.has-home-sticky {
