@@ -85,8 +85,19 @@ export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
       body: JSON.stringify(message),
       signal: AbortSignal.timeout(8_000),
     });
+    if (!response.ok) {
+      // Provider status and error code only; never the recipient or the key.
+      let code = "";
+      try {
+        code = String((await response.json())?.code ?? "");
+      } catch {
+        code = "";
+      }
+      console.warn("brevo_send_failed", response.status, code);
+    }
     return response.ok;
-  } catch {
+  } catch (error) {
+    console.warn("brevo_send_failed", "network", error?.name ?? "");
     return false;
   }
 }
