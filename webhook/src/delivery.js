@@ -92,7 +92,11 @@ export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
       try {
         const body = await response.json();
         code = String(body?.code ?? "");
-        detail = String(body?.message ?? "").slice(0, 160);
+        // Provider messages can echo the recipient or the caller's address.
+        detail = String(body?.message ?? "")
+          .replace(/[^\s@]+@[^\s@]+/g, "[email]")
+          .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b|[0-9a-f:]{2,}:[0-9a-f:]+/gi, "[ip]")
+          .slice(0, 120);
       } catch {
         code = "";
       }
