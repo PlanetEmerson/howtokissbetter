@@ -145,6 +145,11 @@
     // script failed to load; "{he}'s" becomes "they're" for the plural set.
     function applyPronouns(text, set) {
         set = set || THEM_SET;
+        // The engine owns the token grammar (pronouns, contractions, {v:verb}
+        // agreement); this local fallback only covers a missing engine.
+        if (window.KissScore && typeof window.KissScore.applyPronouns === "function") {
+            return window.KissScore.applyPronouns(String(text), set);
+        }
         return String(text).replace(/\{(he|him|his|He|His)\}('s)?/g, function (match, token, contraction) {
             var word = set[token];
             if (typeof word !== "string") {
