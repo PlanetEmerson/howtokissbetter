@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic release checks for the buy-rail conversion surfaces."""
+"""Deterministic release checks for the article conversion surfaces (buy rail and Kiss Test hooks)."""
 
 from __future__ import annotations
 
@@ -37,7 +37,36 @@ VALID_CHAPTERS = {f"chapter-{number:02d}" for number in range(1, 17)}
 VALID_ANCHORS = VALID_CLUSTERS | {"look-inside"}
 BOOK_ANCHORS = (VALID_CLUSTERS - {"complete-guide"}) | {"look-inside"}
 HOME_ANCHORS = {"moment", "look-inside", "preview", "find-your-path", "pricing", "faq"}
-ARTICLE_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
+BUY_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
+QUIZ_PLACEMENTS = ("quiz-article-quarter", "quiz-article-final", "quiz-mobile-bar")
+QUIZ_URL = "/kiss-test/"
+QUIZ_PAGES = ("kiss-test/index.html", "kiss-test/result/index.html")
+# The arm split, restated independently of the builder: quiz categories, the self-assessment posts
+# outside them, and the four crossed tests (two per arm).
+QUIZ_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
+QUIZ_SLUGS = {"what-makes-a-good-kisser", "what-does-a-good-kiss-feel-like"}
+CROSSED_SURFACES = {
+    "how-to-practice-kissing": "buy",
+    "signs-youre-a-bad-kisser": "buy",
+    "how-to-kiss-slowly": "quiz",
+    "kissing-positions": "quiz",
+}
+QUIZ_HOOK_FIELDS = (
+    "question_id",
+    "eyebrow",
+    "title",
+    "copy",
+    "label",
+    "final_eyebrow",
+    "final_title",
+    "final_copy",
+    "final_label",
+    "bar_title",
+    "bar_copy",
+    "bar_label",
+)
+QUIZ_OVERRIDE_FIELDS = set(QUIZ_HOOK_FIELDS) | {"pronoun"}
+PRONOUN_TOKEN = re.compile(r"\{(?:he|him|his|He|His)\}")
 BOOK_PLACEMENTS = {
     "book-nav",
     "book-hero",
@@ -115,11 +144,12 @@ class Validation:
             for error in self.errors:
                 print(f"  - {error}", file=sys.stderr)
             raise SystemExit(1)
-        print(f"PASS: {self.checks} buy-rail conversion checks")
+        print(f"PASS: {self.checks} conversion checks")
 
 
 def load_build_blog():
-    sys.path.insert(0, str(ROOT))
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
     import build_blog  # pylint: disable=import-outside-toplevel
 
     return build_blog
@@ -163,7 +193,8 @@ def page_for_local_url(source_page: Path, raw_url: str) -> tuple[Path | None, st
     return target.resolve(), parsed.fragment
 
 
-def validate_local_links(validation: Validation, pages: list[Path]) -> None:
+def validate_local_links(validation: Validation, pages: list[Path], pending: frozenset[Path] = frozenset()) -> None:
+    """Check every local link target exists; targets in `pending` are pages another build step has not written yet."""
     anchor_cache: dict[Path, set[str]] = {}
     for page in pages:
         collector = LinkCollector()
@@ -174,7 +205,7 @@ def validate_local_links(validation: Validation, pages: list[Path]) -> None:
 
         for attribute, raw_url in collector.urls:
             target, fragment = page_for_local_url(page, raw_url)
-            if target is None:
+            if target is None or target in pending:
                 continue
             validation.require(
                 target.exists(),
@@ -248,6 +279,217 @@ def validate_checkout_form(
     validation.require("payhip.com" not in block and "data-payhip-checkout" not in block, f"{label} form still routes through Payhip")
 
 
+def expected_surface(post: dict[str, object]) -> str:
+    slug = str(post["slug"])
+    if slug in CROSSED_SURFACES:
+        return CROSSED_SURFACES[slug]
+    if slug in QUIZ_SLUGS or str(post.get("category_slug")) in QUIZ_CATEGORIES:
+        return "quiz"
+    return "buy"
+
+
+def validate_quarter_ratio(validation: Validation, slug: str, page_html: str, marker: str) -> None:
+    """The quarter surface sits at 20 to 30.5 percent of the article body, whichever arm renders it."""
+    start_marker = f"<!-- {marker}_START -->"
+    end_marker = f"<!-- {marker}_END -->"
+    content_open = page_html.find('<div class="article-content">')
+    quarter_start = page_html.find(start_marker, content_open)
+    quarter_end = page_html.find(end_marker, quarter_start)
+    content_close = matching_div_close(page_html, content_open)
+    validation.require(
+        content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start and content_close > quarter_end,
+        f"{slug} article content bounds",
+    )
+    if content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start:
+        before = page_html[content_open:quarter_start]
+        after = page_html[quarter_end + len(end_marker):content_close]
+        base_length = len(before) + len(after)
+        ratio = len(before) / base_length if base_length else 0
+        validation.require(0.20 <= ratio <= 0.305, f"{slug} quarter card ratio is {ratio:.1%}")
+
+
+def validate_quiz_article(validation: Validation, slug: str, page_html: str, offer: dict[str, object]) -> None:
+    """Assert the Kiss Test hook contract on one quiz-arm article."""
+    build_blog = load_build_blog()
+    cluster = str(offer.get("offer_key"))
+    chapter = str(offer.get("chapter_id"))
+    hook = offer.get("quiz") or {}
+    for marker in ("QUIZ_HOOK_QUARTER", "QUIZ_HOOK_FINAL", "QUIZ_HOOK_BAR"):
+        validation.equal(page_html.count(f"<!-- {marker}_START -->"), 1, f"{slug} {marker} start marker count")
+        validation.equal(page_html.count(f"<!-- {marker}_END -->"), 1, f"{slug} {marker} end marker count")
+    validation.equal(page_html.count("BUY_RAIL_"), 0, f"{slug} quiz arm still carries buy-rail markers")
+    validation.equal(page_html.count("PROOF_LED_"), 0, f"{slug} still carries proof-led markers")
+    validation.equal(len(checkout_forms(page_html)), 0, f"{slug} quiz arm still carries checkout forms")
+    validation.equal(page_html.count('id="article-kiss-test-hook"'), 1, f"{slug} quiz card ID count")
+    validation.equal(page_html.count('id="article-kiss-test-hook-title"'), 1, f"{slug} quiz card title ID count")
+    validation.equal(page_html.count('id="article-kiss-test-final-title"'), 1, f"{slug} quiz final title ID count")
+    validation.equal(page_html.count('class="mobile-buy-bar mobile-buy-bar--quiz js-offer"'), 1, f"{slug} quiz bar surface count")
+    validation.require(PRONOUN_TOKEN.search(page_html) is None, f"{slug} renders an unresolved pronoun token")
+
+    question = build_blog.quiz_question(str(hook.get("question_id")))
+    option_ids = [str(option["id"]) for option in question["options"]]
+    bases = {placement: f"{QUIZ_URL}?from={slug}&amp;hook={cluster}&amp;placement={placement}" for placement in QUIZ_PLACEMENTS}
+    for placement, base in bases.items():
+        asides = re.findall(rf'<aside\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>', page_html)
+        links = re.findall(rf'<a\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>', page_html)
+        validation.equal(len(asides), 1, f"{slug} {placement} surface count")
+        validation.equal(len(links), len(option_ids) + 1 if placement == "quiz-article-quarter" else 1, f"{slug} {placement} link count")
+        for tag in asides + links:
+            for attribute in REQUIRED_OFFER_ATTRIBUTES:
+                validation.require(attribute in tag, f"{slug} {placement} tag missing {attribute}")
+            validation.require('data-offer-variant="not-applicable"' in tag, f"{slug} {placement} variant is not retired")
+            validation.require(f'data-offer-key="{cluster}"' in tag, f"{slug} {placement} cluster mismatch")
+            validation.require(f'data-chapter-id="{chapter}"' in tag, f"{slug} {placement} chapter mismatch")
+            validation.require(f'data-article-slug="{slug}"' in tag, f"{slug} {placement} article mismatch")
+        for tag in links:
+            validation.require('data-offer-link="true"' in tag, f"{slug} {placement} link is not tracked")
+        hrefs = [match.group(1) for match in (re.search(r'href="([^"]+)"', tag) for tag in links) if match]
+        validation.equal(len(hrefs), len(links), f"{slug} {placement} links carry an href")
+        validation.require(all(href.startswith(base) for href in hrefs), f"{slug} {placement} link href contract")
+        if placement == "quiz-article-quarter":
+            expected_answers = sorted([""] + [f"&amp;q={question['id']}&amp;a={option_id}" for option_id in option_ids])
+            validation.equal(sorted(href[len(base):] for href in hrefs), expected_answers, f"{slug} quarter answer links")
+        else:
+            validation.equal(hrefs, [base], f"{slug} {placement} link href")
+
+    pronouns = build_blog.quiz_pronoun_set(str(hook.get("pronoun", build_blog.QUIZ_DEFAULT_PRONOUN)))
+    prompt = html.escape(build_blog.quiz_text(str(question["prompt"]), pronouns))
+    validation.equal(page_html.count(f'<p class="quiz-hook__question">{prompt}</p>'), 1, f"{slug} embedded question prompt")
+    validation.equal(page_html.count('<a class="quiz-hook__option"'), len(option_ids), f"{slug} option link count")
+    for option in question["options"]:
+        text = html.escape(build_blog.quiz_text(str(option["text"]), pronouns))
+        validation.equal(page_html.count(f">{text}</a></li>"), 1, f"{slug} option {option['id']} text")
+    title = html.escape(str(hook.get("title", "")))
+    validation.equal(
+        page_html.count(f'<h2 class="conversion-offer__title" id="article-kiss-test-hook-title">{title}</h2>'),
+        1,
+        f"{slug} quiz card title",
+    )
+    label = html.escape(str(hook.get("label", "")))
+    validation.equal(
+        len(re.findall(rf'<a href="{re.escape(bases["quiz-article-quarter"])}" [^>]*>{re.escape(label)}</a> · 10 questions · free result</p>', page_html)),
+        1,
+        f"{slug} quiz card label link",
+    )
+    final_title = html.escape(str(hook.get("final_title", "")))
+    validation.equal(
+        page_html.count(f'<h2 class="conversion-final__title" id="article-kiss-test-final-title">{final_title}</h2>'),
+        1,
+        f"{slug} quiz final title",
+    )
+    final_label = html.escape(str(hook.get("final_label", "")))
+    validation.equal(
+        len(re.findall(rf'<a class="conversion-button" href="{re.escape(bases["quiz-article-final"])}" [^>]*>{re.escape(final_label)}</a>', page_html)),
+        1,
+        f"{slug} quiz final button",
+    )
+    validation.equal(
+        page_html.count(f'<a href="/book/" data-offer-link="true" data-offer-placement="article-final-book">{html.escape(build_blog.QUIZ_BOOK_LINK_LABEL)}</a>'),
+        1,
+        f"{slug} final book link",
+    )
+    validation.equal(page_html.count('data-offer-placement="article-final-book"'), 1, f"{slug} final book link count")
+    bar_title = html.escape(str(hook.get("bar_title", "")))
+    bar_copy = html.escape(str(hook.get("bar_copy", "")))
+    validation.equal(page_html.count(f"<strong>{bar_title}</strong><span>{bar_copy}</span>"), 1, f"{slug} quiz bar copy")
+    bar_label = html.escape(str(hook.get("bar_label", "")))
+    validation.equal(
+        len(re.findall(rf'<a class="mobile-buy-bar__link" href="{re.escape(bases["quiz-mobile-bar"])}" tabindex="-1" [^>]*>{re.escape(bar_label)}</a>', page_html)),
+        1,
+        f"{slug} quiz bar link",
+    )
+
+    nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
+    validation.require(nav_match is not None, f"{slug} post-nav link is missing")
+    if nav_match:
+        validation.equal(nav_match.group(1), f"{QUIZ_URL}?from={slug}&amp;hook={cluster}&amp;placement=post-nav", f"{slug} post-nav URL contract")
+    validation.equal(page_html.count('data-offer-placement="post-nav"'), 1, f"{slug} post-nav link count")
+    validation.require('<span class="hidden sm:inline">Take the Kiss Test</span>' in page_html, f"{slug} post-nav label is stale")
+    validation.require('<span class="sm:hidden">Kiss Test</span>' in page_html, f"{slug} post-nav mobile label is stale")
+    validate_quarter_ratio(validation, slug, page_html, "QUIZ_HOOK_QUARTER")
+
+
+def validate_buy_article(validation: Validation, slug: str, page_html: str, offer: dict[str, object]) -> None:
+    """Assert the buy-rail contract on one buy-arm article."""
+    cluster = str(offer.get("offer_key"))
+    chapter = str(offer.get("chapter_id"))
+    anchor = str(offer.get("preview_anchor"))
+    hook = offer.get("buy") or {}
+    validation.equal(page_html.count("QUIZ_HOOK_"), 0, f"{slug} buy arm carries Kiss Test markers")
+    validation.equal(page_html.count("<!-- BUY_RAIL_QUARTER_START -->"), 1, f"{slug} buy card count")
+    validation.equal(page_html.count("<!-- BUY_RAIL_FINAL_START -->"), 1, f"{slug} final buy card count")
+    validation.equal(page_html.count("<!-- BUY_RAIL_BAR_START -->"), 1, f"{slug} mobile buy bar count")
+    validation.equal(page_html.count("PROOF_LED_"), 0, f"{slug} still carries proof-led markers")
+    validation.equal(page_html.count('id="article-book-buy"'), 1, f"{slug} buy card ID count")
+    validation.equal(page_html.count('id="article-book-buy-title"'), 1, f"{slug} buy card title ID count")
+    validation.equal(page_html.count('id="article-book-final-title"'), 1, f"{slug} final card title ID count")
+    validation.equal(page_html.count('class="mobile-buy-bar mobile-buy-bar--buy js-offer"'), 1, f"{slug} mobile bar surface count")
+
+    forms = checkout_forms(page_html)
+    validation.equal(len(forms), 3, f"{slug} checkout form count")
+    for placement in BUY_PLACEMENTS:
+        placement_matches = re.findall(
+            rf'<(?:aside|form)\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>',
+            page_html,
+            re.DOTALL,
+        )
+        validation.equal(len(placement_matches), 2, f"{slug} {placement} surface and form count")
+        for tag in placement_matches:
+            for attribute in REQUIRED_OFFER_ATTRIBUTES:
+                validation.require(attribute in tag, f"{slug} {placement} tag missing {attribute}")
+            validation.require('data-offer-variant="not-applicable"' in tag, f"{slug} {placement} variant is not retired")
+            validation.require(f'data-offer-key="{cluster}"' in tag, f"{slug} {placement} cluster mismatch")
+            validation.require(f'data-chapter-id="{chapter}"' in tag, f"{slug} {placement} chapter mismatch")
+            validation.require(f'data-article-slug="{slug}"' in tag, f"{slug} {placement} article mismatch")
+
+        placement_forms = [block for block in forms if form_placement(block) == placement]
+        validation.equal(len(placement_forms), 1, f"{slug} {placement} checkout form count")
+        for block in placement_forms:
+            validate_checkout_form(
+                validation,
+                f"{slug} {placement}",
+                block,
+                src=slug,
+                placement=placement,
+                entry="article",
+                cancel=f"/blog/{slug}/",
+            )
+
+    title = html.escape(str(hook.get("title", "")))
+    validation.equal(
+        page_html.count(f'<h2 class="conversion-offer__title" id="article-book-buy-title">{title}</h2>'),
+        1,
+        f"{slug} buy card title",
+    )
+    validation.equal(
+        page_html.count(f'<h2 class="conversion-final__title" id="article-book-final-title">{title}</h2>'),
+        1,
+        f"{slug} final card title",
+    )
+    validation.equal(
+        page_html.count(f"<strong>{html.escape(str(hook.get('bar_title', '')))}</strong><span>{html.escape(str(hook.get('bar_copy', '')))}</span>"),
+        1,
+        f"{slug} buy bar copy",
+    )
+    validation.equal(page_html.count(f"Get the book · ${BOOK_PRICE}</button>"), 2, f"{slug} buy button count")
+    validation.equal(page_html.count(f"Get it · ${BOOK_PRICE}</button>"), 1, f"{slug} buy bar button count")
+    validation.equal(page_html.count("Secure checkout by Stripe."), 2, f"{slug} checkout disclosure count")
+
+    nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
+    validation.require(nav_match is not None, f"{slug} post-nav book link is missing")
+    if nav_match:
+        expected = (
+            "/book/?utm_source=howtokissbetter&amp;utm_medium=site"
+            "&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav"
+            f"&amp;offer_key={cluster}#{anchor}"
+        )
+        validation.equal(nav_match.group(1), expected, f"{slug} post-nav URL contract")
+    validation.equal(page_html.count('data-offer-placement="post-nav"'), 1, f"{slug} post-nav link count")
+    validation.require('<span class="hidden sm:inline">Get the book</span>' in page_html, f"{slug} post-nav label is stale")
+
+    validate_quarter_ratio(validation, slug, page_html, "BUY_RAIL_QUARTER")
+
+
 def validate_articles(validation: Validation, catalog: dict[str, dict[str, object]]) -> list[Path]:
     posts = json.loads((BLOG / "posts.json").read_text())
     validate_manifest_cardinality(validation, posts, catalog)
@@ -260,6 +502,7 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         )
 
     article_pages: list[Path] = []
+    surfaces: Counter[str] = Counter()
     for post in posts:
         slug = post["slug"]
         route = f"/blog/{slug}/"
@@ -273,21 +516,14 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         cluster = str(offer.get("offer_key"))
         chapter = str(offer.get("chapter_id"))
         anchor = str(offer.get("preview_anchor"))
-        hook = offer.get("buy") or {}
+        surface = str(offer.get("surface"))
+        surfaces[surface] += 1
 
         validation.require(cluster in VALID_CLUSTERS, f"{slug} has invalid cluster {cluster}")
         validation.require(chapter in VALID_CHAPTERS, f"{slug} has invalid chapter {chapter}")
         validation.require(anchor in VALID_ANCHORS, f"{slug} has invalid preview anchor {anchor}")
         validation.equal(offer.get("article_slug"), slug, f"{slug} catalog slug")
-        validation.equal(offer.get("surface"), "buy", f"{slug} conversion surface")
-        validation.equal(page_html.count("<!-- BUY_RAIL_QUARTER_START -->"), 1, f"{slug} buy card count")
-        validation.equal(page_html.count("<!-- BUY_RAIL_FINAL_START -->"), 1, f"{slug} final buy card count")
-        validation.equal(page_html.count("<!-- BUY_RAIL_BAR_START -->"), 1, f"{slug} mobile buy bar count")
-        validation.equal(page_html.count("PROOF_LED_"), 0, f"{slug} still carries proof-led markers")
-        validation.equal(page_html.count('id="article-book-buy"'), 1, f"{slug} buy card ID count")
-        validation.equal(page_html.count('id="article-book-buy-title"'), 1, f"{slug} buy card title ID count")
-        validation.equal(page_html.count('id="article-book-final-title"'), 1, f"{slug} final card title ID count")
-        validation.equal(page_html.count('class="mobile-buy-bar mobile-buy-bar--buy js-offer"'), 1, f"{slug} mobile bar surface count")
+        validation.equal(surface, expected_surface(post), f"{slug} conversion surface")
         validation.equal(page_html.count("data-mobile-offer-title"), 0, f"{slug} still carries the retired mobile experiment hook")
         validation.require(RETIRED_PRICE not in page_html, f"{slug} still contains the retired {RETIRED_PRICE} price")
         validation.require(not mentions_payhip(page_html), f"{slug} still mentions Payhip")
@@ -304,85 +540,14 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         validation.require(CONVERSION_CSS_TAG in page_html, f"{slug} conversion stylesheet is missing or stale")
         validation.require(CONVERSION_JS_TAG in page_html, f"{slug} conversion script is incomplete or stale")
 
-        forms = checkout_forms(page_html)
-        validation.equal(len(forms), 3, f"{slug} checkout form count")
-        for placement in ARTICLE_PLACEMENTS:
-            placement_matches = re.findall(
-                rf'<(?:aside|form)\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>',
-                page_html,
-                re.DOTALL,
-            )
-            validation.equal(len(placement_matches), 2, f"{slug} {placement} surface and form count")
-            for tag in placement_matches:
-                for attribute in REQUIRED_OFFER_ATTRIBUTES:
-                    validation.require(attribute in tag, f"{slug} {placement} tag missing {attribute}")
-                validation.require('data-offer-variant="not-applicable"' in tag, f"{slug} {placement} variant is not retired")
-                validation.require(f'data-offer-key="{cluster}"' in tag, f"{slug} {placement} cluster mismatch")
-                validation.require(f'data-chapter-id="{chapter}"' in tag, f"{slug} {placement} chapter mismatch")
-                validation.require(f'data-article-slug="{slug}"' in tag, f"{slug} {placement} article mismatch")
+        if surface == "quiz":
+            validate_quiz_article(validation, slug, page_html, offer)
+        else:
+            validate_buy_article(validation, slug, page_html, offer)
 
-            placement_forms = [block for block in forms if form_placement(block) == placement]
-            validation.equal(len(placement_forms), 1, f"{slug} {placement} checkout form count")
-            for block in placement_forms:
-                validate_checkout_form(
-                    validation,
-                    f"{slug} {placement}",
-                    block,
-                    src=slug,
-                    placement=placement,
-                    entry="article",
-                    cancel=f"/blog/{slug}/",
-                )
-
-        title = html.escape(str(hook.get("title", "")))
-        validation.equal(
-            page_html.count(f'<h2 class="conversion-offer__title" id="article-book-buy-title">{title}</h2>'),
-            1,
-            f"{slug} buy card title",
-        )
-        validation.equal(
-            page_html.count(f'<h2 class="conversion-final__title" id="article-book-final-title">{title}</h2>'),
-            1,
-            f"{slug} final card title",
-        )
-        validation.equal(
-            page_html.count(f"<strong>{html.escape(str(hook.get('bar_title', '')))}</strong><span>{html.escape(str(hook.get('bar_copy', '')))}</span>"),
-            1,
-            f"{slug} buy bar copy",
-        )
-        validation.equal(page_html.count(f"Get the book · ${BOOK_PRICE}</button>"), 2, f"{slug} buy button count")
-        validation.equal(page_html.count(f"Get it · ${BOOK_PRICE}</button>"), 1, f"{slug} buy bar button count")
-        validation.equal(page_html.count("Secure checkout by Stripe."), 2, f"{slug} checkout disclosure count")
-
-        nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
-        validation.require(nav_match is not None, f"{slug} post-nav book link is missing")
-        if nav_match:
-            expected = (
-                "/book/?utm_source=howtokissbetter&amp;utm_medium=site"
-                "&amp;utm_campaign=proof_led_rebuild&amp;utm_content=post-nav"
-                f"&amp;offer_key={cluster}#{anchor}"
-            )
-            validation.equal(nav_match.group(1), expected, f"{slug} post-nav URL contract")
-        validation.equal(page_html.count('data-offer-placement="post-nav"'), 1, f"{slug} post-nav link count")
-        validation.require('<span class="hidden sm:inline">Get the book</span>' in page_html, f"{slug} post-nav label is stale")
-
-        content_open = page_html.find('<div class="article-content">')
-        quarter_start = page_html.find('<!-- BUY_RAIL_QUARTER_START -->', content_open)
-        quarter_end = page_html.find('<!-- BUY_RAIL_QUARTER_END -->', quarter_start)
-        content_close = matching_div_close(page_html, content_open)
-        validation.require(
-            content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start and content_close > quarter_end,
-            f"{slug} article content bounds",
-        )
-        if content_open >= 0 and quarter_start > content_open and quarter_end > quarter_start:
-            before = page_html[content_open:quarter_start]
-            after = page_html[quarter_end + len('<!-- BUY_RAIL_QUARTER_END -->'):content_close]
-            base_length = len(before) + len(after)
-            ratio = len(before) / base_length if base_length else 0
-            validation.require(0.20 <= ratio <= 0.305, f"{slug} buy card ratio is {ratio:.1%}")
-
+    validation.require(surfaces["quiz"] > 0 and surfaces["buy"] > 0, f"both arms must be live, got {dict(surfaces)}")
+    print(f"Surface split: {surfaces['quiz']} Kiss Test, {surfaces['buy']} buy rail")
     return article_pages
-
 
 def validate_buy_hooks(validation: Validation, catalog: dict[str, dict[str, object]]) -> None:
     build_blog = load_build_blog()
@@ -402,6 +567,68 @@ def validate_buy_hooks(validation: Validation, catalog: dict[str, dict[str, obje
     for name in ("BUY_META", "BUY_FINAL_COPY", "BUY_BUTTON_LABEL", "BUY_BAR_LABEL"):
         validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
     validation.require("Sold by Blynk Studio" in build_blog.BUY_META, "buy meta line is missing the seller disclosure")
+
+
+def validate_quiz_hooks(validation: Validation, catalog: dict[str, dict[str, object]]) -> None:
+    build_blog = load_build_blog()
+    validation.equal(set(build_blog.QUIZ_HOOKS), VALID_CLUSTERS, "quiz hook cluster set")
+    for cluster, hook in build_blog.QUIZ_HOOKS.items():
+        validation.equal(set(hook), set(QUIZ_HOOK_FIELDS), f"{cluster} quiz hook fields")
+        for field, value in hook.items():
+            validation.require(bool(value.strip()) and value == value.strip(), f"{cluster} quiz hook {field} is empty or padded")
+            validation.require("—" not in value, f"{cluster} quiz hook {field} contains an em dash")
+            validation.require("$" not in value, f"{cluster} quiz hook {field} carries a price")
+        validation.require(re.fullmatch(r"q\d+", str(hook["question_id"])) is not None, f"{cluster} quiz hook question id is malformed")
+    known_slugs = {str(offer["article_slug"]) for offer in catalog.values()}
+    for slug, override in build_blog.QUIZ_HOOK_OVERRIDES.items():
+        validation.require(slug in known_slugs, f"quiz hook override targets unknown post {slug}")
+        validation.require(set(override) <= QUIZ_OVERRIDE_FIELDS, f"{slug} quiz hook override has unknown fields")
+        for field, value in override.items():
+            validation.require("—" not in value and "$" not in value, f"{slug} quiz hook override {field} breaks the copy rules")
+    for name in ("QUIZ_FINAL_EYEBROW", "QUIZ_FINAL_COPY", "QUIZ_FINAL_LABEL", "QUIZ_META_SUFFIX", "QUIZ_BOOK_LINK_LABEL"):
+        validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
+    validation.require(f"${BOOK_PRICE}" in build_blog.QUIZ_BOOK_LINK_LABEL, "quiz final book link label is missing the book price")
+    validation.equal(build_blog.QUIZ_URL, QUIZ_URL, "builder quiz URL")
+    validation.equal(build_blog.BUY_SURFACE_OVERRIDES, {slug for slug, arm in CROSSED_SURFACES.items() if arm == "buy"}, "buy-arm crossed posts")
+    validation.require(
+        {slug for slug, arm in CROSSED_SURFACES.items() if arm == "quiz"} <= build_blog.QUIZ_SURFACE_OVERRIDES,
+        "quiz-arm crossed posts are missing from the builder overrides",
+    )
+
+
+def validate_engine_sync(validation: Validation) -> None:
+    """The article hooks embed engine questions, so the public engine must parse and carry them."""
+    build_blog = load_build_blog()
+    engine = ROOT / "assets" / "kiss-score.js"
+    validation.require(engine.exists(), "public quiz engine assets/kiss-score.js is missing")
+    if not engine.exists():
+        return
+    try:
+        data = build_blog.load_quiz_data()
+    except (ValueError, json.JSONDecodeError) as error:
+        validation.require(False, f"QUIZ_DATA in assets/kiss-score.js does not parse: {error}")
+        return
+    questions = data.get("questions", [])
+    validation.equal(len(questions), 10, "engine question count")
+    question_ids = [str(question.get("id")) for question in questions]
+    validation.equal(len(set(question_ids)), len(question_ids), "engine question ids are unique")
+    for question in questions:
+        options = question.get("options", [])
+        validation.equal(len(options), 4, f"engine {question.get('id')} option count")
+        option_ids = [str(option.get("id")) for option in options]
+        validation.require(all(re.fullmatch(r"[a-z]", option_id) for option_id in option_ids), f"engine {question.get('id')} option ids are not single letters")
+        validation.equal(len(set(option_ids)), len(option_ids), f"engine {question.get('id')} option ids are unique")
+        validation.require(all(str(option.get("text", "")).strip() for option in options), f"engine {question.get('id')} has an empty option")
+        validation.require(str(question.get("prompt", "")).strip() != "", f"engine {question.get('id')} has an empty prompt")
+    hooks = list(build_blog.QUIZ_HOOKS.items()) + list(build_blog.QUIZ_HOOK_OVERRIDES.items())
+    for name, hook in hooks:
+        if "question_id" in hook:
+            validation.require(hook["question_id"] in question_ids, f"{name} hook embeds unknown question {hook['question_id']}")
+    pronoun_ids = {str(option.get("id")) for option in data.get("pronoun", {}).get("options", [])}
+    validation.require(build_blog.QUIZ_DEFAULT_PRONOUN in pronoun_ids, "engine is missing the neutral pronoun set used by static hooks")
+    for name, hook in hooks:
+        if "pronoun" in hook:
+            validation.require(hook["pronoun"] in pronoun_ids, f"{name} hook uses unknown pronoun set {hook['pronoun']}")
 
 
 def validate_build_constants(validation: Validation) -> None:
@@ -636,6 +863,9 @@ def validate_site_safety(validation: Validation) -> None:
     validation.require("/book/?" not in sitemap and "offer_key=" not in sitemap, "query-string book variants entered the sitemap")
     validation.equal(sitemap.count("https://howtokissbetter.com/book/"), 1, "canonical book sitemap entry count")
     validation.require("/book/thanks/" not in sitemap, "noindex download page entered the sitemap")
+    validation.equal(sitemap.count("https://howtokissbetter.com/kiss-test/"), 1, "canonical kiss test sitemap entry count")
+    validation.require("/kiss-test/result/" not in sitemap, "noindex quiz result page entered the sitemap")
+    validation.require("<loc>https://howtokissbetter.com/kiss-test/</loc>" in sitemap, "kiss test sitemap entry is not a canonical loc")
 
     forbidden = (
         "xkey" + "sib-",
@@ -686,6 +916,8 @@ def main() -> None:
     validation.require(not (ROOT / "scripts" / "test_conversion_mobile_offer.mjs").exists(), "retired mobile offer experiment test still exists")
     validate_build_constants(validation)
     validate_buy_hooks(validation, catalog)
+    validate_quiz_hooks(validation, catalog)
+    validate_engine_sync(validation)
     article_pages = validate_articles(validation, catalog)
     book_page = validate_book(validation)
     home_page = validate_home(validation)
@@ -694,6 +926,10 @@ def main() -> None:
     validate_tracking_contract(validation)
     validate_site_safety(validation)
     validate_override_failures(validation)
+    quiz_pages = [(ROOT / relative).resolve() for relative in QUIZ_PAGES]
+    pending = frozenset(page for page in quiz_pages if not page.exists())
+    for page in pending:
+        print(f"NOTICE: {page.relative_to(ROOT)} is not built yet; links into it are not checked")
     validate_local_links(
         validation,
         article_pages
@@ -703,7 +939,9 @@ def main() -> None:
             thanks_page,
             ROOT / "blog/index.html",
         ]
-        + secondary_pages,
+        + secondary_pages
+        + [page for page in quiz_pages if page.exists()],
+        pending,
     )
     validation.finish()
 

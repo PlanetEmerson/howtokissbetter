@@ -1,21 +1,29 @@
-async function optionalImport(specifier) {
+function missingModule(error) {
+  return error?.code === "ERR_MODULE_NOT_FOUND";
+}
+
+// The scoring engine and the paid report belong to the quiz workstream and may
+// not be deployed yet; callers answer "unavailable" instead of crashing. The
+// specifiers stay literal so Vercel's file tracer bundles the modules.
+export async function loadKissScore() {
   try {
-    return await import(specifier);
+    const mod = await import("./kiss-score.cjs");
+    return mod.default ?? mod;
   } catch (error) {
-    if (error?.code === "ERR_MODULE_NOT_FOUND") {
+    if (missingModule(error)) {
       return null;
     }
     throw error;
   }
 }
 
-// The scoring engine and the paid report belong to the quiz workstream and may
-// not be deployed yet; callers answer "unavailable" instead of crashing.
-export async function loadKissScore() {
-  const mod = await optionalImport("./kiss-score.cjs");
-  return mod ? mod.default ?? mod : null;
-}
-
 export async function loadKissReport() {
-  return optionalImport("./kiss-report.js");
+  try {
+    return await import("./kiss-report.js");
+  } catch (error) {
+    if (missingModule(error)) {
+      return null;
+    }
+    throw error;
+  }
 }

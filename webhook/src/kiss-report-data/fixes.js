@@ -1,0 +1,68 @@
+// "Your 7-day fix" per archetype (paid section 6). The Overthinker's is
+// Appendix A 5.3 verbatim; the other six expand the one-line days from 4.3.
+// Pronoun tokens are substituted by the client.
+export const FIXES = {
+  overthinker: [
+    { day: 1, title: "Install the breath.", text: "Three hospital breaths today, anywhere: in the car, in a queue, before a text you're nervous about. In four, hold four, out four. You're teaching your body the reset so it's there when you need it." },
+    { day: 2, title: "Fire the auditor.", text: "One hand-lick test before you leave the house (back of the hand, wait ten seconds, smell). Then stop checking. Prep once, trust it." },
+    { day: 3, title: "Practice feeling.", text: "Eat something you love with your eyes closed and don't rush it. Chapter 11's exercise, and it sounds silly until you notice you've been eating without tasting for years. Presence is one muscle." },
+    { day: 4, title: "The mirror.", text: "Look at yourself and say, out loud, \"This face is capable of making someone feel incredible.\" Then say \"You know, I am going to kiss you right now\" until your voice stops wavering. Rehearsal, not vanity." },
+    { day: 5, title: "One thing to watch.", text: "Next kiss (or next chance): nose only, and watch for the sigh. Nothing else on the list. If you catch it, that's the whole day's assignment done." },
+    { day: 6, title: "The Ten-Second Hold.", text: "Do the move. Count breaths." },
+    { day: 7, title: "The Reset, once, then retake the test.", text: "Pull back one inch, one breath, return. Afterwards, write down one thing you noticed {him} do. Then take the test again with the same honesty and watch Reading {him} and Breath move." },
+  ],
+  natural: [
+    { day: 1, title: "Find the X-spot on yourself.", text: "Reach over one shoulder and find the bottom tip of the shoulder blade, then the soft hollow just below and inside it. That's the landmark from Chapter 8. Know it on your own back before you go looking for it on {his}." },
+    { day: 2, title: "Face cradle, in the mirror.", text: "Index fingers along your own jawline, thumbs on the cheekbones, the other fingers behind the ears. Feel where each finger lands so your hands can find the spot without looking." },
+    { day: 3, title: "Hospital breath, three times.", text: "In for four, hold for four, out for four, anywhere: the car, a queue, before a text. Your body learns the reset when nothing is at stake." },
+    { day: 4, title: "The Push and the Stare, once.", text: "Next kiss, pull back a few inches with your hands exactly where they are. Look at {his} lips, then {his} eyes. Say nothing. Then go back in." },
+    { day: 5, title: "The neck, read properly, once.", text: "Soft first, just below the ear, then watch what it does to {him} before you do anything else. One visit, read like a conversation." },
+    { day: 6, title: "The X-spot, for real.", text: "Middle and ring fingers together into the hollow below each shoulder blade, slow steady pressure for ten to fifteen seconds while kissing, then release slowly. Build and release once more." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. See what moved." },
+  ],
+  "slow-burn": [
+    { day: 1, title: "Count the gear changes.", text: "Think back to your last kiss and count how many times the speed or the pressure actually changed. Be honest. The answer is probably one, and that's the whole diagnosis." },
+    { day: 2, title: "Lips, eyes, lips.", text: "In the mirror, rehearse the look: {his} lips, then {his} eyes, then {his} lips again, slowly. It feels absurd in a mirror and devastating in person." },
+    { day: 3, title: "The Push.", text: "Mid-kiss, pull back a few inches and leave your hands exactly where they were. Hold the gap for one full breath before anything else happens." },
+    { day: 4, title: "The Stare.", text: "Same gap, now filled: lips, eyes, lips, and say nothing. Let the silence do the talking." },
+    { day: 5, title: "The Dive.", text: "After the Stare, go back in with more urgency than before. The contrast is the point; slow was the setup." },
+    { day: 6, title: "One detour.", text: "Once, mid-kiss, take the kiss to {his} jaw and come back. One detour, then home." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Variety move." },
+  ],
+  sweetheart: [
+    { day: 1, title: "Say the magic words to the mirror.", text: "\"You know, I am going to kiss you right now.\" Out loud, slowly, until your voice stops wavering. Rehearsal, not vanity." },
+    { day: 2, title: "Notice who starts it.", text: "Today, just notice who starts every kiss, every touch, every hug. Don't change anything yet. Count." },
+    { day: 3, title: "The Hair Slide, once.", text: "From the waist, up the spine, across the neck and into {his} hair in one continuous movement without breaking contact. One sentence from your hands, then back to the anchor." },
+    { day: 4, title: "Hips forward an inch.", text: "Next kiss, step in until you're sharing the same square foot of floor. Hips present, shoulders soft. Nothing fancy; just show up below the jaw." },
+    { day: 5, title: "Start one kiss, mid-sentence.", text: "Cross the room and start it while {he}'s still talking. No announcement. If {he} {v:pulls} back, you respect it, warmly, and that's the rule." },
+    { day: 6, title: "The Reset, once.", text: "Mid-kiss, pull back exactly one inch for one breath, then close it again. A tiny absence {his} lips will chase." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Beyond the lips and Reading {him} move." },
+  ],
+  explorer: [
+    { day: 1, title: "Hands in one place.", text: "Next kiss, pick one place for your hands and leave them there for the entire kiss. Notice how much you want to move them. Don't." },
+    { day: 2, title: "No tongue until invited.", text: "Your tongue is a guest. Start with none, and when {his} tongue shows up, meet it with the tip, briefly, then retreat." },
+    { day: 3, title: "{He} {v:pulls} back, you stay.", text: "When {he} {v:pulls} back an inch, stay exactly where you are and let {him} come back. The quarter inch {he} {v:closes} is the only honest review you'll ever get." },
+    { day: 4, title: "One location, twice as long.", text: "Whatever you'd normally do next, don't. Stay on one thing for twice as long as feels natural and let it land." },
+    { day: 5, title: "Watch for the sigh.", text: "A soft, involuntary breath against your lip when {his} nervous system stops bracing. Nothing else on the list today; just catch one." },
+    { day: 6, title: "Add exactly one thing back.", text: "Now that you're following, pick one move from your map, the one {he} seemed to lean toward, and add it. One." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Reading {him} and Tongue move." },
+  ],
+  sprinter: [
+    { day: 1, title: "The hand-pressure test.", text: "Press your lips to the back of your hand at your usual pressure. Halve it. Halve it again. That third one is the pressure you're aiming for." },
+    { day: 2, title: "The two-second Pause, rehearsed.", text: "Practise the stop: reach, pull close, and hold for two full seconds before contact. Count them. It will feel like an hour. That hour is the point." },
+    { day: 3, title: "The 30% kiss.", text: "A third of your usual pressure, and let {him} lean in for the rest. Lips barely moving, one change every two or three seconds." },
+    { day: 4, title: "No tongue for a whole kiss.", text: "None. Not a hint. Notice how much the rest of the kiss has to say when the tongue isn't talking over it." },
+    { day: 5, title: "Swallow at the breath breaks.", text: "Mid-kiss, at every natural break for air, swallow. Open your mouth less wide and let your lips absorb what your tongue leaves behind. Nobody notices; everybody benefits." },
+    { day: 6, title: "The Ten-Second Challenge.", text: "One soft, steady kiss, held for ten seconds, changing nothing. Count breaths through your nose, not seconds." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Pace and Pressure move." },
+  ],
+  statue: [
+    { day: 1, title: "Face cradle on your own face.", text: "Index fingers along your jawline, thumbs on the cheekbones, the other fingers behind the ears. Learn where each finger lands so your hands can find it on {him} without looking." },
+    { day: 2, title: "Shake the jaw loose.", text: "Before every kiss today (and before the mirror, if there's nobody to kiss), drop your jaw slightly, shake your head loose, let your mouth hang a fraction open. Concentration lives in your attention, not your face." },
+    { day: 3, title: "Hands: move once with purpose, then stay.", text: "Next kiss, take your hands from wherever they're parked to {his} face, on purpose, in one movement. Then leave them there. One sentence, then stillness." },
+    { day: 4, title: "Share the same square foot.", text: "Step in until you're sharing the same square foot of floor. Hips present, shoulders soft. Show up below the jaw." },
+    { day: 5, title: "The neck, just below the ear.", text: "Move the hair, warm breath first, then a soft press just under the ear held a beat longer than feels normal. Then watch what it does to {him}." },
+    { day: 6, title: "Change one variable at minute two.", text: "Two minutes in, change exactly one thing: the angle, or the speed, or a detour to the jaw and back. Not all three. One." },
+    { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Hands and Beyond the lips move." },
+  ],
+};

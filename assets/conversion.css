@@ -1561,3 +1561,82 @@ body {
         border: 1px solid ButtonText;
     }
 }
+
+/* Kiss Test hooks (quiz arm): single column, no proof page, one engine question as tap targets */
+.article-content .conversion-offer--quiz {
+    padding: clamp(1.25rem, 4vw, 1.85rem);
+}
+
+.article-content .quiz-hook__question {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: clamp(1.25rem, 3.4vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 0.75rem;
+}
+
+.article-content .quiz-hook__options {
+    color: var(--conversion-cream);
+    display: grid;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.article-content .quiz-hook__options li {
+    line-height: 1.35;
+    list-style-type: none;
+    margin: 0;
+}
+
+.article-content .quiz-hook__option {
+    background: var(--conversion-wine);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 0.7rem;
+    color: var(--conversion-cream);
+    display: block;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+    min-height: 2.75rem;
+    padding: 0.72rem 0.95rem;
+    text-decoration: none;
+    transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.article-content .quiz-hook__option:hover,
+.article-content .quiz-hook__option:focus-visible {
+    background: var(--conversion-wine-light);
+    border-color: var(--conversion-gold);
+    color: var(--conversion-cream);
+    text-decoration: none;
+}
+
+.article-content .conversion-offer--quiz .conversion-offer__meta a {
+    color: var(--conversion-gold);
+    font-weight: 600;
+}
+
+.conversion-final--quiz .conversion-final__meta a {
+    color: var(--conversion-gold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.mobile-buy-bar--quiz .mobile-buy-bar__copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.mobile-buy-bar--quiz .mobile-buy-bar__link {
+    text-decoration: none;
+}
+
+@media (min-width: 640px) {
+    .article-content .quiz-hook__options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -11,6 +11,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import functools
 import html
 import json
 import re
@@ -43,6 +44,34 @@ BUY_META = (
     "Sold by Blynk Studio, the studio behind How to Kiss Better. "
     "Not satisfied? Email me. I will make it right."
 )
+
+# Phase 2: the Kiss Test owns the surfaces on the quiz arm.
+QUIZ_URL = "/kiss-test/"
+QUIZ_ENGINE_PATH = ROOT_DIR / "assets" / "kiss-score.js"
+QUIZ_DATA_PATTERN = re.compile(r"/\* QUIZ_DATA_START \*/(.*?)/\* QUIZ_DATA_END \*/", re.S)
+QUIZ_SURFACE_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
+# Self-assessment posts outside those categories, plus the technique-side crossed tests.
+QUIZ_SURFACE_OVERRIDES = {
+    "how-to-practice-kissing",
+    "too-much-saliva-when-kissing",
+    "kiss-too-wet",
+    "signs-youre-a-good-kisser",
+    "signs-youre-a-bad-kisser",
+    "what-makes-a-good-kisser",
+    "what-does-a-good-kiss-feel-like",
+    "why-kissing-feels-awkward",
+    "how-to-kiss-slowly",
+    "kissing-positions",
+}
+# Crossed tests: two self-assessment posts keep the buy rail so surface can be read apart from intent.
+BUY_SURFACE_OVERRIDES = {"how-to-practice-kissing", "signs-youre-a-bad-kisser"}
+QUIZ_FINAL_EYEBROW = "Before you go"
+QUIZ_FINAL_COPY = "Ten questions, one honest number, and the three habits to fix first. Free result."
+QUIZ_FINAL_LABEL = "Take the Kiss Test"
+QUIZ_META_SUFFIX = "10 questions · free result"
+QUIZ_BOOK_LINK_LABEL = f"Or skip straight to the full playbook: Kiss Perfect Now, ${BOOK_PRICE}"
+# Static hook cards render the engine's pronoun tokens with this set; the quiz swaps them after the pronoun tap.
+QUIZ_DEFAULT_PRONOUN = "them"
 
 VALID_CHAPTER_IDS = {f"chapter-{chapter:02d}" for chapter in range(1, 17)}
 CHAPTER_TITLES = {
@@ -240,6 +269,168 @@ BUY_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "eyebrow": "Whatever that cheek kiss meant",
         "title": "The next one might not be on the cheek. Be ready.",
         "copy": "From the first move to the kiss they will remember. Kiss Perfect Now, 16 chapters, on your phone tonight.",
+    },
+}
+
+
+def quiz_hook(
+    question_id: str,
+    eyebrow: str,
+    title: str,
+    copy: str,
+    label: str,
+    bar_title: str,
+    bar_copy: str,
+    bar_label: str,
+) -> dict[str, str]:
+    """Assemble one cluster's Kiss Test copy; the end card reuses the headline under a fixed frame."""
+    return {
+        "question_id": question_id,
+        "eyebrow": eyebrow,
+        "title": title,
+        "copy": copy,
+        "label": label,
+        "final_eyebrow": QUIZ_FINAL_EYEBROW,
+        "final_title": title,
+        "final_copy": QUIZ_FINAL_COPY,
+        "final_label": QUIZ_FINAL_LABEL,
+        "bar_title": bar_title,
+        "bar_copy": bar_copy,
+        "bar_label": bar_label,
+    }
+
+
+QUIZ_HOOKS: dict[str, dict[str, str]] = {
+    "practice": quiz_hook(
+        "q1",
+        "Before you practice anything",
+        "Find out what you'd actually do.",
+        "Ten instinct questions. No experience required. You get an archetype and the habits to build first.",
+        "Take the Kiss Test",
+        "Never kissed anyone? Still scoreable.",
+        "10 questions on instinct, 60 seconds",
+        "Take the test",
+    ),
+    "technique": quiz_hook(
+        "q1",
+        "Before the next tip",
+        "Am I actually good at this?",
+        "Everyone reads the technique. Almost nobody knows which habit is costing them. Ten questions, one honest number.",
+        "Take the Kiss Test",
+        "Am I actually good at this?",
+        "Scored in 60 seconds",
+        "Take the Kiss Test",
+    ),
+    "touch": quiz_hook(
+        "q10",
+        "You know where. Do you know how?",
+        "Rate your hands, your pace, and everything below the jaw.",
+        "Ten questions, one about their neck. An honest score, an archetype, and the fix.",
+        "Score me",
+        "How good are your hands, honestly?",
+        "Kiss Test, 60 seconds",
+        "Find out",
+    ),
+    "chemistry": quiz_hook(
+        "q1",
+        "You're reading them. Fair.",
+        "Now let's read you.",
+        "When the moment comes, what do you do with it? Ten questions, scored, with an archetype you'll want to screenshot.",
+        "Take the test",
+        "What kind of kisser are you?",
+        "10 questions, scored",
+        "Take the test",
+    ),
+    "relationship": quiz_hook(
+        "q9",
+        "You already have the person.",
+        "Which kisser do they have?",
+        "Ten questions about what you do, two about what they do back. Scored, with the three habits to change first.",
+        "Take the test",
+        "What kind of kisser do they have?",
+        "For people who've kissed the same mouth a thousand times",
+        "Take the test",
+    ),
+    "boundaries": quiz_hook(
+        "q5",
+        "Ask the awkward question properly.",
+        "Find your costliest habit before someone else has to mention it.",
+        "Ten honest questions, one about breath and moisture, all scored. Nobody sees your answers but you.",
+        "Find out",
+        "Which habit is costing you?",
+        "Kiss Test, private, 60 seconds",
+        "Find out",
+    ),
+    "complete-guide": quiz_hook(
+        "q1",
+        "Before you read all of it",
+        "Find out what to skip.",
+        "Ten questions, and the report tells you which three chapters you actually need.",
+        "Take the Kiss Test",
+        "Which three habits should you fix first?",
+        "Kiss Test, scored",
+        "Take it",
+    ),
+}
+
+# Per-slug Kiss Test copy for the biggest posts; any field left out falls back to the cluster hook.
+# "pronoun" picks the engine pronoun set used to render the embedded question statically.
+QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
+    "how-to-kiss-someones-neck": {
+        "question_id": "q10",
+        "eyebrow": "You're on the neck post, so",
+        "title": "How good are you, really, below the jaw?",
+        "final_title": "How good are you, really, below the jaw?",
+        "copy": "Ten questions. One is about the neck. The score is honest and the fix is specific.",
+        "label": "Score me",
+        "bar_title": "Rate your neck game",
+        "bar_copy": "Kiss Test, 60 seconds",
+        "bar_label": "Score me",
+    },
+    "how-to-kiss-slowly": {
+        "question_id": "q1",
+        "eyebrow": "Slow is a superpower. Is it yours?",
+        "title": "Find out if you're The Slow Burn or The Sprinter.",
+        "final_title": "Find out if you're The Slow Burn or The Sprinter.",
+        "copy": "Ten questions, scored. The first is about the moment right before.",
+        "label": "Take the test",
+        "bar_title": "Slow Burn or Sprinter?",
+        "bar_copy": "Kiss Test, 60 seconds",
+        "bar_label": "Find out",
+    },
+    "how-to-kiss-your-boyfriend": {
+        "question_id": "q9",
+        "pronoun": "him",
+        "eyebrow": "You've kissed him a thousand times.",
+        "title": "Which kisser does he actually have?",
+        "final_title": "Which kisser does he actually have?",
+        "copy": "Ten questions about what you do, two about what he does back. Scored, plus the one move for your type.",
+        "label": "Find out",
+        "bar_title": "What kind of kisser does he have?",
+        "bar_copy": "10 questions, 60 seconds",
+        "bar_label": "Find out",
+    },
+    "how-to-practice-kissing": {
+        "question_id": "q1",
+        "eyebrow": "Nothing to practice on? Practice this.",
+        "title": "Score your instincts before your first real one.",
+        "final_title": "Score your instincts before your first real one.",
+        "copy": "Ten questions answered on instinct. No experience needed. You get an archetype and the three habits to build first.",
+        "label": "Take it",
+        "bar_title": "No kisses yet? Still scoreable.",
+        "bar_copy": "Instinct test, 60 seconds",
+        "bar_label": "Take it",
+    },
+    "what-does-a-kiss-on-the-cheek-mean": {
+        "question_id": "q1",
+        "eyebrow": "Whatever that cheek kiss meant",
+        "title": "The next one might not be on the cheek. Ready?",
+        "final_title": "The next one might not be on the cheek. Ready?",
+        "copy": "Ten questions, scored. An archetype, a blurred number, and the habits to fix before it matters.",
+        "label": "Take it",
+        "bar_title": "Ready for the one after the cheek?",
+        "bar_copy": "Kiss Test, 60 seconds",
+        "bar_label": "Take it",
     },
 }
 
@@ -668,7 +859,7 @@ def validate_conversion_override(slug: str, override: Any) -> dict[str, str]:
     if not isinstance(override, dict):
         raise ValueError(f"{slug}: conversion_offer must be an object")
 
-    allowed_fields = {"cluster", "chapter_id", "preview_anchor"}
+    allowed_fields = {"cluster", "chapter_id", "preview_anchor", "surface"}
     unknown_fields = set(override) - allowed_fields
     if unknown_fields:
         unknown = ", ".join(sorted(unknown_fields))
@@ -687,11 +878,17 @@ def validate_conversion_override(slug: str, override: Any) -> dict[str, str]:
     if preview_anchor not in valid_anchors:
         raise ValueError(f"{slug}: invalid conversion_offer preview_anchor: {preview_anchor!r}")
 
-    return {
+    validated = {
         "cluster": cluster,
         "chapter_id": chapter_id,
         "preview_anchor": preview_anchor,
     }
+    surface = override.get("surface")
+    if surface is not None:
+        if surface not in {"buy", "quiz"}:
+            raise ValueError(f"{slug}: invalid conversion_offer surface: {surface!r}")
+        validated["surface"] = str(surface)
+    return validated
 
 
 def classify_conversion_cluster(post: dict[str, Any], source: dict[str, Any]) -> str:
@@ -728,6 +925,25 @@ def buy_hook_for_post(slug: str, cluster: str) -> dict[str, str]:
     return hook
 
 
+def quiz_hook_for_post(slug: str, cluster: str) -> dict[str, str]:
+    """Merge the cluster Kiss Test copy with any per-slug override."""
+    hook = dict(QUIZ_HOOKS[cluster])
+    hook.update(QUIZ_HOOK_OVERRIDES.get(slug, {}))
+    return hook
+
+
+def conversion_surface_for_post(post: dict[str, Any], override: dict[str, str]) -> str:
+    """Pick the arm: a source override wins, then the crossed tests, then category and slug lists."""
+    if override.get("surface"):
+        return override["surface"]
+    slug = str(post["slug"])
+    if slug in BUY_SURFACE_OVERRIDES:
+        return "buy"
+    if slug in QUIZ_SURFACE_OVERRIDES or slugify_category(str(post.get("category", ""))) in QUIZ_SURFACE_CATEGORIES:
+        return "quiz"
+    return DEFAULT_SURFACE
+
+
 def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
     """Create a complete conversion offer record for one article."""
     slug = str(post["slug"])
@@ -742,7 +958,7 @@ def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> d
         "article_slug": slug,
         "article_title": str(post["title"]),
         "offer_key": cluster,
-        "surface": DEFAULT_SURFACE,
+        "surface": conversion_surface_for_post(post, override),
         "chapter_id": chapter_id,
         "chapter_label": f"Chapter {chapter_number}",
         "chapter_title": CHAPTER_TITLES[chapter_id],
@@ -752,6 +968,7 @@ def conversion_offer_for_post(post: dict[str, Any], source: dict[str, Any]) -> d
         "image_alt": str(base["image_alt"]),
         "variant_a": dict(base["variant_a"]),
         "buy": buy_hook_for_post(slug, cluster),
+        "quiz": quiz_hook_for_post(slug, cluster),
     }
 
 
@@ -883,9 +1100,115 @@ def render_article_buy_bar(offer: dict[str, Any]) -> str:
     <!-- BUY_RAIL_BAR_END -->"""
 
 
+@functools.lru_cache(maxsize=None)
+def load_quiz_data() -> dict[str, Any]:
+    """Parse the strict-JSON question bank embedded in the shared scoring engine."""
+    match = QUIZ_DATA_PATTERN.search(QUIZ_ENGINE_PATH.read_text())
+    if not match:
+        raise ValueError(f"{QUIZ_ENGINE_PATH}: QUIZ_DATA markers not found")
+    return json.loads(match.group(1))
+
+
+def quiz_question(question_id: str) -> dict[str, Any]:
+    """Return one engine question by id."""
+    for question in load_quiz_data()["questions"]:
+        if question["id"] == question_id:
+            return question
+    raise KeyError(f"Unknown quiz question: {question_id!r}")
+
+
+def quiz_pronoun_set(pronoun_id: str) -> dict[str, str]:
+    """Return the engine's replacement table for one pronoun option."""
+    for option in load_quiz_data()["pronoun"]["options"]:
+        if option["id"] == pronoun_id:
+            return dict(option["set"])
+    raise KeyError(f"Unknown quiz pronoun option: {pronoun_id!r}")
+
+
+def quiz_text(text: str, pronouns: dict[str, str]) -> str:
+    """Resolve the engine's {he}/{him}/{his} tokens for a static render."""
+    return re.sub(r"\{(he|him|his|He|His)\}", lambda match: pronouns[match.group(1)], text)
+
+
+def quiz_hook_href(
+    offer: dict[str, Any], placement: str, question_id: str | None = None, option_id: str | None = None
+) -> str:
+    """Build the article-to-quiz link; the query string carries the handoff so it works with JavaScript off."""
+    href = (
+        f"{QUIZ_URL}?from={html.escape(str(offer['article_slug']), quote=True)}"
+        f"&amp;hook={html.escape(str(offer['offer_key']), quote=True)}"
+        f"&amp;placement={html.escape(placement, quote=True)}"
+    )
+    if question_id and option_id:
+        href += f"&amp;q={html.escape(question_id, quote=True)}&amp;a={html.escape(option_id, quote=True)}"
+    return href
+
+
+def render_article_quiz_hook(offer: dict[str, Any]) -> str:
+    """Render the in-article Kiss Test card with one engine question embedded as tap targets."""
+    hook = offer["quiz"]
+    placement = "quiz-article-quarter"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    link_attributes = offer_data_attributes(offer, placement)
+    question = quiz_question(str(hook["question_id"]))
+    pronouns = quiz_pronoun_set(str(hook.get("pronoun", QUIZ_DEFAULT_PRONOUN)))
+    options = "\n".join(
+        f'        <li><a class="quiz-hook__option" href="{quiz_hook_href(offer, placement, str(question["id"]), str(option["id"]))}" {link_attributes}>{html.escape(quiz_text(str(option["text"]), pronouns))}</a></li>'
+        for option in question["options"]
+    )
+    return f"""<!-- QUIZ_HOOK_QUARTER_START -->
+<aside class="conversion-offer conversion-offer--quiz js-offer" id="article-kiss-test-hook" {surface_attributes} aria-labelledby="article-kiss-test-hook-title">
+    <p class="conversion-offer__eyebrow">{html.escape(str(hook['eyebrow']))}</p>
+    <h2 class="conversion-offer__title" id="article-kiss-test-hook-title">{html.escape(str(hook['title']))}</h2>
+    <p class="conversion-offer__copy">{html.escape(str(hook['copy']))}</p>
+    <p class="quiz-hook__question">{html.escape(quiz_text(str(question['prompt']), pronouns))}</p>
+    <ul class="quiz-hook__options">
+{options}
+    </ul>
+    <p class="conversion-offer__meta"><a href="{quiz_hook_href(offer, placement)}" {link_attributes}>{html.escape(str(hook['label']))}</a> · {QUIZ_META_SUFFIX}</p>
+</aside>
+<!-- QUIZ_HOOK_QUARTER_END -->"""
+
+
+def render_article_quiz_final(offer: dict[str, Any]) -> str:
+    """Render the end-of-article Kiss Test card with the one remaining in-article book link."""
+    hook = offer["quiz"]
+    placement = "quiz-article-final"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    return f"""            <!-- QUIZ_HOOK_FINAL_START -->
+            <aside class="conversion-final conversion-final--quiz js-offer" {surface_attributes} aria-labelledby="article-kiss-test-final-title">
+                <p class="conversion-offer__eyebrow">{html.escape(str(hook['final_eyebrow']))}</p>
+                <h2 class="conversion-final__title" id="article-kiss-test-final-title">{html.escape(str(hook['final_title']))}</h2>
+                <p class="conversion-final__copy">{html.escape(str(hook['final_copy']))}</p>
+                <a class="conversion-button" href="{quiz_hook_href(offer, placement)}" {offer_data_attributes(offer, placement)}>{html.escape(str(hook['final_label']))}</a>
+                <p class="conversion-final__meta"><a href="{BOOK_URL}" data-offer-link="true" data-offer-placement="article-final-book">{html.escape(QUIZ_BOOK_LINK_LABEL)}</a></p>
+            </aside>
+            <!-- QUIZ_HOOK_FINAL_END -->"""
+
+
+def render_article_quiz_bar(offer: dict[str, Any]) -> str:
+    """Render the mobile Kiss Test bar; the shared .mobile-buy-bar class keeps conversion.js driving it."""
+    hook = offer["quiz"]
+    placement = "quiz-mobile-bar"
+    surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
+    return f"""    <!-- QUIZ_HOOK_BAR_START -->
+    <aside class="mobile-buy-bar mobile-buy-bar--quiz js-offer" {surface_attributes} aria-label="Kiss test" aria-hidden="true">
+        <p class="mobile-buy-bar__copy"><strong>{html.escape(str(hook['bar_title']))}</strong><span>{html.escape(str(hook['bar_copy']))}</span></p>
+        <a class="mobile-buy-bar__link" href="{quiz_hook_href(offer, placement)}" tabindex="-1" {offer_data_attributes(offer, placement)}>{html.escape(str(hook['bar_label']))}</a>
+    </aside>
+    <!-- QUIZ_HOOK_BAR_END -->"""
+
+
 def strip_generated_conversion_markup(page_html: str) -> str:
     """Remove this builder's conversion blocks, old and new, so regeneration stays idempotent."""
-    for marker in ("PROOF_LED_QUARTER", "PROOF_LED_MOBILE", "BUY_RAIL_QUARTER", "BUY_RAIL_BAR"):
+    for marker in (
+        "PROOF_LED_QUARTER",
+        "PROOF_LED_MOBILE",
+        "BUY_RAIL_QUARTER",
+        "BUY_RAIL_BAR",
+        "QUIZ_HOOK_QUARTER",
+        "QUIZ_HOOK_BAR",
+    ):
         page_html = re.sub(
             rf"\s*<!-- {marker}_START -->.*?<!-- {marker}_END -->\s*",
             "\n",
@@ -955,7 +1278,14 @@ def insert_offer_after_complete_section(content_html: str, offer_html: str) -> s
 
 
 def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> str:
-    """Apply all buy-rail conversion surfaces to one generated article page."""
+    """Apply the article's conversion surfaces (buy rail or Kiss Test hooks) to one generated page."""
+    quiz = offer["surface"] == "quiz"
+    quarter_html = render_article_quiz_hook(offer) if quiz else render_article_buy_card(offer)
+    final_html = render_article_quiz_final(offer) if quiz else render_article_buy_final(offer)
+    bar_html = render_article_quiz_bar(offer) if quiz else render_article_buy_bar(offer)
+    nav_href = quiz_hook_href(offer, "post-nav") if quiz else book_offer_href(offer, "post-nav")
+    nav_short, nav_long = ("Kiss Test", "Take the Kiss Test") if quiz else ("Get Book", "Get the book")
+
     page_html = strip_generated_conversion_markup(page_html)
     page_html = re.sub(
         r"\s*<!-- Google tag \(gtag\.js\).*?</script>\s*<script>.*?</script>\s*",
@@ -989,14 +1319,14 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     content_start = content_open_start + len(content_open)
     content_end, _ = matching_div_close(page_html, content_open_start)
     content_html = strip_legacy_book_asides(page_html[content_start:content_end])
-    content_html = insert_offer_after_complete_section(content_html, render_article_buy_card(offer))
+    content_html = insert_offer_after_complete_section(content_html, quarter_html)
     page_html = f"{page_html[:content_start]}{content_html}{page_html[content_end:]}"
 
-    final_markers = r"(?:PROOF_LED|BUY_RAIL)_FINAL"
+    final_markers = r"(?:PROOF_LED|BUY_RAIL|QUIZ_HOOK)_FINAL"
     if re.search(rf"<!-- {final_markers}_START -->", page_html):
         page_html = re.sub(
             rf"\s*<!-- {final_markers}_START -->.*?<!-- {final_markers}_END -->\s*",
-            f"\n{render_article_buy_final(offer)}\n",
+            f"\n{final_html}\n",
             page_html,
             count=1,
             flags=re.DOTALL,
@@ -1007,7 +1337,7 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         if final_start < 0 or final_div_start < 0:
             raise ValueError(f"{offer['article_slug']}: final offer boundary not found")
         _, final_div_end = matching_div_close(page_html, final_div_start)
-        page_html = f"{page_html[:final_start]}{render_article_buy_final(offer)}{page_html[final_div_end:]}"
+        page_html = f"{page_html[:final_start]}{final_html}{page_html[final_div_end:]}"
 
     page_html = page_html.replace(
         '            "jobTitle": "Author and Intimacy Expert",\n'
@@ -1015,17 +1345,18 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         '            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."',
         '            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."',
     )
-    # The header button is the look-inside path to /book/; the one-tap buys are the three surfaces.
+    # The header button follows the arm: look inside /book/ on the buy arm, the Kiss Test on the quiz arm.
     page_html = re.sub(
-        r'href="/book/\?[^\"]*utm_content=post[-_]nav[^\"]*"',
-        f'href="{book_offer_href(offer, "post-nav")}"',
+        r'href="(?:/book/\?[^"]*utm_content=post[-_]nav[^"]*|/kiss-test/\?[^"]*placement=post-nav[^"]*)"',
+        lambda _match: f'href="{nav_href}"',
         page_html,
         count=1,
     )
-    page_html = page_html.replace(
-        '<span class="hidden sm:inline">Get the Book</span>',
-        '<span class="hidden sm:inline">Get the book</span>',
-        1,
+    page_html = re.sub(
+        r'(data-offer-placement="post-nav"[^>]*>\s*<span class="sm:hidden">)[^<]*(</span>\s*<span class="hidden sm:inline">)[^<]*(</span>)',
+        lambda match: f"{match.group(1)}{nav_short}{match.group(2)}{nav_long}{match.group(3)}",
+        page_html,
+        count=1,
     )
     page_html = re.sub(
         r"\s*<script src=\"/assets/offer-catalog\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
@@ -1035,7 +1366,7 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     page_html = re.sub(
         r"\s*<script src=\"/assets/conversion\.js(?:\?v=[^\"]+)?\" defer></script>\s*",
         (
-            f"\n{render_article_buy_bar(offer)}\n\n"
+            f"\n{bar_html}\n\n"
             f'    <script src="/assets/conversion.js?v={ASSET_VERSION}" defer></script>\n'
         ),
         page_html,
@@ -1055,7 +1386,11 @@ def rebuild_conversion_surfaces() -> None:
         if not page_path.exists():
             raise FileNotFoundError(f"Missing generated article page: {page_path}")
         page_path.write_text(apply_conversion_to_article_page(page_path.read_text(), offer))
-    print(f"Rebuilt buy-rail conversion surfaces for {len(catalog)} article routes.")
+    quiz_count = sum(1 for offer in catalog.values() if offer["surface"] == "quiz")
+    print(
+        f"Rebuilt conversion surfaces for {len(catalog)} article routes "
+        f"({quiz_count} Kiss Test, {len(catalog) - quiz_count} buy rail)."
+    )
 
 
 def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:
