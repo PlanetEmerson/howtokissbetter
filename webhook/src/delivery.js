@@ -88,12 +88,15 @@ export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
     if (!response.ok) {
       // Provider status and error code only; never the recipient or the key.
       let code = "";
+      let detail = "";
       try {
-        code = String((await response.json())?.code ?? "");
+        const body = await response.json();
+        code = String(body?.code ?? "");
+        detail = String(body?.message ?? "").slice(0, 160);
       } catch {
         code = "";
       }
-      console.warn("brevo_send_failed", response.status, code);
+      console.warn("brevo_send_failed", response.status, code, detail);
     }
     return response.ok;
   } catch (error) {
