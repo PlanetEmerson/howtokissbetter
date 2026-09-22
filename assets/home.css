@@ -295,7 +295,8 @@ html {
     background: linear-gradient(180deg, var(--home-gold-light), #c99a28);
     border: 1px solid #edcf6f;
     box-shadow: inset 0 0 0 3px rgba(64, 35, 6, 0.18), 0 14px 35px rgba(178, 124, 13, 0.2);
-    color: #21150b;
+    color: #17120e;
+    font-weight: 800;
 }
 
 .home-button--primary:hover {
@@ -1071,7 +1072,7 @@ html {
     background: var(--home-gold-light);
     border: 0;
     border-radius: 0.3rem;
-    color: #21150b;
+    color: #17120e;
     cursor: pointer;
     display: inline-flex;
     font-size: 0.78rem;

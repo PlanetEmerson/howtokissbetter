@@ -56,14 +56,14 @@ body {
 
 .conversion-button {
     align-items: center;
-    background: linear-gradient(135deg, #e2c55e, var(--conversion-gold-dark));
+    background: linear-gradient(135deg, #dcbd52, var(--conversion-gold-dark));
     border: 1px solid transparent;
     border-radius: 0.75rem;
-    color: #211b16;
+    color: #17120e;
     cursor: pointer;
     display: inline-flex;
     font-family: Inter, system-ui, sans-serif;
-    font-size: 0.94rem;
+    font-size: 1rem;
     font-weight: 800;
     justify-content: center;
     line-height: 1.2;
@@ -72,6 +72,7 @@ body {
     text-align: center;
     text-decoration: none;
     transition: filter 160ms ease, transform 160ms ease;
+    letter-spacing: 0.01em;
 }
 
 .conversion-button--compact {
@@ -254,7 +255,7 @@ body {
 }
 
 .article-content .conversion-offer__link {
-    color: #211b16;
+    color: #17120e;
     text-decoration: none;
 }
 
@@ -282,7 +283,7 @@ body {
 }
 
 .conversion-final .conversion-button {
-    color: #211b16;
+    color: #17120e;
     text-decoration: none;
 }
 
@@ -352,11 +353,11 @@ body {
     background: var(--conversion-gold);
     border: 0;
     border-radius: 0.6rem;
-    color: #211b16;
+    color: #17120e;
     cursor: pointer;
     display: inline-flex;
     flex: 0 0 auto;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     font-weight: 800;
     line-height: 1.2;
     min-height: 2.75rem;
@@ -1119,7 +1120,7 @@ body {
     background: var(--conversion-gold);
     border: 0;
     border-radius: 0.6rem;
-    color: #211b16;
+    color: #17120e;
     cursor: pointer;
     display: inline-flex;
     font-size: 0.82rem;
@@ -1475,7 +1476,7 @@ body {
     }
 
     .article-content .conversion-offer__link {
-        font-size: 0.78rem;
+        font-size: 0.92rem;
         min-height: 2.85rem;
         padding: 0.75rem 0.8rem;
     }
