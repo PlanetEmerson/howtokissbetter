@@ -55,7 +55,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922b">
-    <link rel="stylesheet" href="/assets/home.css?v=20260922">
+    <link rel="stylesheet" href="/assets/home.css?v=20260922b">
 
     <script type="application/ld+json">
     {
@@ -171,12 +171,19 @@
 
         <section class="home-share" aria-labelledby="home-share-kicker">
             <div class="home-section-inner home-share__inner">
-                <div class="home-share__phone home-reveal" aria-hidden="true">
-                    <div class="home-share__screen">
-                        <p class="home-share__bubble home-share__bubble--out">I got The Slow Burn 💀 what are you</p>
-                        <img class="home-share__card" src="/assets/images/kiss-test/archetypes/slow-burn-mw-thumb.webp" alt="" width="540" height="675" loading="lazy" decoding="async">
-                        <p class="home-share__bubble">taking it now. lower score buys dinner</p>
-                        <p class="home-share__bubble">THE STATUE. i'm suing</p>
+                <div class="home-share__scene">
+                    <picture class="home-share__photo home-reveal">
+                        <source type="image/avif" srcset="/assets/images/home/share-backseat-960.avif 960w, /assets/images/home/share-backseat-1440.avif 1440w" sizes="(min-width: 1200px) 47rem, (min-width: 900px) 66vw, (min-width: 768px) 100vw, 205vw">
+                        <source type="image/webp" srcset="/assets/images/home/share-backseat-960.webp 960w, /assets/images/home/share-backseat-1440.webp 1440w" sizes="(min-width: 1200px) 47rem, (min-width: 900px) 66vw, (min-width: 768px) 100vw, 205vw">
+                        <img src="/assets/images/home/share-backseat-960.webp" alt="A couple in the back seat of a car, laughing together at something on his phone" width="1440" height="810" loading="lazy" decoding="async">
+                    </picture>
+                    <div class="home-share__phone home-reveal" aria-hidden="true">
+                        <div class="home-share__screen">
+                            <p class="home-share__bubble home-share__bubble--out">I got The Slow Burn 💀 what are you</p>
+                            <img class="home-share__card" src="/assets/images/kiss-test/archetypes/slow-burn-mw-thumb.webp" alt="" width="540" height="675" loading="lazy" decoding="async">
+                            <p class="home-share__bubble">taking it now. lower score buys dinner</p>
+                            <p class="home-share__bubble">THE STATUE. i'm suing</p>
+                        </div>
                     </div>
                 </div>
                 <div class="home-share__copy">
@@ -223,20 +230,24 @@
         </section>
 
         <section class="home-guides" id="guides" aria-labelledby="home-guides-title">
-            <div class="home-section-inner">
-                <p class="home-kicker home-reveal">Free guides</p>
-                <h2 id="home-guides-title" class="home-reveal">80+ free guides, sorted by what is on your mind.</h2>
-                <div class="home-guides__chips home-reveal">
-                    <a class="home-guides__chip" href="/blog/category/techniques/">Techniques</a>
-                    <a class="home-guides__chip" href="/blog/category/first-kiss/">First kiss</a>
-                    <a class="home-guides__chip" href="/blog/category/relationships/">Relationships</a>
-                    <a class="home-guides__chip" href="/blog/category/mistakes/">Mistakes</a>
-                    <a class="home-guides__chip" href="/blog/category/anatomy/">Anatomy</a>
-                    <a class="home-guides__chip" href="/blog/category/science/">Science</a>
-                    <a class="home-guides__chip" href="/blog/category/preparation/">Preparation</a>
-                    <a class="home-guides__chip" href="/blog/category/special-situations/">Special situations</a>
+            <div class="home-section-inner home-guides__inner">
+                <div class="home-guides__heading">
+                    <p class="home-kicker home-reveal">Free guides</p>
+                    <h2 id="home-guides-title" class="home-reveal">80+ free guides, sorted by what is on your mind.</h2>
                 </div>
-                <p><a class="home-text-link" href="/blog/">Browse every guide</a></p>
+                <div class="home-guides__list">
+                    <div class="home-guides__chips home-reveal">
+                        <a class="home-guides__chip" href="/blog/category/techniques/">Techniques</a>
+                        <a class="home-guides__chip" href="/blog/category/first-kiss/">First kiss</a>
+                        <a class="home-guides__chip" href="/blog/category/relationships/">Relationships</a>
+                        <a class="home-guides__chip" href="/blog/category/mistakes/">Mistakes</a>
+                        <a class="home-guides__chip" href="/blog/category/anatomy/">Anatomy</a>
+                        <a class="home-guides__chip" href="/blog/category/science/">Science</a>
+                        <a class="home-guides__chip" href="/blog/category/preparation/">Preparation</a>
+                        <a class="home-guides__chip" href="/blog/category/special-situations/">Special situations</a>
+                    </div>
+                    <p><a class="home-text-link" href="/blog/">Browse every guide</a></p>
+                </div>
             </div>
         </section>
 

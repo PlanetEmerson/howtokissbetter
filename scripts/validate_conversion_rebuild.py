@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260922b"
-HOME_ASSET_VERSION = "20260922"
+HOME_ASSET_VERSION = "20260922b"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
@@ -25,7 +25,7 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922">'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922b">'
 QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922d" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"

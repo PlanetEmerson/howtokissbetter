@@ -122,10 +122,10 @@
 
 .quiz-hero__deck {
     color: #e9e2e6;
-    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    font-size: clamp(1.1rem, 0.85rem + 0.6vw, 1.4rem);
     line-height: 1.55;
     margin: 1.1rem 0 1.6rem;
-    max-width: 34rem;
+    max-width: 38rem;
 }
 
 .quiz-hero__actions {
@@ -138,12 +138,12 @@
 .quiz-hero__objections {
     color: #e9e2e6;
     display: grid;
-    font-size: 0.9rem;
+    font-size: clamp(0.9rem, 0.72rem + 0.35vw, 1rem);
     gap: 0.35rem;
     line-height: 1.4;
     list-style: none;
     margin: 1.4rem 0 0;
-    max-width: 34rem;
+    max-width: 36rem;
     padding: 0;
 }
 
@@ -166,8 +166,13 @@
 .quiz-hero__meta,
 .quiz-app__meta {
     color: var(--quiz-muted);
-    font-size: 0.86rem;
+    font-size: clamp(0.86rem, 0.7rem + 0.3vw, 0.95rem);
     margin: 0;
+}
+
+/* Landing-only type scale; the result page keeps the sizes above and in conversion.css. */
+[data-page-kind="quiz"] .conversion-kicker {
+    font-size: clamp(0.74rem, 0.62rem + 0.3vw, 0.86rem);
 }
 
 /* Sections */
@@ -185,6 +190,16 @@
     width: min(100% - 2rem, var(--quiz-measure));
 }
 
+.quiz-section__inner--wide {
+    max-width: 72rem;
+    width: min(100% - 2rem, 72rem);
+}
+
+:where(.quiz-section--app) .quiz-section__inner {
+    max-width: 44rem;
+    width: min(100% - 2rem, 44rem);
+}
+
 .quiz-section h2,
 .quiz-section-title {
     color: var(--quiz-cream);
@@ -192,9 +207,15 @@
     margin: 0 0 1rem;
 }
 
+[data-page-kind="quiz"] .quiz-section h2 {
+    font-size: clamp(2.1rem, 5vw, 3.4rem);
+}
+
 .quiz-section__lede {
     color: var(--quiz-muted);
+    font-size: clamp(1.05rem, 0.85rem + 0.5vw, 1.3rem);
     margin-top: -0.25rem;
+    max-width: 60ch;
 }
 
 .quiz-section p {
@@ -211,13 +232,13 @@
     border: 1px solid var(--quiz-line);
     border-radius: var(--conversion-radius);
     box-shadow: var(--conversion-shadow);
-    padding: clamp(1.25rem, 4vw, 2.25rem);
+    padding: clamp(1.25rem, 4vw, 2.75rem);
     scroll-margin-top: 5.5rem;
 }
 
 .quiz-app__intro p {
     color: var(--quiz-text);
-    font-size: 1.02rem;
+    font-size: clamp(1.02rem, 0.8rem + 0.5vw, 1.15rem);
 }
 
 .quiz-app__start {
@@ -242,7 +263,7 @@
 
 .quiz-progress {
     color: var(--quiz-gold);
-    font-size: 0.78rem;
+    font-size: clamp(0.78rem, 0.66rem + 0.3vw, 0.9rem);
     font-weight: 700;
     letter-spacing: 0.14em;
     margin: 0;
@@ -269,7 +290,7 @@
 
 .quiz-question {
     color: var(--quiz-cream);
-    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
     margin: 0.25rem 0 0.5rem;
     text-wrap: balance;
 }
@@ -280,7 +301,7 @@
 
 .quiz-note {
     color: var(--quiz-muted);
-    font-size: 0.9rem;
+    font-size: clamp(0.9rem, 0.75rem + 0.3vw, 1rem);
     margin: 0;
 }
 
@@ -300,10 +321,10 @@
     color: var(--quiz-cream);
     cursor: pointer;
     display: flex;
-    font-size: 1rem;
+    font-size: clamp(1rem, 0.85rem + 0.25vw, 1.05rem);
     line-height: 1.4;
-    min-height: 2.75rem;
-    padding: 0.85rem 1rem;
+    min-height: clamp(2.75rem, 2.2rem + 1vw, 3.5rem);
+    padding: clamp(0.85rem, 0.6rem + 0.5vw, 1.1rem) clamp(1rem, 0.7rem + 0.6vw, 1.3rem);
     text-align: left;
     transition: border-color var(--conversion-t-fast) var(--conversion-ease-out), background var(--conversion-t-fast) var(--conversion-ease-out), transform var(--conversion-t-fast) var(--conversion-ease-out);
     width: 100%;
@@ -376,7 +397,7 @@
 .quiz-dial__name {
     color: var(--quiz-muted);
     display: block;
-    font-size: 0.68rem;
+    font-size: clamp(0.68rem, 0.55rem + 0.3vw, 0.82rem);
     line-height: 1.2;
     margin-top: 0.35rem;
     text-align: center;
@@ -398,37 +419,32 @@
 /* Landing: archetypes, dimensions, stems, tiers */
 .quiz-archetypes {
     display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    gap: clamp(1.25rem, 0.75rem + 1vw, 2rem) clamp(1rem, 0.4rem + 1vw, 1.5rem);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     list-style: none;
     margin: 1.5rem 0 0;
     padding: 0;
 }
 
-.quiz-archetype-card {
-    background: rgba(35, 28, 34, 0.9);
-    border: 1px solid var(--quiz-line);
-    border-radius: 1rem;
-    overflow: hidden;
-}
-
 .quiz-archetype-card img {
     aspect-ratio: 4 / 5;
+    border: 1px solid var(--quiz-line);
+    border-radius: 0.9rem;
     object-fit: cover;
     width: 100%;
 }
 
 .quiz-archetype-card h3 {
     color: var(--quiz-cream);
-    font-size: 1.35rem;
-    margin: 0.85rem 0.9rem 0.25rem;
+    font-size: clamp(1.35rem, 1.2rem + 0.3vw, 1.5rem);
+    margin: 0.85rem 0 0.25rem;
 }
 
 .quiz-archetype-card p {
     color: var(--quiz-muted);
-    font-size: 0.9rem;
+    font-size: clamp(0.9rem, 0.78rem + 0.25vw, 1rem);
     line-height: 1.45;
-    margin: 0 0.9rem 0.95rem;
+    margin: 0;
 }
 
 .quiz-dims {
@@ -445,7 +461,7 @@
 .quiz-dims dt {
     color: var(--quiz-cream);
     font-family: var(--quiz-serif);
-    font-size: 1.3rem;
+    font-size: clamp(1.3rem, 1.1rem + 0.4vw, 1.6rem);
     font-weight: 700;
 }
 
@@ -458,7 +474,7 @@
     color: var(--quiz-cream);
     display: grid;
     font-family: var(--quiz-serif);
-    font-size: 1.3rem;
+    font-size: clamp(1.3rem, 1.1rem + 0.4vw, 1.6rem);
     gap: 0.6rem;
     line-height: 1.3;
     margin: 0;
@@ -468,29 +484,26 @@
 .quiz-stems li::marker {
     color: var(--quiz-gold);
     font-family: var(--quiz-sans);
-    font-size: 0.85rem;
+    font-size: clamp(0.85rem, 0.7rem + 0.3vw, 1rem);
     font-weight: 700;
 }
 
 .quiz-tiers {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
-.quiz-tier {
-    border: 1px solid var(--quiz-line);
-    border-radius: 1rem;
-    padding: 1.1rem 1.2rem 0.4rem;
-}
-
+/* Only the paid tier is boxed; the free tier is plain prose beside it. */
 .quiz-tier--paid {
     background: rgba(74, 28, 35, 0.35);
-    border-color: rgba(212, 175, 55, 0.5);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    border-radius: 1rem;
+    padding: clamp(1.1rem, 0.6rem + 1.2vw, 1.75rem) clamp(1.2rem, 0.7rem + 1.3vw, 2rem) 0.4rem;
 }
 
 .quiz-tier__retake {
     color: var(--quiz-cream);
-    font-size: 0.9rem;
+    font-size: clamp(0.9rem, 0.75rem + 0.3vw, 1rem);
     font-weight: 600;
     margin: 0 0 0.35rem;
 }
@@ -523,13 +536,22 @@
     line-height: 1.7;
 }
 
+[data-page-kind="quiz"] .quiz-footer-lines {
+    font-size: clamp(0.86rem, 0.7rem + 0.3vw, 0.95rem);
+}
+
+.quiz-scoring p {
+    font-size: clamp(1rem, 0.85rem + 0.3vw, 1.1rem);
+    max-width: 60ch;
+}
+
 .quiz-footer-lines span {
     margin: 0 0.35rem;
 }
 
 .quiz-author {
     color: var(--quiz-muted);
-    font-size: 0.9rem;
+    font-size: clamp(0.9rem, 0.75rem + 0.3vw, 1rem);
 }
 
 .quiz-author a,
@@ -1310,6 +1332,61 @@
 }
 
 /* Responsive */
+@media (min-width: 768px) {
+    .quiz-dims {
+        gap: 1.5rem 2rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 900px) {
+    .quiz-section__inner--wide > h2 {
+        margin-bottom: 1.5rem;
+    }
+
+    .quiz-dims {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .quiz-stems {
+        column-gap: 3rem;
+        grid-auto-flow: column;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: repeat(5, auto);
+        row-gap: 0.8rem;
+    }
+
+    .quiz-tiers {
+        align-items: start;
+        gap: 2rem 3rem;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .quiz-scoring {
+        align-items: start;
+        display: grid;
+        gap: 1rem 3rem;
+        grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    }
+
+    .quiz-scoring h2,
+    .quiz-scoring p {
+        margin: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .quiz-page[data-page-kind="quiz"] {
+        font-size: 1.0625rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .quiz-archetypes {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 900px) {
     .quiz-faq-layout {
         grid-template-columns: 1fr;
@@ -1526,8 +1603,8 @@
     .quiz-score-card,
     .quiz-locked-section,
     .quiz-app,
-    .quiz-archetype-card,
-    .quiz-tier,
+    .quiz-archetype-card img,
+    .quiz-tier--paid,
     .quiz-book__card,
     .quiz-share__shell,
     .quiz-share__action,
