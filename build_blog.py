@@ -1514,16 +1514,23 @@ def build_archive_head(title: str, description: str, canonical: str, schema: dic
     <meta property="og:url" content="{canonical_attr}">
     <meta property="og:title" content="{title_attr}">
     <meta property="og:description" content="{description_attr}">
-    <meta property="og:image" content="{SITE_URL}/assets/images/hero-bg-v2.png">
+    <meta property="og:image" content="{SITE_URL}/assets/images/og/blog.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="Gold lips on a wine background, with the words: Free guides to kissing well.">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{title_attr}">
     <meta name="twitter:description" content="{description_attr}">
-    <meta name="twitter:image" content="{SITE_URL}/assets/images/hero-bg-v2.png">
+    <meta name="twitter:image" content="{SITE_URL}/assets/images/og/blog.jpg">
+    <meta name="twitter:image:alt" content="Gold lips on a wine background, with the words: Free guides to kissing well.">
 
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💋</text></svg>">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 {FONT_AND_TAILWIND_SNIPPET}{ARCHIVE_STYLES}
     <!-- JSON-LD Schema -->
@@ -1837,6 +1844,41 @@ def rebuild_archive_pages() -> None:
     print("Rebuilt blog index and category pages.")
 
 
+def image_size(path: Path) -> tuple[int, int]:
+    """Pixel size of a PNG or JPEG read from the file header, so no imaging library is needed."""
+    data = path.read_bytes()
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+    if data[:2] != b"\xff\xd8":
+        raise ValueError(f"{path} is not a PNG or JPEG")
+    offset = 2
+    while offset + 4 <= len(data):
+        if data[offset] != 0xFF:
+            offset += 1
+            continue
+        marker = data[offset + 1]
+        if marker in (0xFF, 0x01) or 0xD0 <= marker <= 0xD8:
+            offset += 1 if marker == 0xFF else 2
+            continue
+        length = int.from_bytes(data[offset + 2 : offset + 4], "big")
+        if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+            return int.from_bytes(data[offset + 7 : offset + 9], "big"), int.from_bytes(data[offset + 5 : offset + 7], "big")
+        offset += 2 + length
+    raise ValueError(f"{path} has no JPEG frame header")
+
+
+def og_image_dimensions(slug: str) -> str:
+    """The og:image:width and og:image:height lines for a post's featured.jpg; empty until the image exists."""
+    featured = BLOG_DIR / slug / "featured.jpg"
+    if not featured.exists():
+        return ""
+    width, height = image_size(featured)
+    return (
+        f'\n    <meta property="og:image:width" content="{width}">'
+        f'\n    <meta property="og:image:height" content="{height}">'
+    )
+
+
 def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     """Build a blog post from n8n data."""
     fm = parse_frontmatter(data["frontmatter"])
@@ -1871,6 +1913,7 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
         "{{TOC_ITEMS}}": extract_toc(content),
         "{{CATEGORY_SLUG}}": slugify_category(category),
         "{{RELATED_POSTS}}": related_posts,
+        "{{OG_IMAGE_DIMENSIONS}}": og_image_dimensions(slug),
     }
     for placeholder, value in replacements.items():
         page_html = page_html.replace(placeholder, value)

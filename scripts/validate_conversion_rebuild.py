@@ -60,6 +60,13 @@ BUY_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
 QUIZ_PLACEMENTS = ("quiz-article-quarter", "quiz-article-final", "quiz-mobile-bar")
 QUIZ_URL = "/kiss-test/"
 QUIZ_PAGES = ("kiss-test/index.html", "kiss-test/result/index.html")
+FAVICON_LINKS = (
+    '<link rel="icon" href="/favicon.ico" sizes="32x32">',
+    '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
+    '<link rel="apple-touch-icon" href="/apple-touch-icon.png">',
+)
+SHARE_IMAGES = ("assets/images/og/home.jpg", "assets/images/og/book.jpg", "assets/images/og/blog.jpg", "assets/images/kiss-test/og.jpg")
+SHARE_IMAGE_MAX_BYTES = 300_000  # WhatsApp and Messenger drop the preview above this
 KISS_TEST_LOCKED_LINES = (
     "$4.99, one time, 30-day guarantee",
     "Retakes free for 30 days.",
@@ -587,6 +594,8 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         if not page.exists():
             continue
         page_html = page.read_text()
+        validate_head_icons(validation, slug, page_html)
+        validate_share_image(validation, slug, page_html)
         cluster = str(offer.get("offer_key"))
         chapter = str(offer.get("chapter_id"))
         anchor = str(offer.get("preview_anchor"))
@@ -723,6 +732,8 @@ def validate_build_constants(validation: Validation) -> None:
 def validate_book(validation: Validation) -> Path:
     page = ROOT / "book" / "index.html"
     page_html = page.read_text()
+    validate_head_icons(validation, "book page", page_html)
+    validate_share_image(validation, "book page", page_html)
     collector = LinkCollector()
     collector.feed(page_html)
     anchors = set(collector.ids)
@@ -787,6 +798,8 @@ def validate_book(validation: Validation) -> Path:
 def validate_home(validation: Validation) -> Path:
     page = ROOT / "index.html"
     page_html = page.read_text()
+    validate_head_icons(validation, "homepage", page_html)
+    validate_share_image(validation, "homepage", page_html)
     lowered = page_html.lower()
     collector = LinkCollector()
     collector.feed(page_html)
@@ -891,6 +904,7 @@ def validate_thanks_page(validation: Validation) -> Path:
     if not page.exists():
         return page
     page_html = page.read_text()
+    validate_head_icons(validation, "book download page", page_html)
     validation.require('<meta name="robots" content="noindex, follow">' in page_html, "book download page must be noindex")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/thanks/">' in page_html, "book download page canonical is wrong")
     validation.require('data-page-kind="book-thanks"' in page_html, "book download page kind is missing")
@@ -937,6 +951,8 @@ def validate_quiz_pages(validation: Validation) -> None:
         if not page.exists():
             continue
         page_html = page.read_text()
+        validate_head_icons(validation, relative, page_html)
+        validate_share_image(validation, relative, page_html)
         validation.require(CONVERSION_CSS_TAG in page_html and CONVERSION_JS_TAG in page_html, f"{relative} conversion assets are stale")
         validation.require(QUIZ_CSS_TAG in page_html, f"{relative} quiz stylesheet is stale")
         validation.require(QUIZ_JS_TAG in page_html, f"{relative} quiz script is stale")
@@ -952,6 +968,61 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")
 
 
+def validate_head_icons(validation: Validation, label: str, page_html: str) -> None:
+    for link in FAVICON_LINKS:
+        validation.equal(page_html.count(link), 1, f"{label} favicon link count: {link[:44]}")
+    validation.require("data:image/svg+xml" not in page_html, f"{label} still carries the emoji favicon")
+
+
+def validate_share_image(validation: Validation, label: str, page_html: str) -> None:
+    """og:image must be an absolute JPG or PNG that exists, with true dimensions, alt text and a matching large Twitter card."""
+    build_blog = load_build_blog()
+    match = re.search(r'<meta property="og:image" content="([^"]+)">', page_html)
+    validation.require(match is not None, f"{label} has no og:image")
+    if match is None:
+        return
+    url = match.group(1)
+    prefix = f"{build_blog.SITE_URL}/"
+    validation.require(url.startswith(prefix) and url.endswith((".jpg", ".png")), f"{label} og:image is not an absolute JPG or PNG URL")
+    image = ROOT / url[len(prefix):]
+    validation.require(image.exists(), f"{label} og:image file is missing: {url}")
+    declared = re.search(r'<meta property="og:image:width" content="(\d+)">\s*<meta property="og:image:height" content="(\d+)">', page_html)
+    validation.require(declared is not None, f"{label} og:image has no width and height")
+    if image.exists() and declared is not None:
+        validation.equal((int(declared.group(1)), int(declared.group(2))), build_blog.image_size(image), f"{label} og:image dimensions")
+    validation.equal(page_html.count('<meta property="og:image:alt" content="'), 1, f"{label} og:image:alt count")
+    validation.equal(page_html.count('<meta name="twitter:card" content="summary_large_image">'), 1, f"{label} twitter card count")
+    validation.equal(page_html.count(f'<meta name="twitter:image" content="{url}">'), 1, f"{label} twitter:image count")
+    validation.equal(page_html.count('<meta name="twitter:image:alt" content="'), 1, f"{label} twitter:image:alt count")
+
+
+def validate_brand_assets(validation: Validation) -> None:
+    build_blog = load_build_blog()
+    ico = ROOT / "favicon.ico"
+    validation.require(ico.exists() and ico.read_bytes()[:6] == b"\x00\x00\x01\x00\x03\x00", "favicon.ico is missing or does not hold three sizes")
+    svg = ROOT / "favicon.svg"
+    validation.require(svg.exists() and "<svg" in svg.read_text(), "favicon.svg is missing")
+    touch = ROOT / "apple-touch-icon.png"
+    validation.require(touch.exists() and build_blog.image_size(touch) == (180, 180), "apple-touch-icon.png is missing or not 180x180")
+    for relative in SHARE_IMAGES:
+        image = ROOT / relative
+        validation.require(image.exists(), f"share image is missing: {relative}")
+        if image.exists():
+            validation.equal(build_blog.image_size(image), (1200, 630), f"{relative} size")
+            validation.require(image.stat().st_size <= SHARE_IMAGE_MAX_BYTES, f"{relative} exceeds 300 KB")
+
+
+def validate_listing_pages(validation: Validation) -> list[Path]:
+    pages = [ROOT / "blog/index.html"] + sorted((ROOT / "blog/category").glob("*/index.html"))
+    validation.require(len(pages) >= 9, "blog listing pages are missing")
+    for page in pages:
+        label = str(page.relative_to(ROOT))
+        page_html = page.read_text()
+        validate_head_icons(validation, label, page_html)
+        validate_share_image(validation, label, page_html)
+    return pages
+
+
 def validate_secondary_pages(validation: Validation) -> list[Path]:
     confirmed = ROOT / "free-chapter-confirmed/index.html"
     confirmed_html = confirmed.read_text()
@@ -960,6 +1031,15 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
     validation.require(CONVERSION_CSS_TAG in confirmed_html and CONVERSION_JS_TAG in confirmed_html, "confirmed page assets are stale")
 
     template_html = (BLOG / "_template.html").read_text()
+    validate_head_icons(validation, "confirmed page", confirmed_html)
+    validate_head_icons(validation, "404 page", (ROOT / "404.html").read_text())
+    validate_head_icons(validation, "article template", template_html)
+    for needle in (
+        '<meta property="og:image" content="https://howtokissbetter.com/blog/{{SLUG}}/featured.jpg">{{OG_IMAGE_DIMENSIONS}}',
+        '<meta property="og:image:alt" content="{{TITLE}}">',
+        '<meta name="twitter:image:alt" content="{{TITLE}}">',
+    ):
+        validation.equal(template_html.count(needle), 1, f"article template share image line count: {needle[:40]}")
     validation.require(RETIRED_PRICE not in template_html, f"article template contains the retired {RETIRED_PRICE} price")
     validation.require("<!-- CTA Box -->" in template_html, "article template lost the first-build final offer anchor")
     validation.require(CONVERSION_CSS_TAG in template_html and CONVERSION_JS_TAG in template_html, "article template assets are stale")
@@ -967,12 +1047,16 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
 
     privacy = ROOT / "privacy/index.html"
     privacy_html = privacy.read_text()
+    validate_head_icons(validation, "privacy page", privacy_html)
+    validate_share_image(validation, "privacy page", privacy_html)
     for needle in ("Stripe", "Vercel", "local storage", "Brevo", "Google Analytics"):
         validation.require(needle in privacy_html, f"privacy policy does not mention {needle}")
     validation.require(CONVERSION_JS_TAG in privacy_html, "privacy page script is stale")
 
     terms = ROOT / "terms/index.html"
     terms_html = terms.read_text()
+    validate_head_icons(validation, "terms page", terms_html)
+    validate_share_image(validation, "terms page", terms_html)
     for needle in ("Stripe", "one-time charge", "18 or older", "Thirty-Day Guarantee", "within 30 days of purchase", "full-refund guarantee", "nothing is revoked"):
         validation.require(needle in terms_html, f"terms of service do not mention {needle}")
     validation.require(CONVERSION_JS_TAG in terms_html, "terms page script is stale")
@@ -1108,6 +1192,8 @@ def main() -> None:
     thanks_page = validate_thanks_page(validation)
     validate_quiz_pages(validation)
     secondary_pages = validate_secondary_pages(validation)
+    validate_brand_assets(validation)
+    listing_pages = validate_listing_pages(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)
     validate_override_failures(validation)
@@ -1122,8 +1208,8 @@ def main() -> None:
             book_page,
             home_page,
             thanks_page,
-            ROOT / "blog/index.html",
         ]
+        + listing_pages
         + secondary_pages
         + [page for page in quiz_pages if page.exists()],
         pending,
