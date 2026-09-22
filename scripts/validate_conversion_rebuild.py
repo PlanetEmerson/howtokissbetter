@@ -872,10 +872,16 @@ def validate_site_safety(validation: Validation) -> None:
         "/Us" + "ers/",
         "/Us" + "ers/murph/howtokissbetter/" + "_pri" + "vate",
         "_pri" + "vate/keys.txt",
-        "sk_" + "live_",
-        "sk_" + "test_",
-        "rk_" + "live_",
-        "whsec" + "_",
+    )
+    # Real Stripe keys and webhook secrets carry a long random tail; the short
+    # fixtures in webhook/test (whsec_test, sk_test_checkout) do not.
+    forbidden_shapes = tuple(
+        re.compile(pattern)
+        for pattern in (
+            r"sk_(?:live|test)_[A-Za-z0-9]{20,}",
+            r"rk_(?:live|test)_[A-Za-z0-9]{20,}",
+            r"whsec_[A-Za-z0-9]{20,}",
+        )
     )
     non_public_dirs = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
     public_files = [
@@ -889,6 +895,8 @@ def validate_site_safety(validation: Validation) -> None:
         text = path.read_text(errors="ignore")
         for token in forbidden:
             validation.require(token not in text, f"{path.relative_to(ROOT)} contains forbidden private or credential material")
+        for shape in forbidden_shapes:
+            validation.require(not shape.search(text), f"{path.relative_to(ROOT)} contains a credential-shaped string")
 
 
 def validate_override_failures(validation: Validation) -> None:
