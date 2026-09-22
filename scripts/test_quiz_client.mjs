@@ -59,6 +59,7 @@ class FakeElement {
   get textContent() { return this.ownText + this.children.map((c) => c.textContent).join(""); }
   set textContent(value) { this.children = []; this.ownText = String(value); }
   get firstChild() { return this.children[0] || null; }
+  get nextSibling() { const i = this.parent ? this.parent.children.indexOf(this) : -1; return i < 0 ? null : this.parent.children[i + 1] || null; }
   get parentNode() { return this.parent; }
   get innerHTML() { throw new Error("innerHTML is off limits"); }
   set innerHTML(value) { throw new Error("innerHTML is off limits"); }
@@ -83,6 +84,10 @@ class FakeElement {
     return current;
   }
   submit() { this.submitCalls = (this.submitCalls || 0) + 1; }
+  // Media element surface quiz.js touches: a resolved play(), pause(), and canPlayType.
+  play() { this.playCalls = (this.playCalls || 0) + 1; return Promise.resolve(); }
+  pause() { this.pauseCalls = (this.pauseCalls || 0) + 1; }
+  canPlayType() { return "probably"; }
 }
 
 function makeStorage(initial = {}) {
@@ -164,7 +169,11 @@ function stubEngine() {
   return engine;
 }
 
-function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl }) {
+// matchMedia answers reduced motion and hover separately; reduced motion stays on by
+// default (the stub matched every query before), so the scoring beat keeps its zero delay.
+// `landing` adds the archetype row and the tier demo figure; `observers` collects every
+// IntersectionObserver quiz.js creates so a test can drive visibility by hand.
+function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, connection, landing = false, observers }) {
   FakeElement.active = null;
   const body = new FakeElement("body");
   body.dataset.pageKind = pageKind;
@@ -186,6 +195,24 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   lede.textContent = "free lede";
   const startButtons = [new FakeElement("a"), new FakeElement("button")];
   startButtons.forEach((b) => { b.setAttribute("data-quiz-start", ""); main.appendChild(b); });
+  let landingCards = [];
+  let demoFigure = null;
+  if (landing) {
+    const row = main.appendChild(new FakeElement("ul"));
+    row.className = "quiz-archetypes";
+    landingCards = ["explorer", "natural"].map((id) => {
+      const card = row.appendChild(new FakeElement("li"));
+      card.className = "quiz-archetype-card";
+      card.appendChild(new FakeElement("img")).setAttribute("src", `/assets/images/kiss-test/archetypes/${id}-mw-thumb.webp`);
+      card.appendChild(new FakeElement("h3")).textContent = id;
+      card.appendChild(new FakeElement("p")).textContent = "tagline";
+      return card;
+    });
+    demoFigure = main.appendChild(new FakeElement("figure"));
+    demoFigure.setAttribute("data-score-demo", "");
+    demoFigure.appendChild(new FakeElement("img")).setAttribute("src", "/assets/images/kiss-test/score-demo-poster.webp");
+    demoFigure.appendChild(new FakeElement("figcaption")).textContent = "Sample.";
+  }
 
   const events = [];
   const timeouts = [];
@@ -215,8 +242,8 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
       reload: () => navigations.push(["reload"]),
     },
     history: { replaceState: (...args) => navigations.push(["replaceState", ...args]) },
-    matchMedia: () => ({ matches: true }),
-    navigator: { share, canShare, clipboard },
+    matchMedia: (query) => ({ matches: /reduce/.test(query) ? reducedMotion : /hover/.test(query) ? hover : true }),
+    navigator: { share, canShare, clipboard, connection },
     File: fileImpl,
     setTimeout(fn, delay) { timeouts.push({ fn, delay }); return timeouts.length; },
   };
@@ -226,10 +253,16 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
       events.push({ name: args[1], params: args[2] });
     };
   }
+  if (observers) {
+    window.IntersectionObserver = class {
+      constructor(callback, options) { this.callback = callback; this.options = options; this.targets = []; observers.push(this); }
+      observe(target) { this.targets.push(target); }
+    };
+  }
   window.window = window;
   vm.runInNewContext(quizSource, { Array, Boolean, Error, JSON, Math, Number, Object, Promise, String, URLSearchParams, document, window });
   ready();
-  return { app, body, document, engine, events, feedbackForm, feedbackSent, lede, navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
+  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, landingCards, lede, navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
 }
 
 const settle = async () => { for (let i = 0; i < 6; i++) await new Promise((resolve) => setImmediate(resolve)); };
@@ -869,4 +902,160 @@ test("homepage Q1 handoff starts the test inline from the hero card", () => {
   assert.deepEqual(plain(named(page.events, "quiz_start")[0].params), { entry: "inline", article: "homepage", offer_key: "complete-guide", placement: "home-hero" });
   assert.deepEqual(plain(named(page.events, "quiz_answer")[0].params), { question_index: 1, entry: "inline" });
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "b_________");
+});
+
+const CLIP_ATTRIBUTES = [["muted", ""], ["playsinline", ""], ["webkit-playsinline", ""], ["aria-hidden", "true"]];
+
+test("free render layers the reveal clip over the mw still when motion is allowed; the share sheet keeps the jpg", async () => {
+  const page = runPage({ pageKind: "quiz-result", reducedMotion: false, session: { kt_answers_v1: ANSWERS, kt_pronoun_v1: "him", kt_self_v1: "woman" }, fetchImpl: freeFetch([]) });
+  await settle();
+  const videos = page.app.querySelectorAll(".quiz-card__media video.quiz-card__video");
+  assert.equal(videos.length, 1);
+  const [video] = videos;
+  assert.equal(video.querySelector("source").getAttribute("src"), "/assets/video/archetypes/overthinker-mw.mp4");
+  assert.equal(video.querySelector("source").getAttribute("type"), "video/mp4");
+  for (const [name, value] of [...CLIP_ATTRIBUTES, ["autoplay", ""], ["preload", "auto"]]) {
+    assert.equal(video.getAttribute(name), value, name);
+  }
+  assert.equal(video.getAttribute("poster"), null, "the picture underneath is the poster");
+  assert.equal(video.getAttribute("loop"), null);
+  assert.equal(video.muted, true);
+  assert.equal(video.playCalls, 1);
+  const media = video.parent;
+  assert.equal(media.className, "quiz-card__media");
+  assert.deepEqual(media.children.map((c) => c.tagName), ["PICTURE", "VIDEO"]);
+  video.dispatch("playing");
+  assert.equal(video.classList.contains("is-playing"), true);
+  assert.equal(page.app.querySelectorAll("video").length, 1, "the glance thumb and the rest of the page stay stills");
+
+  page.app.querySelector(".quiz-share-cta__button").dispatch("click");
+  const sheetMedia = page.body.querySelector("dialog.quiz-share .quiz-share__media");
+  assert.equal(sheetMedia.querySelector("video"), null);
+  assert.equal(sheetMedia.querySelector("img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-mw.jpg");
+
+  // A source that fails to load takes the clip out and leaves the picture.
+  video.querySelector("source").dispatch("error");
+  assert.equal(page.app.querySelector(".quiz-card__media video"), null);
+  assert.equal(page.app.querySelector(".quiz-card__media picture img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-mw.jpg");
+});
+
+test("reduced motion, data saver and 2g links get today's still with no video element", async () => {
+  for (const options of [{ reducedMotion: true }, { reducedMotion: false, connection: { saveData: true } }, { reducedMotion: false, connection: { effectiveType: "slow-2g" } }]) {
+    const page = runPage({ pageKind: "quiz-result", ...options, session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
+    await settle();
+    assert.equal(page.app.querySelectorAll("video").length, 0, JSON.stringify(options));
+    assert.equal(page.app.querySelector(".quiz-card__media picture img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-mw.jpg");
+  }
+});
+
+test("mm and ww pairings keep their stills: only mw has clips", async () => {
+  for (const [pronoun, self, pairing] of [["her", "woman", "ww"], ["him", "man", "mm"]]) {
+    const page = runPage({ pageKind: "quiz-result", reducedMotion: false, session: { kt_answers_v1: ANSWERS, kt_pronoun_v1: pronoun, kt_self_v1: self }, fetchImpl: freeFetch([]) });
+    await settle();
+    assert.equal(page.app.querySelectorAll("video").length, 0, pairing);
+    assert.equal(page.app.querySelector(".quiz-card__media img").getAttribute("src"), `/assets/images/kiss-test/archetypes/overthinker-${pairing}.jpg`);
+  }
+});
+
+test("paid render breathes the gold plate behind the glance once and removes it; reduced motion never adds it", async () => {
+  const page = runPage({ pageKind: "quiz-result", reducedMotion: false, session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  const glance = page.app.querySelector(".quiz-glance");
+  const plate = glance.children[0];
+  assert.equal(plate.tagName, "VIDEO");
+  assert.equal(plate.className, "quiz-glance__plate");
+  assert.equal(plate.querySelector("source").getAttribute("src"), "/assets/video/score-plate.mp4");
+  for (const [name, value] of [...CLIP_ATTRIBUTES, ["autoplay", ""], ["preload", "auto"]]) {
+    assert.equal(plate.getAttribute(name), value, name);
+  }
+  assert.equal(plate.getAttribute("loop"), null);
+  assert.equal(plate.getAttribute("poster"), null);
+  assert.equal(plate.muted, true);
+  assert.equal(plate.playCalls, 1);
+  assert.equal(glance.querySelectorAll("video").length, 1);
+  assert.equal(page.app.querySelectorAll(".quiz-card .quiz-card__video").length, 1, "the report's archetype card carries the reveal clip too");
+  plate.dispatch("playing");
+  assert.equal(plate.classList.contains("is-playing"), true);
+  plate.dispatch("ended");
+  assert.equal(plate.classList.contains("is-done"), true);
+  const removal = page.timeouts.at(-1);
+  assert.equal(removal.delay, 800);
+  removal.fn();
+  assert.equal(glance.querySelector("video"), null);
+  assert.equal(glance.querySelector(".quiz-glance__score strong").textContent, "73");
+
+  const still = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  assert.equal(still.app.querySelectorAll("video").length, 0);
+});
+
+test("landing row with a fine pointer: a hover builds the card's clip once, plays it, and replays from the start after it ends", () => {
+  const page = runPage({ pageKind: "quiz", landing: true, reducedMotion: false, hover: true });
+  assert.equal(page.body.querySelectorAll("video").length, 0, "no bytes until a hover");
+  const [explorer, natural] = page.landingCards;
+  explorer.dispatch("mouseenter");
+  const video = explorer.querySelector("video");
+  assert.ok(video);
+  assert.deepEqual(explorer.children.map((c) => c.tagName), ["IMG", "VIDEO", "H3", "P"]);
+  assert.equal(video.querySelector("source").getAttribute("src"), "/assets/video/archetypes/explorer-mw.mp4");
+  for (const [name, value] of [...CLIP_ATTRIBUTES, ["preload", "none"], ["poster", "/assets/images/kiss-test/archetypes/explorer-mw-thumb.webp"], ["width", "540"], ["height", "675"]]) {
+    assert.equal(video.getAttribute(name), value, name);
+  }
+  assert.equal(video.getAttribute("autoplay"), null);
+  assert.equal(video.getAttribute("loop"), null);
+  assert.equal(video.muted, true);
+  assert.equal(video.playCalls, 1);
+  explorer.dispatch("mouseenter");
+  assert.equal(explorer.querySelectorAll("video").length, 1);
+  assert.equal(video.playCalls, 2);
+  assert.equal(video.currentTime, undefined);
+  video.ended = true;
+  explorer.dispatch("mouseenter");
+  assert.equal(video.currentTime, 0);
+  assert.equal(video.playCalls, 3);
+  assert.equal(natural.querySelector("video"), null);
+  assert.equal(page.demoFigure.querySelector("video"), null, "the demo needs an IntersectionObserver");
+});
+
+test("landing on touch: cards play once as they scroll into view, the tier demo loops only while on screen", () => {
+  const observers = [];
+  const page = runPage({ pageKind: "quiz", landing: true, reducedMotion: false, hover: false, observers });
+  assert.deepEqual(observers.map((o) => o.options.threshold), [0.6, 0.6, 0.4]);
+  const [explorerWatch, , demoWatch] = observers;
+  const [explorer] = page.landingCards;
+  assert.deepEqual(explorerWatch.targets, [explorer]);
+  assert.deepEqual(demoWatch.targets, [page.demoFigure]);
+  assert.equal(page.body.querySelectorAll("video").length, 0, "no bytes until something is in view");
+
+  explorerWatch.callback([{ target: explorer, isIntersecting: true }]);
+  const clip = explorer.querySelector("video");
+  assert.equal(clip.querySelector("source").getAttribute("src"), "/assets/video/archetypes/explorer-mw.mp4");
+  assert.equal(clip.getAttribute("preload"), "none");
+  assert.equal(clip.playCalls, 1);
+  explorerWatch.callback([{ target: explorer, isIntersecting: false }]);
+  assert.equal(clip.pauseCalls, 1);
+  explorerWatch.callback([{ target: explorer, isIntersecting: true }]);
+  assert.equal(clip.playCalls, 2);
+  clip.ended = true;
+  explorerWatch.callback([{ target: explorer, isIntersecting: false }, { target: explorer, isIntersecting: true }]);
+  assert.equal(clip.playCalls, 2, "a finished card stays on its still");
+
+  demoWatch.callback([{ target: page.demoFigure, isIntersecting: true }]);
+  const loop = page.demoFigure.querySelector("video");
+  assert.ok(loop);
+  assert.deepEqual(page.demoFigure.children.map((c) => c.tagName), ["IMG", "VIDEO", "FIGCAPTION"]);
+  assert.equal(loop.querySelector("source").getAttribute("src"), "/assets/video/score-demo.mp4");
+  for (const [name, value] of [...CLIP_ATTRIBUTES, ["loop", ""], ["preload", "none"], ["poster", "/assets/images/kiss-test/score-demo-poster.webp"]]) {
+    assert.equal(loop.getAttribute(name), value, name);
+  }
+  assert.equal(loop.muted, true);
+  assert.equal(loop.playCalls, 1);
+  demoWatch.callback([{ target: page.demoFigure, isIntersecting: false }]);
+  assert.equal(loop.pauseCalls, 1);
+  demoWatch.callback([{ target: page.demoFigure, isIntersecting: true }]);
+  assert.equal(page.demoFigure.querySelectorAll("video").length, 1);
+  assert.equal(loop.playCalls, 2);
+
+  const still = runPage({ pageKind: "quiz", landing: true, reducedMotion: true, hover: false, observers: [] });
+  assert.equal(still.body.querySelectorAll("video").length, 0);
 });

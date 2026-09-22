@@ -426,12 +426,37 @@
     padding: 0;
 }
 
+.quiz-archetype-card {
+    position: relative;
+}
+
 .quiz-archetype-card img {
     aspect-ratio: 4 / 5;
     border: 1px solid var(--quiz-line);
     border-radius: 0.9rem;
     object-fit: cover;
     width: 100%;
+}
+
+/* Clips sit exactly on their stills and stay invisible until they play. */
+.quiz-archetype-card video,
+.quiz-tier__demo video {
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--quiz-line);
+    border-radius: 0.9rem;
+    height: auto;
+    left: 0;
+    object-fit: cover;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.quiz-archetype-card video.is-playing,
+.quiz-tier__demo video.is-playing,
+.quiz-card__video.is-playing {
+    opacity: 1;
 }
 
 .quiz-archetype-card h3 {
@@ -493,12 +518,49 @@
     gap: 1.5rem;
 }
 
-/* Only the paid tier is boxed; the free tier is plain prose beside it. */
+/* Only the paid tier is boxed; the free tier is plain prose beside it. The
+   sample score screen sits in a narrow second column, top aligned. */
 .quiz-tier--paid {
+    align-items: start;
     background: rgba(74, 28, 35, 0.35);
     border: 1px solid rgba(212, 175, 55, 0.5);
     border-radius: 1rem;
+    column-gap: 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 9.5rem;
     padding: clamp(1.1rem, 0.6rem + 1.2vw, 1.75rem) clamp(1.2rem, 0.7rem + 1.3vw, 2rem) 0.4rem;
+}
+
+.quiz-tier--paid > :not(.quiz-tier__demo) {
+    grid-column: 1;
+    margin-top: 0;
+}
+
+.quiz-tier__demo {
+    grid-column: 2;
+    grid-row: 1 / span 6;
+    margin: 0;
+    position: relative;
+}
+
+.quiz-tier__demo img {
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--quiz-line);
+    border-radius: 0.6rem;
+    display: block;
+    height: auto;
+    width: 100%;
+}
+
+.quiz-tier__demo video {
+    border-radius: 0.6rem;
+}
+
+.quiz-tier__demo figcaption {
+    color: var(--quiz-muted);
+    font-size: 0.78rem;
+    line-height: 1.35;
+    margin: 0.45rem 0 0;
 }
 
 .quiz-tier__retake {
@@ -602,9 +664,22 @@
     overflow: hidden;
 }
 
+.quiz-card__media {
+    position: relative;
+}
+
 .quiz-card__media img {
     aspect-ratio: 4 / 5;
     object-fit: cover;
+    width: 100%;
+}
+
+.quiz-card__video {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    opacity: 0;
+    position: absolute;
     width: 100%;
 }
 
@@ -1242,7 +1317,34 @@
     display: grid;
     gap: 1rem;
     grid-template-columns: minmax(6rem, 9rem) minmax(0, 1fr);
+    isolation: isolate;
+    overflow: hidden;
     padding: 1rem;
+    position: relative;
+}
+
+/* The gold plate breathes once behind the score; the mask keeps it off the
+   top-left corner where the digits and labels sit, so the cream and gold
+   text never meets the brightest sweep. */
+.quiz-glance__plate {
+    height: 100%;
+    inset: 0;
+    -webkit-mask-image: linear-gradient(155deg, rgba(0, 0, 0, 0) 25%, #000 70%);
+    mask-image: linear-gradient(155deg, rgba(0, 0, 0, 0) 25%, #000 70%);
+    object-fit: cover;
+    object-position: 50% 100%;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+}
+
+.quiz-glance__plate.is-playing {
+    opacity: 0.55;
+}
+
+.quiz-glance__plate.is-done {
+    opacity: 0;
 }
 
 .quiz-glance__media img {
@@ -1439,6 +1541,20 @@
     }
 }
 
+/* The tiers stack below 768px, so the paid tier is at its widest there and
+   keeps the demo column; it only goes single column where the copy beside a
+   9rem poster would narrow past a comfortable measure. */
+@media (max-width: 599px) {
+    .quiz-tier--paid {
+        display: block;
+    }
+
+    .quiz-tier__demo {
+        margin: 0 0 1rem;
+        width: 9rem;
+    }
+}
+
 @media (max-width: 390px) {
     .quiz-section__inner,
     .quiz-result {
@@ -1523,6 +1639,16 @@
         animation: quiz-screen-in 160ms var(--conversion-ease-out) backwards;
     }
 
+    .quiz-card__video,
+    .quiz-archetype-card video,
+    .quiz-tier__demo video {
+        transition: opacity 300ms var(--conversion-ease-out);
+    }
+
+    .quiz-glance__plate {
+        transition: opacity 700ms var(--conversion-ease-out);
+    }
+
     .quiz-option:active {
         transform: translateY(1px) scale(0.985);
     }
@@ -1604,6 +1730,7 @@
     .quiz-locked-section,
     .quiz-app,
     .quiz-archetype-card img,
+    .quiz-tier__demo img,
     .quiz-tier--paid,
     .quiz-book__card,
     .quiz-share__shell,

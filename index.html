@@ -55,7 +55,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922b">
-    <link rel="stylesheet" href="/assets/home.css?v=20260922b">
+    <link rel="stylesheet" href="/assets/home.css?v=20260922c">
 
     <script type="application/ld+json">
     {
@@ -305,5 +305,36 @@
     </aside>
 
     <script src="/assets/conversion.js?v=20260922b" defer></script>
+    <script>
+    (function () {
+        var mq = window.matchMedia;
+        var link = navigator.connection;
+        if (!mq || !mq("(hover: hover) and (pointer: fine)").matches || mq("(prefers-reduced-motion: reduce)").matches || (link && link.saveData)) {
+            return;
+        }
+        Array.prototype.forEach.call(document.querySelectorAll(".home-archetypes__card"), function (card) {
+            var img = card.querySelector("img");
+            var match = img && /\/archetypes\/([a-z-]+)-mw-mini\.webp$/.exec(img.getAttribute("src") || "");
+            var video = null;
+            if (!match) { return; }
+            card.addEventListener("mouseenter", function () {
+                if (!video) {
+                    video = document.createElement("video");
+                    [["muted", ""], ["playsinline", ""], ["preload", "none"], ["aria-hidden", "true"], ["poster", img.getAttribute("src")]].forEach(function (pair) { video.setAttribute(pair[0], pair[1]); });
+                    video.muted = true;
+                    var source = document.createElement("source");
+                    source.setAttribute("src", "/assets/video/archetypes/" + match[1] + "-mw.mp4");
+                    source.setAttribute("type", "video/mp4");
+                    video.appendChild(source);
+                    video.addEventListener("playing", function () { video.className = "is-playing"; });
+                    card.insertBefore(video, img.nextSibling);
+                }
+                if (video.ended) { video.currentTime = 0; }
+                var pending = video.play();
+                if (pending && pending.then) { pending.then(null, function () {}); }
+            });
+        });
+    })();
+    </script>
 </body>
 </html>

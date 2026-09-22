@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260922b"
-HOME_ASSET_VERSION = "20260922b"
+HOME_ASSET_VERSION = "20260922c"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
@@ -25,8 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922b">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922d" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922c">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922e" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
@@ -135,6 +135,20 @@ BOOK_PLACEMENTS = {
 HOME_PLACEMENTS = {"home-nav", "home-book-facts"}
 HOME_SURFACES = Counter({"home-hero": 1, "home-book-facts": 1, "home-final": 1, "home-mobile-sticky": 1})
 HOME_ARCHETYPES = ("natural", "slow-burn", "sweetheart", "explorer", "sprinter", "statue", "overthinker")
+# Reveal clips and score motion: only the mw pairing has clips; byte caps per file.
+MOTION_BUDGETS = {
+    **{f"assets/video/archetypes/{archetype}-mw.mp4": 650_000 for archetype in HOME_ARCHETYPES},
+    "assets/video/score-plate.mp4": 400_000,
+    "assets/video/score-demo.mp4": 450_000,
+}
+SCORE_DEMO_POSTER = "assets/images/kiss-test/score-demo-poster.webp"
+SCORE_DEMO_FIGURE = (
+    '<figure class="quiz-tier__demo" data-score-demo><img src="/assets/images/kiss-test/score-demo-poster.webp" width="536" height="670" '
+    'alt="Sample Kiss Test score screen: 71, Dangerous, in a Good Way" loading="lazy" decoding="async">'
+    "<figcaption>Sample. Yours is computed from your answers.</figcaption></figure>"
+)
+HOME_FAN_MARKER = 'source.setAttribute("src", "/assets/video/archetypes/" + match[1] + "-mw.mp4");'
+QUIZ_VIDEO_ROOT = 'var VIDEO_ROOT = "/assets/video/archetypes/";'
 HOME_HANDOFF = "/kiss-test/?from=homepage&amp;hook=complete-guide&amp;placement="
 HOME_BANNED = (
     "conversion_repair",
@@ -1016,6 +1030,35 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")
 
 
+def mp4_boxes(path: Path, count: int = 2) -> list[str]:
+    """The first top-level box types of an MP4; a faststart file reads ftyp then moov."""
+    data = path.read_bytes()
+    boxes: list[str] = []
+    offset = 0
+    while offset + 8 <= len(data) and len(boxes) < count:
+        size = int.from_bytes(data[offset:offset + 4], "big")
+        boxes.append(data[offset + 4:offset + 8].decode("ascii", "replace"))
+        if size < 8:
+            break
+        offset += size
+    return boxes
+
+
+def validate_motion(validation: Validation) -> None:
+    """Reveal clips and score motion: every file small and faststart, wired on exactly the surfaces that use it."""
+    for relative, budget in MOTION_BUDGETS.items():
+        clip = ROOT / relative
+        validation.require(clip.exists(), f"motion clip is missing: {relative}")
+        if not clip.exists():
+            continue
+        validation.require(clip.stat().st_size <= budget, f"{relative} exceeds {budget // 1000} KB")
+        validation.equal(mp4_boxes(clip), ["ftyp", "moov"], f"{relative} is not a faststart MP4")
+    validation.require((ROOT / SCORE_DEMO_POSTER).exists(), f"score demo poster is missing: {SCORE_DEMO_POSTER}")
+    validation.equal((ROOT / "kiss-test/index.html").read_text().count(SCORE_DEMO_FIGURE), 1, "kiss test page score demo figure count")
+    validation.equal((ROOT / "index.html").read_text().count(HOME_FAN_MARKER), 1, "homepage fan hover script count")
+    validation.require(QUIZ_VIDEO_ROOT in (ROOT / "assets/quiz.js").read_text(), "quiz.js video root changed")
+
+
 def validate_kiss_test_hero(validation: Validation, page_html: str) -> None:
     for name, budget in KISS_TEST_HERO_FILES.items():
         asset = ROOT / KISS_TEST_HERO_DIR / name
@@ -1274,6 +1317,7 @@ def main() -> None:
     home_page = validate_home(validation)
     thanks_page = validate_thanks_page(validation)
     validate_quiz_pages(validation)
+    validate_motion(validation)
     secondary_pages = validate_secondary_pages(validation)
     validate_brand_assets(validation)
     validate_product_images(validation)

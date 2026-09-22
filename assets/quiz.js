@@ -35,6 +35,9 @@
     var SHARE_TITLE = "The Kiss Test";
     var SHARE_SUBJECT = "My Kiss Test result";
     var IMAGE_ROOT = "/assets/images/kiss-test/archetypes/";
+    var VIDEO_ROOT = "/assets/video/archetypes/";
+    var SCORE_PLATE = "/assets/video/score-plate.mp4";
+    var SCORE_DEMO = "/assets/video/score-demo.mp4";
     var SUPPORT_EMAIL = "contact@howtokissbetter.com";
     var SCORING_DELAY = 1200;
     var SLUG = /^[a-z0-9-]{1,100}$/;
@@ -122,6 +125,55 @@
 
     function reducedMotion() {
         return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    }
+
+    // Reduced motion, data saver and slow links get today's stills: no video
+    // element is created for them, so nothing downloads and nothing moves.
+    function motionAllowed() {
+        var connection = window.navigator && window.navigator.connection;
+        if (reducedMotion() || (connection && (connection.saveData === true || /2g$/.test(String(connection.effectiveType || ""))))) {
+            return false;
+        }
+        return typeof document.createElement("video").canPlayType === "function";
+    }
+
+    // A silent inline clip that stays invisible until it is really playing, so
+    // a blocked autoplay or a missing file leaves the still in place.
+    function quietVideo(className, src, poster, preload) {
+        var video = el("video", className);
+        video.setAttribute("muted", "");
+        video.muted = true;
+        video.setAttribute("playsinline", "");
+        video.setAttribute("webkit-playsinline", "");
+        video.setAttribute("preload", preload);
+        video.setAttribute("aria-hidden", "true");
+        if (poster) {
+            video.setAttribute("poster", poster);
+        }
+        var source = el("source");
+        source.setAttribute("src", src);
+        source.setAttribute("type", "video/mp4");
+        video.appendChild(source);
+        video.addEventListener("playing", function () {
+            video.classList.add("is-playing");
+        });
+        function remove() {
+            if (video.parentNode) {
+                video.parentNode.removeChild(video);
+            }
+        }
+        video.addEventListener("error", remove);
+        source.addEventListener("error", remove);
+        return video;
+    }
+
+    function playQuietly(video) {
+        var pending = video.play();
+        if (pending && typeof pending.then === "function") {
+            pending.then(null, function () {
+                return null;
+            });
+        }
     }
 
     function captureGaIds() {
@@ -395,6 +447,75 @@
         return item;
     }
 
+    // Landing page clips: a row card loads nothing until it is hovered (fine
+    // pointers) or mostly in view (touch), plays once and ends on its own
+    // still; the tier demo loops only while it is on screen.
+    function setupLandingMotion() {
+        var thumbs = document.querySelectorAll(".quiz-archetype-card img");
+        var demo = document.querySelector("[data-score-demo]");
+        if ((!thumbs.length && !demo) || !motionAllowed()) {
+            return;
+        }
+        var hover = Boolean(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+        var observes = typeof window.IntersectionObserver === "function";
+        Array.prototype.forEach.call(thumbs, function (img) {
+            var match = /\/archetypes\/([a-z-]+)-mw-thumb\.webp$/.exec(img.getAttribute("src") || "");
+            var card = img.parentNode;
+            var video = null;
+            if (!match || !card || (!hover && !observes)) {
+                return;
+            }
+            function play(replay) {
+                if (!video) {
+                    video = quietVideo("", VIDEO_ROOT + match[1] + "-mw.mp4", img.getAttribute("src"), "none");
+                    video.setAttribute("width", "540");
+                    video.setAttribute("height", "675");
+                    card.insertBefore(video, img.nextSibling);
+                }
+                if (video.ended) {
+                    if (!replay) {
+                        return;
+                    }
+                    video.currentTime = 0;
+                }
+                playQuietly(video);
+            }
+            if (hover) {
+                card.addEventListener("mouseenter", function () {
+                    play(true);
+                });
+                return;
+            }
+            new window.IntersectionObserver(function (entries) {
+                if (entries[entries.length - 1].isIntersecting) {
+                    play(false);
+                } else if (video) {
+                    video.pause();
+                }
+            }, { threshold: 0.6 }).observe(card);
+        });
+        if (!demo || !observes) {
+            return;
+        }
+        var poster = demo.querySelector("img");
+        var loop = null;
+        new window.IntersectionObserver(function (entries) {
+            var visible = entries[entries.length - 1].isIntersecting;
+            if (visible && !loop) {
+                loop = quietVideo("", SCORE_DEMO, poster ? poster.getAttribute("src") : "", "none");
+                loop.setAttribute("loop", "");
+                loop.setAttribute("width", "536");
+                loop.setAttribute("height", "670");
+                demo.insertBefore(loop, poster ? poster.nextSibling : null);
+            }
+            if (visible) {
+                playQuietly(loop);
+            } else if (loop) {
+                loop.pause();
+            }
+        }, { threshold: 0.4 }).observe(demo);
+    }
+
     function setupQuizPage() {
         if (document.body.dataset.pageKind !== "quiz") {
             return;
@@ -403,6 +524,7 @@
         if (!app) {
             return;
         }
+        setupLandingMotion();
         var handoff = parseHandoff(window.location.search);
         var context = readContext();
         var answers = readAnswers();
@@ -614,8 +736,10 @@
         return IMAGE_ROOT + archetype.id + "-" + storedPairing();
     }
 
-    // "thumb" is the 540px webp used where the card is decoration, not the artwork.
-    function archetypeImage(archetype, variant) {
+    // "thumb" is the 540px webp used where the card is decoration, not the
+    // artwork. "motion" layers the reveal clip over the full-size still; only
+    // the mw pairing has clips, so mm and ww keep the still.
+    function archetypeImage(archetype, variant, motion) {
         var media = el("div", "quiz-card__media");
         var base = archetypeImageBase(archetype);
         if (!base) {
@@ -641,6 +765,15 @@
         img.setAttribute("height", "1350");
         picture.appendChild(img);
         media.appendChild(picture);
+        if (motion && storedPairing() === "mw" && motionAllowed()) {
+            // No poster: the picture underneath is the poster, and a poster URL would fetch the jpg beside the webp the picture already chose.
+            var video = quietVideo("quiz-card__video", VIDEO_ROOT + archetype.id + "-mw.mp4", "", "auto");
+            video.setAttribute("autoplay", "");
+            video.setAttribute("width", "896");
+            video.setAttribute("height", "1120");
+            media.appendChild(video);
+            playQuietly(video);
+        }
         return media;
     }
 
@@ -913,7 +1046,7 @@
         options = options || {};
         var card = el("section", "quiz-card");
         card.setAttribute("aria-label", "Your archetype");
-        card.appendChild(archetypeImage(archetype));
+        card.appendChild(archetypeImage(archetype, "", true));
         var body = el("div", "quiz-card__body");
         body.appendChild(el("p", "quiz-card__eyebrow", options.eyebrow || "Kiss Test result"));
         var title = el(options.headingTag || "h1", "quiz-card__title", "You're " + archetype.name + ".");
@@ -1306,6 +1439,22 @@
     function glanceCard(local, sections, state, compact) {
         var card = el("section", compact ? "quiz-glance quiz-glance--compact" : "quiz-glance");
         card.setAttribute("aria-label", "Your result at a glance");
+        if (motionAllowed()) {
+            // The reveal moment: the gold plate breathes once behind the
+            // count-up, then fades and leaves the DOM.
+            var plate = quietVideo("quiz-glance__plate", SCORE_PLATE, "", "auto");
+            plate.setAttribute("autoplay", "");
+            plate.addEventListener("ended", function () {
+                plate.classList.add("is-done");
+                window.setTimeout(function () {
+                    if (plate.parentNode) {
+                        plate.parentNode.removeChild(plate);
+                    }
+                }, 800);
+            });
+            card.appendChild(plate);
+            playQuietly(plate);
+        }
         var body = el("div", "quiz-glance__body");
         if (!compact) {
             var media = archetypeImage(local.archetype, "thumb");

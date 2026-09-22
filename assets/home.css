@@ -424,6 +424,23 @@ video {
     object-fit: cover;
 }
 
+/* The hover clip sits exactly on the mini and stays invisible until it
+   plays; the name band comes later in the DOM, so it paints on top. */
+.home-archetypes__card video {
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 0.7rem;
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.home-archetypes__card video.is-playing {
+    opacity: 1;
+}
+
 .home-archetypes__name {
     background: linear-gradient(0deg, rgba(22, 15, 17, 0.94), transparent);
     border-radius: 0 0 0.7rem 0.7rem;
@@ -1127,6 +1144,10 @@ body.has-home-sticky {
         animation-delay: calc(120ms + var(--i) * 40ms);
     }
 
+    .home-archetypes__card video {
+        transition: opacity 300ms var(--conversion-ease-out);
+    }
+
     .home-q1__option:active,
     .home-guides__chip:active {
         transform: translateY(1px) scale(0.985);
@@ -1144,6 +1165,25 @@ body.has-home-sticky {
             animation: home-reveal var(--conversion-t-slow) var(--conversion-ease-out) both;
             animation-timeline: view();
             animation-range: entry 0% entry 30%;
+        }
+
+        /* The chat bubbles rise one after another as the phone enters. */
+        .home-share__phone {
+            view-timeline-name: --home-phone;
+        }
+
+        .home-share__bubble {
+            animation: home-reveal var(--conversion-t-slow) var(--conversion-ease-out) both;
+            animation-timeline: --home-phone;
+            animation-range: entry 15% entry 55%;
+        }
+
+        .home-share__bubble:nth-child(3) {
+            animation-range: entry 27% entry 67%;
+        }
+
+        .home-share__bubble:nth-child(4) {
+            animation-range: entry 39% entry 79%;
         }
     }
 }
