@@ -715,3 +715,18 @@ test("a direct start resets both taps, and a reload resumes at the next unanswer
   const noTaps = runPage({ pageKind: "quiz", session: { kt_answers_v1: "abc_______" } });
   assert.match(noTaps.app.textContent, /Who's on the other end/);
 });
+
+test("homepage Q1 handoff starts the test inline from the hero card", () => {
+  const { KissQuiz } = runPage({ pageKind: "quiz" });
+  const handoff = KissQuiz.parseHandoff("?from=homepage&hook=complete-guide&placement=home-hero&q=q1&a=b");
+  assert.deepEqual(plain(handoff), { from: "homepage", hook: "complete-guide", placement: "home-hero", q: "q1", a: "b", index: 0, entry: "inline" });
+  for (const placement of ["home-final", "home-mobile-sticky"]) {
+    const link = KissQuiz.parseHandoff(`?from=homepage&hook=complete-guide&placement=${placement}`);
+    assert.deepEqual([link.from, link.hook, link.placement, link.entry], ["homepage", "complete-guide", placement, "article"]);
+  }
+
+  const page = runPage({ pageKind: "quiz", search: "?from=homepage&hook=complete-guide&placement=home-hero&q=q1&a=b" });
+  assert.deepEqual(plain(named(page.events, "quiz_start")[0].params), { entry: "inline", article: "homepage", offer_key: "complete-guide", placement: "home-hero" });
+  assert.deepEqual(plain(named(page.events, "quiz_answer")[0].params), { question_index: 1, entry: "inline" });
+  assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "b_________");
+});

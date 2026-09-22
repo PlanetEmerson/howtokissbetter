@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260922"
-HOME_ASSET_VERSION = "20260918"
+HOME_ASSET_VERSION = "20260922"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
@@ -54,7 +54,7 @@ VALID_CLUSTERS = {
 VALID_CHAPTERS = {f"chapter-{number:02d}" for number in range(1, 17)}
 VALID_ANCHORS = VALID_CLUSTERS | {"look-inside"}
 BOOK_ANCHORS = (VALID_CLUSTERS - {"complete-guide"}) | {"look-inside"}
-HOME_ANCHORS = {"moment", "look-inside", "preview", "find-your-path", "pricing", "faq"}
+HOME_ANCHORS = {"kiss-test", "book", "guides"}
 BUY_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
 QUIZ_PLACEMENTS = ("quiz-article-quarter", "quiz-article-final", "quiz-mobile-bar")
 QUIZ_URL = "/kiss-test/"
@@ -94,7 +94,30 @@ BOOK_PLACEMENTS = {
     "book-final",
     "book-mobile-sticky",
 }
-HOME_PLACEMENTS = {"home-nav", "home-menu", "home-book-facts", "home-final", "home-mobile-sticky"}
+HOME_PLACEMENTS = {"home-nav", "home-book-facts"}
+HOME_SURFACES = Counter({"home-hero": 1, "home-book-facts": 1, "home-final": 1, "home-mobile-sticky": 1})
+HOME_ARCHETYPES = ("natural", "slow-burn", "sweetheart", "explorer", "sprinter", "statue", "overthinker")
+HOME_HANDOFF = "/kiss-test/?from=homepage&amp;hook=complete-guide&amp;placement="
+HOME_BANNED = (
+    "conversion_repair",
+    "exit-popup",
+    "section-fade",
+    "hero-bg-v2",
+    "data:image/svg+xml",
+    "hollywood's kissing coach",
+    "reader said",
+    "data-countdown",
+    "homepage_moment_proof",
+    "home-preview-card",
+    "data-home-pathway",
+    "moment-steps",
+    "sibforms.com",
+    "data-preview-viewer",
+    "book-preview.js",
+    "star rating",
+    "faqpage",
+    "customer",
+)
 BUY_HOOK_FIELDS = ("eyebrow", "title", "copy", "bar_title", "bar_copy")
 REQUIRED_OFFER_ATTRIBUTES = (
     "data-offer-placement",
@@ -755,9 +778,11 @@ def validate_book(validation: Validation) -> Path:
 def validate_home(validation: Validation) -> Path:
     page = ROOT / "index.html"
     page_html = page.read_text()
+    lowered = page_html.lower()
     collector = LinkCollector()
     collector.feed(page_html)
     anchors = set(collector.ids)
+    build_blog = load_build_blog()
 
     for anchor in HOME_ANCHORS:
         validation.require(anchor in anchors, f"homepage is missing stable anchor #{anchor}")
@@ -766,38 +791,69 @@ def validate_home(validation: Validation) -> Path:
         in page_html,
         "homepage analytics body contract is incomplete",
     )
-    validation.require(
-        "Make the moment happen." in page_html and "Kiss better" in page_html,
-        "homepage hero promise changed",
-    )
-    validation.require(f"Look inside the ${BOOK_PRICE} guide" in page_html, "homepage hero CTA is missing")
-    validation.equal(page_html.count('class="home-preview-card"'), 6, "homepage real preview card count")
-    validation.equal(page_html.count('data-home-pathway="'), 6, "homepage need-based pathway count")
-    validation.equal(page_html.count('class="moment-steps__number"'), 4, "homepage first-kiss step count")
-    validation.require(page_html.count("js-offer") >= 4, "homepage tracked offer surface count is incomplete")
-    validation.require("data-home-sticky" in page_html, "homepage mobile sticky purchase control is missing")
-    validation.require("data-home-hero-cta" in page_html, "homepage hero CTA marker is missing")
-    validation.require("homepage_moment_proof" in page_html, "homepage conversion campaign is missing")
-    validation.require("conversion_repair" not in page_html, "homepage still uses the stale conversion campaign")
+    for needle, label in (
+        ("You think you're a good kisser.", "homepage H1 promise"),
+        ("<span>Let's check.</span>", "homepage H1 emphasis"),
+        ("Start the Kiss Test", "homepage final CTA"),
+        ("Start from the top instead", "homepage hero CTA"),
+        ("80+ free guides", "homepage guides claim"),
+        ("Thousands of readers a month", "homepage readership line"),
+    ):
+        validation.require(needle in page_html, f"{label} changed")
+
+    question = build_blog.quiz_question("q1")
+    prompt = html.escape(str(question["prompt"]), quote=False)
+    validation.equal(page_html.count(f'<p class="home-q1__prompt">{prompt}</p>'), 1, "homepage Q1 prompt")
+    for option in question["options"]:
+        text = html.escape(str(option["text"]), quote=False)
+        validation.equal(page_html.count(f">{text}</a>"), 1, f"homepage Q1 option {option['id']} text")
+        validation.equal(page_html.count(f'href="{HOME_HANDOFF}home-hero&amp;q=q1&amp;a={option["id"]}"'), 1, f"homepage Q1 option {option['id']} handoff")
+    for placement in ("home-hero", "home-final", "home-mobile-sticky"):
+        validation.equal(page_html.count(f'href="{HOME_HANDOFF}{placement}"'), 1, f"homepage {placement} handoff link")
+
+    for needle, count, label in (
+        ('class="home-q1__option"', 4, "homepage Q1 option count"),
+        ('class="home-archetypes__card"', 7, "homepage archetype card count"),
+        ('class="home-guides__chip"', 8, "homepage guide chip count"),
+        ('class="home-share"', 1, "homepage share loop count"),
+    ):
+        validation.equal(page_html.count(needle), count, label)
+    validation.require(page_html.count(GUARANTEE_BADGE) >= 2, "homepage guarantee badge count is below two")
+
+    surfaces = Counter()
+    for tag in re.findall(r"<(?:div|section|aside)\b[^>]*\bjs-offer\b[^>]*>", page_html):
+        match = re.search(r'data-offer-placement="([^"]+)"', tag)
+        surfaces[match.group(1) if match else ""] += 1
+        validation.require(all(f'{attribute}="' in tag for attribute in REQUIRED_OFFER_ATTRIBUTES), f"homepage offer surface is missing tracking attributes: {tag[:60]}")
+    validation.equal(surfaces, HOME_SURFACES, "homepage tracked offer surfaces")
+    for marker, label in (
+        ("data-home-sticky", "mobile sticky bar"),
+        ("data-home-hero-cta", "hero CTA marker"),
+        ("homepage_test_led", "conversion campaign"),
+    ):
+        validation.require(marker in page_html, f"homepage {label} is missing")
+    validation.require("app.css" not in page_html, "homepage still loads app.css")
+    for needle in HOME_BANNED:
+        validation.require(needle not in lowered, f"homepage contains retired or unsupported content: {needle}")
     validation.require(RETIRED_PRICE not in page_html, f"homepage contains the retired {RETIRED_PRICE} price")
-    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "homepage schema has the wrong price")
-    validation.require("exit-popup" not in page_html, "homepage still contains the automatic exit popup")
-    validation.require("section-fade" not in page_html, "homepage still contains opacity-gated sections")
-    validation.require("hero-bg-v2" not in page_html, "homepage still loads the old decorative hero image")
-    validation.require("data:image/svg+xml" not in page_html, "homepage still contains the emoji SVG favicon")
-    validation.require("Hollywood's kissing coach" not in page_html, "homepage contains an unsupported authority claim")
-    validation.require("reader said" not in page_html.lower(), "homepage contains an unsupported reader quote")
-    validation.require("data-countdown" not in page_html.lower(), "homepage contains fake urgency")
     validation.require(not mentions_payhip(page_html), "homepage still mentions Payhip")
+
+    image_tags = re.findall(r"<img\b[^>]*>", page_html)
+    for tag in image_tags:
+        validation.require(' width="' in tag and ' height="' in tag, f"homepage image is missing its dimensions: {tag[:60]}")
+    mini_tags = [tag for tag in image_tags if "-mw-mini.webp" in tag]
+    validation.equal(len(mini_tags), len(HOME_ARCHETYPES), "homepage archetype image count")
+    validation.equal(sum('loading="lazy"' in tag for tag in mini_tags), 4, "homepage archetype lazy-load split")
+
     validation.require("Secure checkout by Stripe" in page_html, "homepage is missing the Stripe disclosure")
     validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "homepage is missing the seller disclosure")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
-    validation.require("PDF and EPUB" in page_html, "homepage FAQ schema is missing both delivery formats")
-    validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "homepage is missing the guarantee sentence")
+    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "homepage schema has the wrong price")
+    validation.require("PDF and EPUB" in page_html, "homepage is missing both delivery formats")
+    validation.require(PROCESS_LINE in page_html, "homepage book block is missing the process line")
     validate_no_retired_refund_copy(validation, "homepage", page_html)
     validation.require(CONVERSION_CSS_TAG in page_html, "homepage conversion stylesheet is missing or stale")
     validation.require(HOME_CSS_TAG in page_html, "homepage stylesheet is missing or stale")
-    validation.require(PREVIEW_JS_TAG in page_html, "homepage preview script is missing")
     validation.require(CONVERSION_JS_TAG in page_html, "homepage conversion script is missing or stale")
 
     forms = checkout_forms(page_html)
@@ -807,18 +863,16 @@ def validate_home(validation: Validation) -> Path:
         placement = form_placement(block)
         validate_checkout_form(validation, f"homepage {placement}", block, src="homepage", placement=placement, entry="home", cancel="/")
 
-    hero_media = [
-        ROOT / "assets/images/book-proof/cover-320.avif",
-        ROOT / "assets/images/book-proof/commandments-title-480.avif",
-        ROOT / "assets/images/book-proof/mirror-technique-480.avif",
-    ]
-    for asset in hero_media:
-        validation.require(asset.exists(), f"missing homepage hero proof asset {asset.relative_to(ROOT)}")
-    existing = [asset for asset in hero_media if asset.exists()]
-    validation.require(sum(asset.stat().st_size for asset in existing) < 500_000, "initial homepage proof media exceeds 500 KB")
+    minis = [ROOT / f"assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp" for archetype in HOME_ARCHETYPES]
+    for asset in minis:
+        validation.require(asset.exists(), f"missing homepage archetype mini {asset.relative_to(ROOT)}")
+        validation.require(f"/{asset.relative_to(ROOT)}" in page_html, f"homepage does not show {asset.name}")
+        if asset.exists():
+            validation.require(asset.stat().st_size < 20_000, f"homepage archetype mini {asset.name} exceeds 20 KB")
+    validation.require(sum(asset.stat().st_size for asset in minis if asset.exists()) < 120_000, "homepage archetype minis exceed 120 KB combined")
     cover = ROOT / "assets/images/book-proof/cover-320.avif"
-    if cover.exists():
-        validation.require(cover.stat().st_size < 200_000, "homepage mobile hero cover exceeds 200 KB")
+    validation.require(cover.exists() and cover.stat().st_size < 200_000, "homepage book cover exceeds 200 KB")
+    validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the homepage 80+ free guides claim outruns blog/posts.json")
     return page
 
 
