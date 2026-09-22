@@ -1336,3 +1336,11 @@
         opacity: 0.4;
     }
 }
+
+.quiz-glance--compact {
+    grid-template-columns: 1fr;
+}
+
+.quiz-glance--compact .quiz-glance__body {
+    padding: 0;
+}

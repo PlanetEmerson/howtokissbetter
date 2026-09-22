@@ -900,13 +900,14 @@
         return actions;
     }
 
-    function archetypeCard(archetype, paid) {
+    function archetypeCard(archetype, paid, options) {
+        options = options || {};
         var card = el("section", "quiz-card");
         card.setAttribute("aria-label", "Your archetype");
         card.appendChild(archetypeImage(archetype));
         var body = el("div", "quiz-card__body");
-        body.appendChild(el("p", "quiz-card__eyebrow", "Kiss Test result"));
-        var title = el("h1", "quiz-card__title", "You're " + archetype.name + ".");
+        body.appendChild(el("p", "quiz-card__eyebrow", options.eyebrow || "Kiss Test result"));
+        var title = el(options.headingTag || "h1", "quiz-card__title", "You're " + archetype.name + ".");
         body.appendChild(title);
         body.appendChild(el("p", "quiz-card__tagline", archetype.tagline));
         body.appendChild(el("p", "quiz-card__url", "howtokissbetter.com/kiss-test"));
@@ -1272,15 +1273,17 @@
 
     // At a glance, above the first paid section: thumb, name, score and the two
     // chips the rest of the report expands on.
-    function glanceCard(local, sections, state) {
-        var card = el("section", "quiz-glance");
+    function glanceCard(local, sections, state, compact) {
+        var card = el("section", compact ? "quiz-glance quiz-glance--compact" : "quiz-glance");
         card.setAttribute("aria-label", "Your result at a glance");
-        var media = archetypeImage(local.archetype, "thumb");
-        media.className = "quiz-glance__media";
-        card.appendChild(media);
         var body = el("div", "quiz-glance__body");
-        body.appendChild(el("p", "quiz-glance__name", local.archetype.name));
-        body.appendChild(el("p", "quiz-glance__tagline", local.archetype.tagline));
+        if (!compact) {
+            var media = archetypeImage(local.archetype, "thumb");
+            media.className = "quiz-glance__media";
+            card.appendChild(media);
+            body.appendChild(el("p", "quiz-glance__name", local.archetype.name));
+            body.appendChild(el("p", "quiz-glance__tagline", local.archetype.tagline));
+        }
         var score = el("p", "quiz-glance__score");
         score.appendChild(el("span", "quiz-glance__score-label", "Kiss Score"));
         score.appendChild(el("strong", null, local.score));
@@ -1333,7 +1336,10 @@
         header.appendChild(heading);
         root.appendChild(header);
         if (local && local.archetype && local.band) {
-            root.appendChild(glanceCard(local, sections, state));
+            // The full-size archetype art stays on the unlocked page too; the
+            // compact glance below it carries the score and the two chips.
+            root.appendChild(archetypeCard(local.archetype, { score: local.score, bandLabel: local.band.label }, { headingTag: "h2", eyebrow: "Kiss Test report" }));
+            root.appendChild(glanceCard(local, sections, state, true));
         }
         sections.forEach(function (section) {
             if (section && typeof section === "object") {
