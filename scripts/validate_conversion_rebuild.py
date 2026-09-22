@@ -25,7 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922a" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922c" defer></script>'
 GUARANTEE_BADGE = '<p class="kiss-guarantee" data-guarantee>'
 GUARANTEE_LINE = '<span class="kiss-guarantee--line"><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>'
 GUARANTEE_KEEP = '<span class="kiss-guarantee__keep">Keep it anyway. I can\'t take it back.</span>'
@@ -59,6 +60,14 @@ BUY_PLACEMENTS = ("buy-article-quarter", "buy-article-final", "buy-mobile-bar")
 QUIZ_PLACEMENTS = ("quiz-article-quarter", "quiz-article-final", "quiz-mobile-bar")
 QUIZ_URL = "/kiss-test/"
 QUIZ_PAGES = ("kiss-test/index.html", "kiss-test/result/index.html")
+KISS_TEST_LOCKED_LINES = (
+    "$4.99, one time, 30-day guarantee",
+    "Retakes free for 30 days.",
+    "<li>Honest, not magic. Same answers, same result.</li>",
+    "<li>Private. Scored on your phone. Nothing is stored unless you buy the report.</li>",
+    "<li>Never kissed anyone? Answer on instinct.</li>",
+    "The scoring file runs in your browser and is public. The paid report uses the same file, byte for byte. Same answers, same number, nothing to fudge.",
+)
 # The arm split, restated independently of the builder: quiz categories, the self-assessment posts
 # outside them, and the four crossed tests (two per arm).
 QUIZ_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
@@ -898,6 +907,25 @@ def validate_thanks_page(validation: Validation) -> Path:
     return page
 
 
+def validate_faq_twins(validation: Validation, label: str, page_html: str) -> None:
+    """Every FAQPage answer in the JSON-LD must appear verbatim as visible text."""
+    faq = None
+    for block in re.findall(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", page_html, re.S):
+        data = json.loads(block)
+        nodes = data.get("@graph", [data]) if isinstance(data, dict) else data
+        for node in nodes:
+            if isinstance(node, dict) and node.get("@type") == "FAQPage":
+                faq = node
+    validation.require(faq is not None, f"{label} has no FAQPage schema")
+    if faq is None:
+        return
+    questions = faq.get("mainEntity", [])
+    validation.require(len(questions) >= 5, f"{label} FAQPage lists fewer than five questions")
+    for question in questions:
+        answer = question.get("acceptedAnswer", {}).get("text", "")
+        validation.require(bool(answer) and answer in page_html, f"{label} FAQ answer is not visible on the page: {question.get('name', '')[:48]}")
+
+
 def validate_quiz_pages(validation: Validation) -> None:
     quiz_js = (ROOT / "assets/quiz.js").read_text()
     validation.require('el("span", "kiss-guarantee__keep", "Keep it anyway. I can\'t take it back.")' in quiz_js, "paywall badge keep line is missing from quiz.js")
@@ -910,8 +938,14 @@ def validate_quiz_pages(validation: Validation) -> None:
             continue
         page_html = page.read_text()
         validation.require(CONVERSION_CSS_TAG in page_html and CONVERSION_JS_TAG in page_html, f"{relative} conversion assets are stale")
+        validation.require(QUIZ_CSS_TAG in page_html, f"{relative} quiz stylesheet is stale")
         validation.require(QUIZ_JS_TAG in page_html, f"{relative} quiz script is stale")
         validate_no_retired_refund_copy(validation, relative, page_html)
+    test_html = (ROOT / "kiss-test/index.html").read_text()
+    validation.equal(test_html.count(GUARANTEE_BADGE), 1, "kiss test page guarantee badge count")
+    for line in KISS_TEST_LOCKED_LINES:
+        validation.equal(test_html.count(line), 1, f"kiss test page locked line count: {line[:40]}")
+    validate_faq_twins(validation, "kiss test page", test_html)
     result_html = (ROOT / "kiss-test/result/index.html").read_text()
     validation.equal(result_html.count(GUARANTEE_BADGE), 1, "result page guarantee badge count")
     validation.equal(result_html.count(GUARANTEE_LINE), 1, "result page guarantee line count")

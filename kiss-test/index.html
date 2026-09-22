@@ -47,7 +47,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
-    <link rel="stylesheet" href="/assets/quiz.css?v=20260919c">
+    <link rel="stylesheet" href="/assets/quiz.css?v=20260922">
 
     <script type="application/ld+json">
     {
@@ -128,7 +128,7 @@
                         "name": "What do I get for free, and what costs $4.99?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "Free: archetype, tagline, a short read, your two strongest habits. Paid, one time: score, breakdown, the three costliest habits with fixes, what they're noticing from your answers, your one move, and the 7-day plan. No subscription, no account."
+                            "text": "Free: archetype, tagline, a short read, your two strongest habits. Paid, one time: score, breakdown, the three costliest habits with fixes, what they're noticing from your answers, your one move, and the 7-day plan. No subscription, no account. Thirty-day guarantee on the report: not worth it, one email, full refund. You keep the report; I can't take it back."
                         }
                     },
                     {
@@ -136,7 +136,7 @@
                         "name": "Is it private?",
                         "acceptedAnswer": {
                             "@type": "Answer",
-                            "text": "Your answers are scored on your phone and stored nowhere. The result link contains your answers so you can reopen it; who you're kissing never leaves your device. If you email yourself the result, I hold your email address and nothing else."
+                            "text": "Your answers are scored on your phone and stored nowhere unless you buy the report; then your ten answers sit in the payment record and on this device so the report can be rebuilt. They never go into a link, so no URL can reopen a free result; a paid report stays open on this device for 30 days. Who you're kissing never leaves your device. If you email yourself the result, I hold your email address and nothing else."
                         }
                     },
                     {
@@ -182,9 +182,14 @@
                 <h1 id="kiss-test-title">Am I a Good Kisser? Take the Kiss Test.</h1>
                 <p class="quiz-hero__deck">Ten questions about what you actually do. A score, an archetype, and the three habits to fix first. About a minute.</p>
                 <div class="quiz-hero__actions">
-                    <a class="conversion-button" href="#kiss-test-app" data-quiz-start>Start the Kiss Test</a>
+                    <a class="conversion-button conversion-sheen" href="#kiss-test-app" data-quiz-start>Start the Kiss Test</a>
                     <p class="quiz-hero__meta">10 questions <span aria-hidden="true">·</span> about a minute <span aria-hidden="true">·</span> free result</p>
                 </div>
+                <ul class="quiz-hero__objections">
+                    <li>Honest, not magic. Same answers, same result.</li>
+                    <li>Private. Scored on your phone. Nothing is stored unless you buy the report.</li>
+                    <li>Never kissed anyone? Answer on instinct.</li>
+                </ul>
             </div>
         </section>
 
@@ -293,8 +298,13 @@
                         <p>Your archetype, the tagline you'll want to screenshot, an honest three-sentence read, and your two strongest habits.</p>
                     </div>
                     <div class="quiz-tier quiz-tier--paid">
-                        <p class="conversion-kicker">$4.99, one time</p>
+                        <p class="conversion-kicker">$4.99, one time, 30-day guarantee</p>
                         <p>Your score and the eight-dimension breakdown, the three habits costing you the most with the fix for each (pulled from my book), what they're actually noticing based on your answers, the one move for your type, and a 7-day fix.</p>
+                        <p class="quiz-tier__retake">Retakes free for 30 days.</p>
+                        <p class="kiss-guarantee" data-guarantee>
+                            <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
+                            <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -303,7 +313,7 @@
         <section class="quiz-section" id="scoring" aria-labelledby="scoring-title">
             <div class="quiz-section__inner">
                 <h2 id="scoring-title">How it's scored</h2>
-                <p>Every answer moves one or two of eight dials by a fixed amount. The dials are weighted (reading your partner counts most, the room counts least) and added into a score from 20 to 100. Nobody scores under 20; taking a test about kissing already puts you ahead of the people who never wonder. Your archetype is the pattern that showed up most in your answers. Same answers, same result, every time. This is for fun and self-awareness, not a scientific instrument.</p>
+                <p>Every answer moves one or two of eight dials by a fixed amount. The dials are weighted (reading your partner counts most, the room counts least) and added into a score from 20 to 100. Nobody scores under 20; taking a test about kissing already puts you ahead of the people who never wonder. Your archetype is the pattern that showed up most in your answers. Same answers, same result, every time. This is for fun and self-awareness, not a scientific instrument. The scoring file runs in your browser and is public. The paid report uses the same file, byte for byte. Same answers, same number, nothing to fudge.</p>
             </div>
         </section>
 
@@ -324,11 +334,11 @@
                     </details>
                     <details>
                         <summary>What do I get for free, and what costs $4.99?</summary>
-                        <p>Free: archetype, tagline, a short read, your two strongest habits. Paid, one time: score, breakdown, the three costliest habits with fixes, what they're noticing from your answers, your one move, and the 7-day plan. No subscription, no account.</p>
+                        <p>Free: archetype, tagline, a short read, your two strongest habits. Paid, one time: score, breakdown, the three costliest habits with fixes, what they're noticing from your answers, your one move, and the 7-day plan. No subscription, no account. Thirty-day guarantee on the report: not worth it, one email, full refund. You keep the report; I can't take it back.</p>
                     </details>
                     <details>
                         <summary>Is it private?</summary>
-                        <p>Your answers are scored on your phone and stored nowhere. The result link contains your answers so you can reopen it; who you're kissing never leaves your device. If you email yourself the result, I hold your email address and nothing else.</p>
+                        <p>Your answers are scored on your phone and stored nowhere unless you buy the report; then your ten answers sit in the payment record and on this device so the report can be rebuilt. They never go into a link, so no URL can reopen a free result; a paid report stays open on this device for 30 days. Who you're kissing never leaves your device. If you email yourself the result, I hold your email address and nothing else.</p>
                     </details>
                     <details>
                         <summary>Can I retake it?</summary>
@@ -362,7 +372,7 @@
     </footer>
 
     <script src="/assets/kiss-score.js?v=20260918-e1" defer></script>
-    <script src="/assets/quiz.js?v=20260922a" defer></script>
+    <script src="/assets/quiz.js?v=20260922c" defer></script>
     <script src="/assets/conversion.js?v=20260922" defer></script>
 </body>
 </html>

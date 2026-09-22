@@ -56,7 +56,8 @@
         "The 3 habits costing you the most, and the fix for each, pulled from the book",
         "What {he}'s actually noticing (from your answers)",
         "The one move for {archetype}",
-        "Your 7-day fix"
+        "Your 7-day fix",
+        "Retakes for 30 days on this device. Fix one habit, retake, watch the number move."
     ];
     var CHECKOUT_NOTICES = {
         canceled: "Checkout was canceled. Nothing was charged; your result is still here whenever you're ready.",
@@ -509,8 +510,14 @@
             var screen = progressScreen("quiz-screen--scoring", "Scoring", "Scoring your answers. Eight dials, ten taps.");
             var dials = el("div", "quiz-dials");
             dials.setAttribute("aria-hidden", "true");
+            var dimensions = data().dimensions || [];
             for (var i = 0; i < 8; i++) {
-                dials.appendChild(el("span"));
+                var dial = el("div", "quiz-dial");
+                dial.appendChild(el("span", "quiz-dial__bar"));
+                var name = el("span", "quiz-dial__name", dimensions[i] ? dimensions[i].name : "");
+                name.setAttribute("aria-hidden", "true");
+                dial.appendChild(name);
+                dials.appendChild(dial);
             }
             screen.appendChild(dials);
             mount(app, screen);
@@ -637,11 +644,13 @@
         return media;
     }
 
+    // The dare makes the partner player two, and only the paid number settles
+    // it, so the share loop sells the report on its own.
     function shareText(archetype, paid) {
-        var middle = paid
-            ? "Kiss Score " + paid.score + ", " + paid.bandLabel + "."
-            : "I'm not telling you my score.";
-        return "I took the Kiss Test and got " + archetype.name + ". \"" + archetype.tagline + "\" " + middle + " Take it and tell me yours:";
+        var ending = paid
+            ? "Kiss Score " + paid.score + ", " + paid.bandLabel + ". Your turn. Lower score buys dinner:"
+            : "I'm not telling you my score. Take it. Lower score buys dinner:";
+        return "I took the Kiss Test and got " + archetype.name + ". \"" + archetype.tagline + "\" " + ending;
     }
 
     function shareLinks(text, url) {
@@ -1011,8 +1020,10 @@
         card.appendChild(blurredScore());
         var claim = el("p", "quiz-score-card__claim");
         claim.appendChild(el("strong", null, "Computed from your 10 answers. Not a vibe. A number."));
+        claim.appendChild(el("span", "quiz-score-card__endowment", "It's already scored. It's sitting under the blur."));
         card.appendChild(claim);
         card.appendChild(el("p", "quiz-score-card__teaser", state.summary.teaser));
+        card.appendChild(el("p", "quiz-score-card__floor", "Nobody scores under 20. The report is the fix, not the verdict."));
         var behind = el("p", "quiz-score-card__behind");
         behind.appendChild(el("strong", null, "Behind the unlock:"));
         card.appendChild(behind);
@@ -1033,7 +1044,7 @@
             card.appendChild(notice);
         });
         card.appendChild(paywallForm(state));
-        card.appendChild(el("p", "quiz-paywall__once", "One-time payment. No subscription, no account. Apple Pay, Google Pay, or card."));
+        card.appendChild(el("p", "quiz-paywall__once", "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen."));
         var fine = el("p", "quiz-paywall__fine");
         fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older to purchase. Refunds: email " + SUPPORT_EMAIL + " within 30 days."));
         card.appendChild(fine);
@@ -1112,6 +1123,14 @@
         var link = el("a", "conversion-button", text);
         link.setAttribute("href", href);
         return link;
+    }
+
+    // "Retake the test" starts fresh: a half-finished retake left in
+    // sessionStorage would otherwise resume mid-test on /kiss-test/.
+    function retakeFresh(link) {
+        link.addEventListener("click", function () {
+            safeStorage(window.sessionStorage, "removeItem", KEYS.answers);
+        });
     }
 
     function renderFree(root, state) {
@@ -1298,6 +1317,12 @@
         var score = el("p", "quiz-glance__score");
         score.appendChild(el("span", "quiz-glance__score-label", "Kiss Score"));
         score.appendChild(el("strong", null, local.score));
+        // Sighted count-up stand-in; the <strong> stays the score assistive tech
+        // reads and quiz.css hides it visually only where the count runs.
+        var count = el("span", "quiz-glance__count");
+        count.setAttribute("aria-hidden", "true");
+        count.style.setProperty("--kiss-score", String(local.score));
+        score.appendChild(count);
         score.appendChild(el("span", null, local.band.label));
         body.appendChild(score);
         var chips = el("ul", "quiz-glance__chips");
@@ -1319,7 +1344,7 @@
 
     function renderPaid(root, state, report) {
         // The report describes the answers that were paid for, which can differ
-        // from this browser's latest run (a receipt link, or a retake in
+        // from this browser's latest run (a Stripe return link, or a retake in
         // progress). Its own free summary drives the header, not local state.
         var paid = report && report.paid ? report.paid : report;
         var sections = paid && Array.isArray(paid.sections) ? paid.sections : [];
@@ -1357,6 +1382,14 @@
                 root.appendChild(paidSection(section, state, local));
             }
         });
+        var signoff = el("div", "quiz-paid-signoff");
+        signoff.appendChild(el("p", "quiz-signoff", "That's the honest version. Day 7, retake it. Your report stays open 30 days and I want that number to move. C.J."));
+        var retake = el("a", "quiz-paid-signoff__link", "Retake the test");
+        retake.setAttribute("href", QUIZ_PATH + "#kiss-test-app");
+        retake.setAttribute("data-quiz-retake", "");
+        retakeFresh(retake);
+        signoff.appendChild(retake);
+        root.appendChild(signoff);
         if (local && local.archetype) {
             var share = el("section", "quiz-paid-share");
             share.appendChild(el("h2", "quiz-section-title", "Tell someone. Or don't."));
@@ -1374,7 +1407,7 @@
 
     function verifyNotice(status, mode) {
         if (status === 401) {
-            return "This device's unlock has expired (unlocks last 30 days). The link in your receipt email reopens the report.";
+            return "This device's 30-day window on the report has ended. Bought it less than 30 days ago? Email " + SUPPORT_EMAIL + " and I will sort it out.";
         }
         if (status === 402) {
             return "That order isn't marked as paid yet. If you did pay, email " + SUPPORT_EMAIL + " and I will sort it out.";
@@ -1415,6 +1448,7 @@
         };
         var token = safeStorage(window.localStorage, "getItem", KEYS.token) || "";
         captureGaIds();
+        Array.prototype.forEach.call(document.querySelectorAll("[data-quiz-retake]"), retakeFresh);
 
         function fallback(notice, retryable, retry) {
             if (state.answers) {

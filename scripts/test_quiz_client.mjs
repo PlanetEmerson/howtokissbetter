@@ -353,7 +353,7 @@ test("an expired token is forgotten and the free result still renders", async ()
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "stale" }, fetchImpl });
   await settle();
   assert.equal(page.window.localStorage.getItem("kt_token_v1"), null);
-  assert.match(page.app.textContent, /unlock has expired/);
+  assert.match(page.app.textContent, /30-day window on the report has ended/);
   assert.match(page.app.textContent, /You're The Overthinker\./);
   assert.equal(page.app.querySelector(".quiz-retry"), null);
 });
@@ -362,6 +362,97 @@ test("no answers and no unlock sends the visitor back to the test", async () => 
   const page = runPage({ pageKind: "quiz-result" });
   await settle();
   assert.deepEqual(page.navigations, [["replace", "/kiss-test/"]]);
+});
+
+test("free render carries the endowment and floor lines, the sixth list item, and the Stripe-page fine print", async () => {
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
+  await settle();
+  const card = page.app.querySelector(".quiz-score-card");
+  assert.equal(card.querySelector(".quiz-score-card__claim .quiz-score-card__endowment").textContent, "It's already scored. It's sitting under the blur.");
+  assert.equal(card.querySelector(".quiz-score-card__floor").textContent, "Nobody scores under 20. The report is the fix, not the verdict.");
+  const kinds = card.children.map((c) => c.className);
+  assert.equal(kinds.indexOf("quiz-score-card__floor"), kinds.indexOf("quiz-score-card__teaser") + 1);
+  const items = card.querySelectorAll(".quiz-paywall__list li").map((li) => li.textContent);
+  assert.equal(items.length, 6);
+  assert.equal(items[5], "Retakes for 30 days on this device. Fix one habit, retake, watch the number move.");
+  assert.equal(card.querySelector(".quiz-paywall__once").textContent, "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen.");
+  const form = card.querySelector("form[data-report-checkout]");
+  assert.match(form.textContent, /30-day guarantee/);
+  assert.equal(form.querySelector("button").className.split(" ").includes("conversion-sheen"), true);
+});
+
+const DARE_REPORT = {
+  paid: {
+    sections: [
+      { id: "score", title: "Where your points went", paragraphs: ["Kiss Score 73, Dangerous, in a Good Way."], items: [{ label: "Reading them", level: "strong", line: "Keep it." }, { label: "Pace", level: "costing", line: "Slow down." }] },
+      { id: "tonight", title: "Tonight, if you get the chance", paragraphs: ["Then stop counting."], items: ["1. Breathe."] },
+    ],
+  },
+};
+const paidFetch = (url) => Promise.resolve(url.endsWith("/api/verify") ? jsonResponse(200, { ok: true, product: "report", payload: { report: DARE_REPORT } }) : jsonResponse(500, {}));
+
+test("paid render adds the sighted count-up beside the real score, then the sign-off with a fresh-start retake link", async () => {
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  const score = page.app.querySelector(".quiz-glance__score");
+  const real = score.querySelector("strong");
+  assert.equal(real.textContent, "73");
+  const count = score.querySelector(".quiz-glance__count");
+  assert.equal(count.getAttribute("aria-hidden"), "true");
+  assert.equal(count.style.props["--kiss-score"], "73");
+  assert.equal(count.textContent, "");
+  assert.equal(score.children.indexOf(count), score.children.indexOf(real) + 1);
+
+  const signoff = page.app.querySelector(".quiz-paid-signoff");
+  assert.equal(signoff.querySelector(".quiz-signoff").textContent, "That's the honest version. Day 7, retake it. Your report stays open 30 days and I want that number to move. C.J.");
+  const link = signoff.querySelector("a[data-quiz-retake]");
+  assert.equal(link.textContent, "Retake the test");
+  assert.equal(link.getAttribute("href"), "/kiss-test/#kiss-test-app");
+  const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
+  assert.equal(at("quiz-paid-signoff"), at("quiz-paid-section--tonight") + 1);
+  assert.equal(at("quiz-paid-share"), at("quiz-paid-signoff") + 1);
+
+  assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), ANSWERS);
+  link.dispatch("click");
+  assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), null);
+});
+
+test("share text ends with the dare: the free line hides the score, the paid line carries it", async () => {
+  const free = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
+  await settle();
+  free.app.querySelector(".quiz-share-cta__button").dispatch("click");
+  const freeQuote = free.body.querySelector("blockquote.quiz-share__text").textContent;
+  assert.equal(freeQuote.endsWith(`I'm not telling you my score. Take it. Lower score buys dinner: ${SHARE_URL}`), true, freeQuote);
+
+  const paid = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  paid.app.querySelector(".quiz-paid-share .quiz-share-cta__button").dispatch("click");
+  const paidQuote = paid.body.querySelector("blockquote.quiz-share__text").textContent;
+  assert.equal(paidQuote.startsWith("I took the Kiss Test and got The Overthinker. \"Your instincts are fine. Your narrator won't shut up.\" "), true, paidQuote);
+  assert.equal(paidQuote.endsWith(`Kiss Score 73, Dangerous, in a Good Way. Your turn. Lower score buys dinner: ${SHARE_URL}`), true, paidQuote);
+});
+
+test("the scoring beat names all eight dials and is the only timer in a ten-answer run", () => {
+  const page = runPage({ pageKind: "quiz" });
+  page.startButtons[0].dispatch("click", { preventDefault() {} });
+  const first = () => page.app.querySelectorAll(".quiz-option")[0].dispatch("click");
+  first();
+  first();
+  assert.match(page.app.textContent, /Question 1 of 10/);
+  for (let q = 1; q <= 9; q++) {
+    first();
+    assert.equal(page.timeouts.length, 0, `no timer after question ${q}`);
+    assert.match(page.app.textContent, new RegExp(`Question ${q + 1} of 10`));
+  }
+  first();
+  assert.match(page.app.textContent, /Scoring your answers\. Eight dials, ten taps\./);
+  assert.equal(page.timeouts.length, 1);
+  assert.equal(page.app.querySelector(".quiz-dials").getAttribute("aria-hidden"), "true");
+  assert.equal(page.app.querySelectorAll(".quiz-dial .quiz-dial__bar").length, 8);
+  const names = page.app.querySelectorAll(".quiz-dial__name");
+  assert.equal(names.length, 8);
+  assert.deepEqual(names.map((n) => n.textContent), page.engine.DATA.dimensions.map((d) => d.name));
+  assert.equal(names.every((n) => n.getAttribute("aria-hidden") === "true"), true);
 });
 
 test("paid render writes server strings as text, applies the stored pronoun, and stores the unlock", async () => {
@@ -485,7 +576,7 @@ test("shareLinks encodes the text and url for every network", () => {
   assert.equal(both.includes("\"") || both.includes("&") || both.includes("?ref"), false);
 });
 
-const SHARE_TEXT = "I took the Kiss Test and got The Overthinker. \"Your instincts are fine. Your narrator won't shut up.\" I'm not telling you my score. Take it and tell me yours:";
+const SHARE_TEXT = "I took the Kiss Test and got The Overthinker. \"Your instincts are fine. Your narrator won't shut up.\" I'm not telling you my score. Take it. Lower score buys dinner:";
 const SHARE_URL = "https://howtokissbetter.com/kiss-test/?ref=share";
 
 test("without Web Share, the button opens an in-page sheet: copy flips to Copied, links are encoded, focus returns", async () => {
