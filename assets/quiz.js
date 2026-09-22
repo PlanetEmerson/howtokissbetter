@@ -38,6 +38,9 @@
     var VIDEO_ROOT = "/assets/video/archetypes/";
     var SCORE_PLATE = "/assets/video/score-plate.mp4";
     var SCORE_DEMO = "/assets/video/score-demo.mp4";
+    var WAVE_GAP = 1800;
+    var WAVE_REST = 4200;
+    var CARD_REST = 3200;
     var SUPPORT_EMAIL = "contact@howtokissbetter.com";
     var SCORING_DELAY = 1200;
     var SLUG = /^[a-z0-9-]{1,100}$/;
@@ -165,6 +168,41 @@
         video.addEventListener("error", remove);
         source.addEventListener("error", remove);
         return video;
+    }
+
+    // Keeps a card's clip alive: it plays again after a rest, only while its
+    // box is on screen, and lets go once the box has left the document.
+    function keepAlive(video, box) {
+        var timer = null;
+        var seen = true;
+        function again() {
+            timer = null;
+            if (seen && video.parentNode) {
+                video.currentTime = 0;
+                playQuietly(video);
+            }
+        }
+        video.addEventListener("ended", function () {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(again, CARD_REST);
+        });
+        if (typeof window.IntersectionObserver !== "function") {
+            return;
+        }
+        var watch = new window.IntersectionObserver(function (entries) {
+            seen = entries[entries.length - 1].isIntersecting;
+            if (!video.parentNode) {
+                watch.disconnect();
+            } else if (!seen) {
+                video.pause();
+            } else if (video.ended) {
+                window.clearTimeout(timer);
+                again();
+            } else if (video.paused) {
+                playQuietly(video);
+            }
+        }, { threshold: 0.3 });
+        watch.observe(box);
     }
 
     function playQuietly(video) {
@@ -456,16 +494,18 @@
         if ((!thumbs.length && !demo) || !motionAllowed()) {
             return;
         }
-        var hover = Boolean(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
         var observes = typeof window.IntersectionObserver === "function";
+        var deck = [];
+        var row = null;
         Array.prototype.forEach.call(thumbs, function (img) {
             var match = /\/archetypes\/([a-z-]+)-mw-thumb\.webp$/.exec(img.getAttribute("src") || "");
             var card = img.parentNode;
             var video = null;
-            if (!match || !card || (!hover && !observes)) {
+            if (!match || !card) {
                 return;
             }
-            function play(replay) {
+            row = card.parentNode;
+            function play() {
                 if (!video) {
                     video = quietVideo("", VIDEO_ROOT + match[1] + "-mw.mp4", img.getAttribute("src"), "none");
                     video.setAttribute("width", "540");
@@ -473,27 +513,41 @@
                     card.insertBefore(video, img.nextSibling);
                 }
                 if (video.ended) {
-                    if (!replay) {
-                        return;
-                    }
                     video.currentTime = 0;
                 }
                 playQuietly(video);
             }
-            if (hover) {
-                card.addEventListener("mouseenter", function () {
-                    play(true);
-                });
-                return;
-            }
-            new window.IntersectionObserver(function (entries) {
-                if (entries[entries.length - 1].isIntersecting) {
-                    play(false);
-                } else if (video) {
-                    video.pause();
+            card.addEventListener("mouseenter", play);
+            deck.push({
+                play: play,
+                pause: function () {
+                    if (video) {
+                        video.pause();
+                    }
                 }
-            }, { threshold: 0.6 }).observe(card);
+            });
         });
+        if (deck.length && observes) {
+            // The row ripples while it is on screen: a card starts every
+            // WAVE_GAP, rests after the last one, then goes round again.
+            var timer = null;
+            var index = 0;
+            var step = function () {
+                deck[index % deck.length].play();
+                index += 1;
+                timer = window.setTimeout(step, index % deck.length ? WAVE_GAP : WAVE_REST);
+            };
+            new window.IntersectionObserver(function (entries) {
+                window.clearTimeout(timer);
+                if (entries[entries.length - 1].isIntersecting) {
+                    step();
+                } else {
+                    deck.forEach(function (item) {
+                        item.pause();
+                    });
+                }
+            }, { threshold: 0.25 }).observe(row);
+        }
         if (!demo || !observes) {
             return;
         }
@@ -753,7 +807,7 @@
             img.setAttribute("width", "540");
             img.setAttribute("height", "675");
             media.appendChild(img);
-            return media;
+            return liveCard(media, archetype, motion);
         }
         var picture = el("picture");
         var source = el("source");
@@ -765,13 +819,20 @@
         img.setAttribute("height", "1350");
         picture.appendChild(img);
         media.appendChild(picture);
+        return liveCard(media, archetype, motion);
+    }
+
+    // Layers the reveal clip over a card's still and keeps it alive. No
+    // poster: the picture underneath is the poster, and a poster URL would
+    // fetch the jpg beside the webp the picture already chose.
+    function liveCard(media, archetype, motion) {
         if (motion && storedPairing() === "mw" && motionAllowed()) {
-            // No poster: the picture underneath is the poster, and a poster URL would fetch the jpg beside the webp the picture already chose.
             var video = quietVideo("quiz-card__video", VIDEO_ROOT + archetype.id + "-mw.mp4", "", "auto");
             video.setAttribute("autoplay", "");
             video.setAttribute("width", "896");
             video.setAttribute("height", "1120");
             media.appendChild(video);
+            keepAlive(video, media);
             playQuietly(video);
         }
         return media;
@@ -1457,7 +1518,7 @@
         }
         var body = el("div", "quiz-glance__body");
         if (!compact) {
-            var media = archetypeImage(local.archetype, "thumb");
+            var media = archetypeImage(local.archetype, "thumb", true);
             media.className = "quiz-glance__media";
             card.appendChild(media);
             body.appendChild(el("p", "quiz-glance__name", local.archetype.name));

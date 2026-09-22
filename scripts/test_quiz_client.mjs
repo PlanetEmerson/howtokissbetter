@@ -246,6 +246,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
     navigator: { share, canShare, clipboard, connection },
     File: fileImpl,
     setTimeout(fn, delay) { timeouts.push({ fn, delay }); return timeouts.length; },
+    clearTimeout(id) { const pending = timeouts[id - 1]; if (pending) { pending.cleared = true; } },
   };
   if (!gtagMissing) {
     window.gtag = (...args) => {
@@ -926,7 +927,13 @@ test("free render layers the reveal clip over the mw still when motion is allowe
   assert.deepEqual(media.children.map((c) => c.tagName), ["PICTURE", "VIDEO"]);
   video.dispatch("playing");
   assert.equal(video.classList.contains("is-playing"), true);
-  assert.equal(page.app.querySelectorAll("video").length, 1, "the glance thumb and the rest of the page stay stills");
+  assert.equal(Array.from(page.app.querySelectorAll("video")).every((v) => v.classList.contains("quiz-card__video")), true, "only the archetype cards move");
+  video.dispatch("ended");
+  const rest = page.timeouts[page.timeouts.length - 1];
+  assert.equal(rest.delay, 3200, "a finished card rests, then plays again");
+  rest.fn();
+  assert.equal(video.currentTime, 0);
+  assert.equal(video.playCalls, 2);
 
   page.app.querySelector(".quiz-share-cta__button").dispatch("click");
   const sheetMedia = page.body.querySelector("dialog.quiz-share .quiz-share__media");
@@ -1017,28 +1024,40 @@ test("landing row with a fine pointer: a hover builds the card's clip once, play
   assert.equal(page.demoFigure.querySelector("video"), null, "the demo needs an IntersectionObserver");
 });
 
-test("landing on touch: cards play once as they scroll into view, the tier demo loops only while on screen", () => {
+test("landing row: the deck ripples while on screen on any pointer, the tier demo loops only while on screen", () => {
   const observers = [];
   const page = runPage({ pageKind: "quiz", landing: true, reducedMotion: false, hover: false, observers });
-  assert.deepEqual(observers.map((o) => o.options.threshold), [0.6, 0.6, 0.4]);
-  const [explorerWatch, , demoWatch] = observers;
-  const [explorer] = page.landingCards;
-  assert.deepEqual(explorerWatch.targets, [explorer]);
+  assert.deepEqual(observers.map((o) => o.options.threshold), [0.25, 0.4]);
+  const [rowWatch, demoWatch] = observers;
+  const [explorer, natural] = page.landingCards;
+  const row = explorer.parentNode;
+  assert.deepEqual(rowWatch.targets, [row]);
   assert.deepEqual(demoWatch.targets, [page.demoFigure]);
-  assert.equal(page.body.querySelectorAll("video").length, 0, "no bytes until something is in view");
+  assert.equal(page.body.querySelectorAll("video").length, 0, "no bytes until the row is in view");
 
-  explorerWatch.callback([{ target: explorer, isIntersecting: true }]);
+  rowWatch.callback([{ target: row, isIntersecting: true }]);
   const clip = explorer.querySelector("video");
   assert.equal(clip.querySelector("source").getAttribute("src"), "/assets/video/archetypes/explorer-mw.mp4");
   assert.equal(clip.getAttribute("preload"), "none");
   assert.equal(clip.playCalls, 1);
-  explorerWatch.callback([{ target: explorer, isIntersecting: false }]);
+  assert.equal(natural.querySelector("video"), null, "one card starts at a time");
+  const gap = page.timeouts[page.timeouts.length - 1];
+  assert.equal(gap.delay, 1800);
+  gap.fn();
+  const next = natural.querySelector("video");
+  assert.equal(next.playCalls, 1, "the next card follows after the gap");
+  assert.equal(page.timeouts[page.timeouts.length - 1].delay, 4200, "a rest after the last card");
+
+  rowWatch.callback([{ target: row, isIntersecting: false }]);
+  assert.equal(page.timeouts[page.timeouts.length - 1].cleared, true, "off screen, the ripple stops");
   assert.equal(clip.pauseCalls, 1);
-  explorerWatch.callback([{ target: explorer, isIntersecting: true }]);
-  assert.equal(clip.playCalls, 2);
+  assert.equal(next.pauseCalls, 1);
   clip.ended = true;
-  explorerWatch.callback([{ target: explorer, isIntersecting: false }, { target: explorer, isIntersecting: true }]);
-  assert.equal(clip.playCalls, 2, "a finished card stays on its still");
+  explorer.dispatch("mouseenter");
+  assert.equal(clip.currentTime, 0);
+  assert.equal(clip.playCalls, 2, "a finished card replays from the start on hover");
+  rowWatch.callback([{ target: row, isIntersecting: true }]);
+  assert.equal(page.timeouts[page.timeouts.length - 1].cleared, undefined, "back on screen, the ripple resumes");
 
   demoWatch.callback([{ target: page.demoFigure, isIntersecting: true }]);
   const loop = page.demoFigure.querySelector("video");

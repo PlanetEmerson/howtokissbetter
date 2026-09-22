@@ -309,15 +309,18 @@
     (function () {
         var mq = window.matchMedia;
         var link = navigator.connection;
-        if (!mq || !mq("(hover: hover) and (pointer: fine)").matches || mq("(prefers-reduced-motion: reduce)").matches || (link && link.saveData)) {
+        if (!mq || mq("(prefers-reduced-motion: reduce)").matches || (link && (link.saveData || /2g$/.test(String(link.effectiveType || ""))))) {
             return;
         }
+        var deck = [];
+        var row = null;
         Array.prototype.forEach.call(document.querySelectorAll(".home-archetypes__card"), function (card) {
             var img = card.querySelector("img");
             var match = img && /\/archetypes\/([a-z-]+)-mw-mini\.webp$/.exec(img.getAttribute("src") || "");
             var video = null;
             if (!match) { return; }
-            card.addEventListener("mouseenter", function () {
+            row = card.parentNode;
+            function play() {
                 if (!video) {
                     video = document.createElement("video");
                     [["muted", ""], ["playsinline", ""], ["preload", "none"], ["aria-hidden", "true"], ["poster", img.getAttribute("src")]].forEach(function (pair) { video.setAttribute(pair[0], pair[1]); });
@@ -332,8 +335,24 @@
                 if (video.ended) { video.currentTime = 0; }
                 var pending = video.play();
                 if (pending && pending.then) { pending.then(null, function () {}); }
-            });
+            }
+            card.addEventListener("mouseenter", play);
+            deck.push({ play: play, pause: function () { if (video) { video.pause(); } } });
         });
+        if (!deck.length || typeof window.IntersectionObserver !== "function") { return; }
+        // The deck ripples while it is on screen: a card starts every 1.8 s,
+        // a short rest after the last one, then round again. Off screen it stops.
+        var timer = null;
+        var index = 0;
+        function step() {
+            deck[index % deck.length].play();
+            index += 1;
+            timer = window.setTimeout(step, index % deck.length ? 1800 : 4200);
+        }
+        new window.IntersectionObserver(function (entries) {
+            window.clearTimeout(timer);
+            if (entries[entries.length - 1].isIntersecting) { step(); } else { deck.forEach(function (card) { card.pause(); }); }
+        }, { threshold: 0.25 }).observe(row);
     })();
     </script>
 </body>
