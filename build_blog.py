@@ -30,7 +30,7 @@ SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
-ASSET_VERSION = "20260918"
+ASSET_VERSION = "20260922"
 BOOK_PRICE = "9.99"
 CHECKOUT_API = "https://api.howtokissbetter.com"
 # Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".
@@ -42,8 +42,9 @@ BUY_FINAL_COPY = "Every chapter, from the first move to the long kiss goodbye. P
 BUY_META = (
     "Secure checkout by Stripe. Apple Pay, Google Pay, Link, or card. "
     "Sold by Blynk Studio, the studio behind How to Kiss Better. "
-    "Not satisfied? Email me. I will make it right."
+    "Pay on Stripe's page. PDF and EPUB on the next screen, plus an email with a link that stays yours."
 )
+QUIZ_HOOK_ARCHETYPES = ("natural", "sprinter", "overthinker")
 
 # Phase 2: the Kiss Test owns the surfaces on the quiz arm.
 QUIZ_URL = "/kiss-test/"
@@ -1039,21 +1040,30 @@ def render_checkout_form(
     return "\n".join(f"{indent}{line}" for line in lines)
 
 
+def render_guarantee_badge(indent: str) -> str:
+    """Render the shared 30-day guarantee badge; the same markup sits on every purchase surface."""
+    lines = (
+        '<p class="kiss-guarantee" data-guarantee>',
+        '    <span class="kiss-guarantee__mark" aria-hidden="true">30</span>',
+        "    <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>",
+        "</p>",
+    )
+    return "\n".join(f"{indent}{line}" for line in lines)
+
+
 def render_article_buy_card(offer: dict[str, Any]) -> str:
-    """Render the in-article buy card: real page, desire-framed copy, one-tap checkout."""
+    """Render the in-article buy card: the cover, desire-framed copy, one-tap checkout."""
     hook = offer["buy"]
-    image_stem = Path(str(offer["image"])).stem.replace("-480", "")
-    image_root = "/assets/images/book-proof"
     placement = "buy-article-quarter"
     surface_attributes = offer_data_attributes(offer, placement).replace('data-offer-link="true" ', "")
     form = render_checkout_form(offer, placement, BUY_BUTTON_LABEL, "conversion-button conversion-offer__link", indent="        ")
     return f"""<!-- BUY_RAIL_QUARTER_START -->
-<aside class="conversion-offer conversion-offer--proof conversion-offer--buy js-offer" id="article-book-buy" {surface_attributes} aria-labelledby="article-book-buy-title">
-    <div class="conversion-offer__proof" aria-hidden="true">
-        <picture>
-            <source srcset="{image_root}/{image_stem}-480.avif" type="image/avif">
-            <source srcset="{image_root}/{image_stem}-480.webp" type="image/webp">
-            <img src="{image_root}/{image_stem}-480.webp" alt="" width="480" height="600" loading="lazy" decoding="async">
+<aside class="conversion-offer conversion-offer--cover conversion-offer--buy js-offer" id="article-book-buy" {surface_attributes} aria-labelledby="article-book-buy-title">
+    <div class="conversion-offer__cover" aria-hidden="true">
+        <picture class="kiss-cover kiss-cover--tilt">
+            <source srcset="/assets/images/book-proof/cover-320.avif 320w, /assets/images/book-proof/cover-480.avif 480w" type="image/avif">
+            <source srcset="/assets/images/book-proof/cover-320.webp 320w, /assets/images/book-proof/cover-480.webp 480w" type="image/webp">
+            <img src="/assets/images/book-proof/cover-320.webp" alt="" width="320" height="480" loading="lazy" decoding="async">
         </picture>
     </div>
     <div class="conversion-offer__body">
@@ -1061,6 +1071,7 @@ def render_article_buy_card(offer: dict[str, Any]) -> str:
         <h2 class="conversion-offer__title" id="article-book-buy-title">{html.escape(str(hook['title']))}</h2>
         <p class="conversion-offer__copy">{html.escape(str(hook['copy']))}</p>
 {form}
+{render_guarantee_badge("        ")}
         <p class="conversion-offer__meta">{html.escape(BUY_META)}</p>
     </div>
 </aside>
@@ -1079,6 +1090,7 @@ def render_article_buy_final(offer: dict[str, Any]) -> str:
                 <h2 class="conversion-final__title" id="article-book-final-title">{html.escape(str(hook['title']))}</h2>
                 <p class="conversion-final__copy">{html.escape(BUY_FINAL_COPY)}</p>
 {form}
+{render_guarantee_badge("                ")}
                 <p class="conversion-final__meta">{html.escape(BUY_META)}</p>
             </aside>
             <!-- BUY_RAIL_FINAL_END -->"""
@@ -1156,11 +1168,19 @@ def render_article_quiz_hook(offer: dict[str, Any]) -> str:
         f'        <li><a class="quiz-hook__option" href="{quiz_hook_href(offer, placement, str(question["id"]), str(option["id"]))}" {link_attributes}>{html.escape(quiz_text(str(option["text"]), pronouns))}</a></li>'
         for option in question["options"]
     )
+    minis = "\n".join(
+        f'        <li><img src="/assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp" alt="" width="240" height="300" loading="lazy" decoding="async"></li>'
+        for archetype in QUIZ_HOOK_ARCHETYPES
+    )
     return f"""<!-- QUIZ_HOOK_QUARTER_START -->
 <aside class="conversion-offer conversion-offer--quiz js-offer" id="article-kiss-test-hook" {surface_attributes} aria-labelledby="article-kiss-test-hook-title">
     <p class="conversion-offer__eyebrow">{html.escape(str(hook['eyebrow']))}</p>
     <h2 class="conversion-offer__title" id="article-kiss-test-hook-title">{html.escape(str(hook['title']))}</h2>
     <p class="conversion-offer__copy">{html.escape(str(hook['copy']))}</p>
+    <p class="quiz-hook__which">Which one are you?</p>
+    <ul class="quiz-hook__archetypes" aria-hidden="true">
+{minis}
+    </ul>
     <p class="quiz-hook__question">{html.escape(quiz_text(str(question['prompt']), pronouns))}</p>
     <ul class="quiz-hook__options">
 {options}

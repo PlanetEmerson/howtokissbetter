@@ -60,6 +60,18 @@ class QuizHookTests(unittest.TestCase):
         self.assertRegex(markup, rf'<a href="{re.escape(base)}" data-offer-link="true"[^>]*>{re.escape(label)}</a> · 10 questions · free result</p>')
         self.assertIn('<p class="quiz-hook__question">', markup)
         self.assertNotRegex(markup, r"\{(?:he|him|his|He|His)\}")
+        strip = re.search(
+            r'<p class="quiz-hook__which">Which one are you\?</p>\n    <ul class="quiz-hook__archetypes" aria-hidden="true">\n(.*?)\n    </ul>\n    <p class="quiz-hook__question">',
+            markup,
+            re.DOTALL,
+        )
+        self.assertIsNotNone(strip)
+        self.assertEqual(
+            re.findall(r'<li><img src="([^"]+)" alt="" width="240" height="300" loading="lazy" decoding="async"></li>', strip.group(1)),
+            [f"/assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp" for archetype in ("natural", "sprinter", "overthinker")],
+        )
+        self.assertEqual(markup.count("<img"), 3)
+        self.assertNotIn("unlock", markup.lower())
 
     def test_boyfriend_hook_hard_codes_him(self):
         markup = build_blog.render_article_quiz_hook(self.offer("how-to-kiss-your-boyfriend"))

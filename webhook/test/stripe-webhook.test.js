@@ -120,9 +120,9 @@ test("a paid book session posts one GA4 purchase and one delivery email", async 
   assert.deepEqual(message.to, [{ email: "buyer@example.com" }]);
   assert.equal(message.subject, "Your copy of Kiss Perfect Now");
   assert.ok(message.textContent.includes(THANKS_URL));
-  assert.ok(message.textContent.includes("Not satisfied? Email me. I will make it right."));
+  assert.ok(message.textContent.includes("Not worth it? Email me within 30 days for a full refund. You keep the files either way."));
   assert.ok(message.htmlContent.includes(`<a href="${THANKS_URL}">`));
-  assert.ok(message.htmlContent.includes("Not satisfied? Email me. I will make it right."));
+  assert.ok(message.htmlContent.includes("<p>Not worth it? Email me within 30 days for a full refund. You keep the files either way.</p>"));
   assert.equal(`${message.textContent}${message.htmlContent}`.includes(String.fromCharCode(0x2014)), false);
   assert.equal(brevo.options.body.includes("ga-secret-for-tests"), false);
 });

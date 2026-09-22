@@ -40,7 +40,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/conversion.css?v=20260918">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
     <link rel="stylesheet" href="/assets/quiz.css?v=20260919c">
 </head>
 
@@ -102,13 +102,17 @@
                         <input type="hidden" name="cancel" value="/kiss-test/result/">
                         <button type="submit" class="conversion-button">Get the book: $9.99</button>
                     </form>
-                    <p class="quiz-book__fine">Instant download. Secure checkout by Stripe. Not satisfied? Email me. I will make it right.</p>
+                    <p class="quiz-book__fine">Instant download. Secure checkout by Stripe. <span class="kiss-guarantee--line"><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span></p>
                 </div>
             </div>
         </section>
 
         <section class="quiz-section quiz-section--final" aria-label="About this result">
             <div class="quiz-section__inner quiz-final">
+                <p class="kiss-guarantee" data-guarantee>
+                    <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
+                    <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>
+                </p>
                 <p class="quiz-footer-lines">
                     <em>For fun and self-awareness, not a scientific instrument.</em>
                     <span aria-hidden="true">·</span>
@@ -116,7 +120,7 @@
                     <span aria-hidden="true">·</span>
                     <a href="/kiss-test/#kiss-test-app" data-quiz-retake>Retake the test</a>
                     <span aria-hidden="true">·</span>
-                    <em>Not satisfied? <a href="mailto:contact@howtokissbetter.com">Email me</a>. I will make it right.</em>
+                    <em>Thirty days to decide. If it is not for you, one email to me gets every cent back. No form, no interrogation. You keep the report; I can't take it back. <a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a></em>
                 </p>
             </div>
         </section>
@@ -137,7 +141,7 @@
     </footer>
 
     <script src="/assets/kiss-score.js?v=20260918-e1" defer></script>
-    <script src="/assets/quiz.js?v=20260919c" defer></script>
-    <script src="/assets/conversion.js?v=20260918" defer></script>
+    <script src="/assets/quiz.js?v=20260922a" defer></script>
+    <script src="/assets/conversion.js?v=20260922" defer></script>
 </body>
 </html>

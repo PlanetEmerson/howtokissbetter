@@ -30,6 +30,18 @@ test("bookDownloads never throws to the caller", async () => {
   assert.deepEqual(result, { downloads: [], error: true });
 });
 
+test("sendBookEmail carries the refund line in both bodies", async () => {
+  let posted;
+  const fetchImpl = async (url, options) => {
+    posted = JSON.parse(options.body);
+    return new Response(JSON.stringify({ messageId: "1" }), { status: 201 });
+  };
+  assert.equal(await sendBookEmail({ BREVO_API_KEY: "k" }, fetchImpl, { to: "a@example.com", thanksUrl: "https://x/" }), true);
+  const refund = "Not worth it? Email me within 30 days for a full refund. You keep the files either way.";
+  assert.ok(posted.textContent.includes(`\n${refund}\n`));
+  assert.ok(posted.htmlContent.includes(`<p>${refund}</p>`));
+});
+
 test("sendBookEmail reports Brevo failures as false", async () => {
   assert.equal(await sendBookEmail({ BREVO_API_KEY: "k" }, async () => new Response(null, { status: 401 }), { to: "a@example.com", thanksUrl: "https://x/" }), false);
   assert.equal(await sendBookEmail({ BREVO_API_KEY: "k" }, async () => { throw new Error("timeout"); }, { to: "a@example.com", thanksUrl: "https://x/" }), false);

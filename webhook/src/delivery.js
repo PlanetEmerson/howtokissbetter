@@ -48,7 +48,7 @@ function bookEmailText(thanksUrl) {
     "",
     "It has the PDF and the EPUB. Save a copy to your phone so it is there tonight.",
     "",
-    "Not satisfied? Email me. I will make it right.",
+    "Not worth it? Email me within 30 days for a full refund. You keep the files either way.",
     "",
     "C.J. McKenna",
     "howtokissbetter.com",
@@ -60,7 +60,7 @@ function bookEmailHtml(thanksUrl) {
     "<p>Thank you for getting Kiss Perfect Now.</p>",
     `<p>Your download page is here, and this link stays yours:<br><a href="${thanksUrl}">${thanksUrl}</a></p>`,
     "<p>It has the PDF and the EPUB. Save a copy to your phone so it is there tonight.</p>",
-    "<p>Not satisfied? Email me. I will make it right.</p>",
+    "<p>Not worth it? Email me within 30 days for a full refund. You keep the files either way.</p>",
     "<p>C.J. McKenna<br>howtokissbetter.com</p>",
   ].join("\n");
 }

@@ -17,7 +17,7 @@ const BOOK_FIELDS = {
   ga_sid: "1758150000",
 };
 const SUBMIT_MESSAGE =
-  "One-time payment. You confirm you are 18 or older. Not happy? Email contact@howtokissbetter.com and I will make it right.";
+  "One-time payment. You confirm you are 18 or older. 30-day guarantee: not worth it? Email contact@howtokissbetter.com for a full refund. You keep it either way.";
 const EXCLUDED_FORM = {
   "excluded_payment_method_types[0]": "klarna",
   "excluded_payment_method_types[1]": "amazon_pay",

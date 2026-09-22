@@ -947,9 +947,20 @@
         Object.keys(fields).forEach(function (name) {
             setHiddenField(form, name, fields[name]);
         });
-        var button = el("button", "conversion-button quiz-paywall__button", "Unlock my full report · $4.99");
+        var button = el("button", "conversion-button conversion-sheen quiz-paywall__button", "Unlock my full report · $4.99");
         button.type = "submit";
         form.appendChild(button);
+        var guarantee = el("p", "kiss-guarantee");
+        guarantee.setAttribute("data-guarantee", "");
+        var mark = el("span", "kiss-guarantee__mark", "30");
+        mark.setAttribute("aria-hidden", "true");
+        guarantee.appendChild(mark);
+        var terms = el("span");
+        terms.appendChild(el("strong", null, "30-day guarantee."));
+        terms.appendChild(document.createTextNode(" Not worth it? One email, full refund. "));
+        terms.appendChild(el("span", "kiss-guarantee__keep", "Keep it anyway. I can't take it back."));
+        guarantee.appendChild(terms);
+        form.appendChild(guarantee);
 
         form.addEventListener("submit", function (event) {
             if (form.dataset.checkoutSubmitted === "true") {
@@ -1024,7 +1035,7 @@
         card.appendChild(paywallForm(state));
         card.appendChild(el("p", "quiz-paywall__once", "One-time payment. No subscription, no account. Apple Pay, Google Pay, or card."));
         var fine = el("p", "quiz-paywall__fine");
-        fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older to purchase. Not satisfied? Email me. I will make it right. " + SUPPORT_EMAIL));
+        fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older to purchase. Refunds: email " + SUPPORT_EMAIL + " within 30 days."));
         card.appendChild(fine);
         if (state.retry) {
             var retry = el("button", "conversion-button conversion-button-secondary quiz-retry", "Retry unlock check");

@@ -44,7 +44,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
-    <link rel="stylesheet" href="/assets/conversion.css?v=20260918">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
 
     <script type="application/ld+json">
     {
@@ -66,7 +66,15 @@
             "url": "https://howtokissbetter.com/book/",
             "price": "9.99",
             "priceCurrency": "USD",
-            "availability": "https://schema.org/InStock"
+            "availability": "https://schema.org/InStock",
+            "hasMerchantReturnPolicy": {
+                "@type": "MerchantReturnPolicy",
+                "applicableCountry": "US",
+                "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                "merchantReturnDays": 30,
+                "refundType": "https://schema.org/FullRefund",
+                "returnFees": "https://schema.org/FreeReturn"
+            }
         }
     }
     </script>
@@ -117,15 +125,27 @@
                             <input type="hidden" name="placement" value="book-hero">
                             <input type="hidden" name="entry" value="book">
                             <input type="hidden" name="cancel" value="/book/">
-                            <button type="submit" class="conversion-button" data-hero-checkout>Get the book · $9.99</button>
+                            <button type="submit" class="conversion-button conversion-sheen" data-hero-checkout>Get the book · $9.99</button>
                         </form>
                         <a href="/assets/images/book-proof/contents-one-768.webp" class="conversion-button conversion-button-secondary" data-preview-open="contents-one" data-preview-source="book-hero">Look inside first</a>
                     </div>
 
                     <div class="book-hero__assurance" aria-label="Purchase assurance">
                         <p>Secure checkout by Stripe. Apple Pay, Google Pay, Link, or card. Sold by Blynk Studio, the studio behind How to Kiss Better.</p>
-                        <p>Not satisfied? Email me. I will make it right.</p>
+                        <p>Pay on Stripe's page. PDF and EPUB on the next screen, plus an email with a link that stays yours.</p>
+                        <p class="kiss-guarantee" data-guarantee>
+                            <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
+                            <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund. <span class="kiss-guarantee__keep">Keep it anyway. I can't take it back.</span></span>
+                        </p>
                     </div>
+                    <ul class="kiss-creds">
+                        <li>183 pages</li>
+                        <li>16 chapters</li>
+                        <li>80+ free guides</li>
+                        <li>Thousands of readers a month</li>
+                        <li>Secure checkout by Stripe</li>
+                        <li>30-day guarantee</li>
+                    </ul>
                 </div>
 
                 <div class="book-proof-stack" aria-label="The cover and real interior pages from Kiss Perfect Now">
@@ -442,7 +462,7 @@
                     </details>
                     <details>
                         <summary>What if something goes wrong with my order?</summary>
-                        <p>Email <a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a>. Not satisfied? Email me. I will make it right.</p>
+                        <p>Email <a href="mailto:contact@howtokissbetter.com">contact@howtokissbetter.com</a>. Thirty days to decide. If it is not for you, one email to me gets every cent back. No form, no interrogation. You keep the files; I can't take them back.</p>
                     </details>
                     <form method="post" action="https://api.howtokissbetter.com/api/checkout" class="buy-form" data-checkout-form data-price="9.99" data-offer-link data-offer-placement="book-after-faq" data-offer-variant="not-applicable" data-article-slug="book">
                         <input type="hidden" name="product" value="book">
@@ -452,6 +472,10 @@
                         <input type="hidden" name="cancel" value="/book/">
                         <button type="submit" class="conversion-button">Get Kiss Perfect Now · $9.99</button>
                     </form>
+                    <p class="kiss-guarantee" data-guarantee>
+                        <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
+                        <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>
+                    </p>
                 </div>
             </div>
         </section>
@@ -474,7 +498,11 @@
                         <input type="hidden" name="cancel" value="/book/">
                         <button type="submit" class="conversion-button">Get the book · $9.99</button>
                     </form>
-                    <p class="book-final__assurance">Secure checkout by Stripe. Sold by Blynk Studio, the studio behind How to Kiss Better. Not satisfied? Email me. I will make it right.</p>
+                    <p class="kiss-guarantee" data-guarantee>
+                        <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
+                        <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>
+                    </p>
+                    <p class="book-final__assurance">Secure checkout by Stripe. Sold by Blynk Studio, the studio behind How to Kiss Better.</p>
                 </div>
             </div>
         </section>
@@ -526,6 +554,6 @@
     </dialog>
 
     <script src="/assets/book-preview.js?v=20260814" defer></script>
-    <script src="/assets/conversion.js?v=20260918" defer></script>
+    <script src="/assets/conversion.js?v=20260922" defer></script>
 </body>
 </html>

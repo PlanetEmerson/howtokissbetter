@@ -14,16 +14,34 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
-CONVERSION_ASSET_VERSION = "20260918"
+CONVERSION_ASSET_VERSION = "20260922"
+HOME_ASSET_VERSION = "20260918"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
 CHECKOUT_ACTION = f"{CHECKOUT_API}/api/checkout"
 SUPPORT_EMAIL = "contact@howtokissbetter.com"
 CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CONVERSION_ASSET_VERSION}">'
-HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={CONVERSION_ASSET_VERSION}">'
+HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922a" defer></script>'
+GUARANTEE_BADGE = '<p class="kiss-guarantee" data-guarantee>'
+GUARANTEE_LINE = '<span class="kiss-guarantee--line"><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>'
+GUARANTEE_KEEP = '<span class="kiss-guarantee__keep">Keep it anyway. I can\'t take it back.</span>'
+GUARANTEE_SENTENCE = "Thirty days to decide. If it is not for you, one email to me gets every cent back. No form, no interrogation."
+PROCESS_LINE = "Pay on Stripe's page. PDF and EPUB on the next screen, plus an email with a link that stays yours."
+RETIRED_REFUND_COPY = ("make it " + "right", "Not " + "satisfied")
+BOOK_CREDS = ("183 pages", "16 chapters", "80+ free guides", "Thousands of readers a month", "Secure checkout by Stripe", "30-day guarantee")
+RETURN_POLICY_FIELDS = (
+    '"@type": "MerchantReturnPolicy"',
+    '"applicableCountry": "US"',
+    '"returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow"',
+    '"merchantReturnDays": 30',
+    '"refundType": "https://schema.org/FullRefund"',
+    '"returnFees": "https://schema.org/FreeReturn"',
+)
+QUIZ_HOOK_ARCHETYPES = ("natural", "sprinter", "overthinker")
 VALID_CLUSTERS = {
     "practice",
     "technique",
@@ -307,6 +325,21 @@ def validate_quarter_ratio(validation: Validation, slug: str, page_html: str, ma
         validation.require(0.20 <= ratio <= 0.305, f"{slug} quarter card ratio is {ratio:.1%}")
 
 
+def validate_no_retired_refund_copy(validation: Validation, label: str, text: str) -> None:
+    for retired in RETIRED_REFUND_COPY:
+        validation.require(retired not in text, f"{label} carries the retired refund line ({retired})")
+
+
+def validate_card_copy(validation: Validation, slug: str, page_html: str, markers: tuple[str, ...]) -> None:
+    """Card copy never says unlock and never carries the retired refund line."""
+    for marker in markers:
+        start = page_html.find(f"<!-- {marker}_START -->")
+        end = page_html.find(f"<!-- {marker}_END -->")
+        block = page_html[start:end] if 0 <= start < end else ""
+        validation.require("unlock" not in block.lower(), f"{slug} {marker} copy says unlock")
+        validate_no_retired_refund_copy(validation, f"{slug} {marker}", block)
+
+
 def validate_quiz_article(validation: Validation, slug: str, page_html: str, offer: dict[str, object]) -> None:
     """Assert the Kiss Test hook contract on one quiz-arm article."""
     build_blog = load_build_blog()
@@ -324,6 +357,11 @@ def validate_quiz_article(validation: Validation, slug: str, page_html: str, off
     validation.equal(page_html.count('id="article-kiss-test-final-title"'), 1, f"{slug} quiz final title ID count")
     validation.equal(page_html.count('class="mobile-buy-bar mobile-buy-bar--quiz js-offer"'), 1, f"{slug} quiz bar surface count")
     validation.require(PRONOUN_TOKEN.search(page_html) is None, f"{slug} renders an unresolved pronoun token")
+    validation.equal(page_html.count('<p class="quiz-hook__which">Which one are you?</p>'), 1, f"{slug} quiz card archetype heading count")
+    validation.equal(page_html.count('<ul class="quiz-hook__archetypes" aria-hidden="true">'), 1, f"{slug} quiz card archetype strip count")
+    for archetype in QUIZ_HOOK_ARCHETYPES:
+        validation.equal(page_html.count(f'src="/assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp"'), 1, f"{slug} quiz card {archetype} mini count")
+    validate_card_copy(validation, slug, page_html, ("QUIZ_HOOK_QUARTER", "QUIZ_HOOK_FINAL", "QUIZ_HOOK_BAR"))
 
     question = build_blog.quiz_question(str(hook.get("question_id")))
     option_ids = [str(option["id"]) for option in question["options"]]
@@ -473,6 +511,11 @@ def validate_buy_article(validation: Validation, slug: str, page_html: str, offe
     validation.equal(page_html.count(f"Get the book · ${BOOK_PRICE}</button>"), 2, f"{slug} buy button count")
     validation.equal(page_html.count(f"Get it · ${BOOK_PRICE}</button>"), 1, f"{slug} buy bar button count")
     validation.equal(page_html.count("Secure checkout by Stripe."), 2, f"{slug} checkout disclosure count")
+    validation.equal(page_html.count('class="conversion-offer__cover"'), 1, f"{slug} buy card cover count")
+    validation.equal(page_html.count('class="kiss-guarantee"'), 2, f"{slug} guarantee badge count")
+    validation.equal(page_html.count(html.escape(PROCESS_LINE)), 2, f"{slug} checkout process line count")
+    validation.equal(page_html.count("conversion-offer__proof"), 0, f"{slug} still carries the proof scan card")
+    validate_card_copy(validation, slug, page_html, ("BUY_RAIL_QUARTER", "BUY_RAIL_FINAL", "BUY_RAIL_BAR"))
 
     nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
     validation.require(nav_match is not None, f"{slug} post-nav book link is missing")
@@ -566,6 +609,9 @@ def validate_buy_hooks(validation: Validation, catalog: dict[str, dict[str, obje
     for name in ("BUY_META", "BUY_FINAL_COPY", "BUY_BUTTON_LABEL", "BUY_BAR_LABEL"):
         validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
     validation.require("Sold by Blynk Studio" in build_blog.BUY_META, "buy meta line is missing the seller disclosure")
+    validation.require("30-day" not in build_blog.BUY_META, "buy meta line duplicates the guarantee badge")
+    validation.require(build_blog.BUY_META.endswith(PROCESS_LINE), "buy meta line is missing the checkout process line")
+    validate_no_retired_refund_copy(validation, "BUY_META", build_blog.BUY_META)
 
 
 def validate_quiz_hooks(validation: Validation, catalog: dict[str, dict[str, object]]) -> None:
@@ -593,6 +639,9 @@ def validate_quiz_hooks(validation: Validation, catalog: dict[str, dict[str, obj
         {slug for slug, arm in CROSSED_SURFACES.items() if arm == "quiz"} <= build_blog.QUIZ_SURFACE_OVERRIDES,
         "quiz-arm crossed posts are missing from the builder overrides",
     )
+    for archetype in QUIZ_HOOK_ARCHETYPES:
+        mini = ROOT / f"assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp"
+        validation.require(mini.exists() and mini.stat().st_size < 20_000, f"{archetype} archetype mini is missing or over 20 KB")
 
 
 def validate_engine_sync(validation: Validation) -> None:
@@ -636,6 +685,7 @@ def validate_build_constants(validation: Validation) -> None:
     validation.equal(build_blog.BOOK_PRICE, BOOK_PRICE, "builder book price")
     validation.equal(build_blog.CHECKOUT_API, CHECKOUT_API, "builder checkout API origin")
     validation.equal(build_blog.DEFAULT_SURFACE, "buy", "builder default surface")
+    validation.equal(build_blog.QUIZ_HOOK_ARCHETYPES, QUIZ_HOOK_ARCHETYPES, "builder archetype strip")
 
 
 def validate_book(validation: Validation) -> Path:
@@ -652,7 +702,19 @@ def validate_book(validation: Validation) -> Path:
     validation.equal(page_html.count('data-pathway="'), 6, "book pathway control count")
     validation.require('data-preview-viewer' in page_html, "book preview dialog is missing")
     validation.require('data-book-sticky' in page_html, "book mobile sticky purchase control is missing")
-    validation.require('<button type="submit" class="conversion-button" data-hero-checkout>' in page_html, "book hero checkout button is missing")
+    validation.require('<button type="submit" class="conversion-button conversion-sheen" data-hero-checkout>' in page_html, "book hero checkout button is missing")
+    validation.equal(page_html.count(GUARANTEE_BADGE), 3, "book guarantee badge count")
+    validation.equal(page_html.count(GUARANTEE_KEEP), 1, "book guarantee keep line count")
+    validation.equal(page_html.count('<ul class="kiss-creds">'), 1, "book credentials strip count")
+    for item in BOOK_CREDS:
+        validation.require(f"<li>{item}</li>" in page_html, f"book credentials strip is missing {item}")
+    validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the 80+ free guides claim outruns blog/posts.json")
+    validation.require(PROCESS_LINE in page_html, "book hero is missing the checkout process line")
+    validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "book FAQ is missing the guarantee sentence")
+    for needle in RETURN_POLICY_FIELDS:
+        validation.require(needle in page_html, f"book schema return policy is missing {needle}")
+    validation.require('"returnMethod"' not in page_html, "book schema return policy names a return method")
+    validate_no_retired_refund_copy(validation, "book page", page_html)
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/">' in page_html, "book canonical URL changed")
     validation.require('"numberOfPages": 183' in page_html, "book page schema is missing 183 pages")
     validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "book page schema has the wrong price")
@@ -731,6 +793,8 @@ def validate_home(validation: Validation) -> Path:
     validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "homepage is missing the seller disclosure")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
     validation.require("PDF and EPUB" in page_html, "homepage FAQ schema is missing both delivery formats")
+    validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "homepage is missing the guarantee sentence")
+    validate_no_retired_refund_copy(validation, "homepage", page_html)
     validation.require(CONVERSION_CSS_TAG in page_html, "homepage conversion stylesheet is missing or stale")
     validation.require(HOME_CSS_TAG in page_html, "homepage stylesheet is missing or stale")
     validation.require(PREVIEW_JS_TAG in page_html, "homepage preview script is missing")
@@ -771,10 +835,33 @@ def validate_thanks_page(validation: Validation) -> Path:
     validation.require("data-thanks-status" in page_html and "data-thanks-downloads" in page_html, "book download page is missing its status or download regions")
     validation.require(SUPPORT_EMAIL in page_html, "book download page is missing the support email")
     validation.require("Your copy of Kiss Perfect Now" in page_html, "book download page heading changed")
+    validation.equal(page_html.count(GUARANTEE_BADGE), 1, "book download page guarantee badge count")
+    validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "book download page is missing the guarantee sentence")
+    validate_no_retired_refund_copy(validation, "book download page", page_html)
     validation.require(RETIRED_PRICE not in page_html and not mentions_payhip(page_html), "book download page carries retired sales copy")
     validation.require(CONVERSION_CSS_TAG in page_html, "book download page stylesheet is missing or stale")
     validation.require(CONVERSION_JS_TAG in page_html, "book download page script is missing or stale")
     return page
+
+
+def validate_quiz_pages(validation: Validation) -> None:
+    quiz_js = (ROOT / "assets/quiz.js").read_text()
+    validation.require('el("span", "kiss-guarantee__keep", "Keep it anyway. I can\'t take it back.")' in quiz_js, "paywall badge keep line is missing from quiz.js")
+    validation.require('"conversion-button conversion-sheen quiz-paywall__button"' in quiz_js, "paywall button is missing the sheen class")
+    validate_no_retired_refund_copy(validation, "quiz.js", quiz_js)
+    for relative in QUIZ_PAGES:
+        page = ROOT / relative
+        validation.require(page.exists(), f"{relative} is missing")
+        if not page.exists():
+            continue
+        page_html = page.read_text()
+        validation.require(CONVERSION_CSS_TAG in page_html and CONVERSION_JS_TAG in page_html, f"{relative} conversion assets are stale")
+        validation.require(QUIZ_JS_TAG in page_html, f"{relative} quiz script is stale")
+        validate_no_retired_refund_copy(validation, relative, page_html)
+    result_html = (ROOT / "kiss-test/result/index.html").read_text()
+    validation.equal(result_html.count(GUARANTEE_BADGE), 1, "result page guarantee badge count")
+    validation.equal(result_html.count(GUARANTEE_LINE), 1, "result page guarantee line count")
+    validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")
 
 
 def validate_secondary_pages(validation: Validation) -> list[Path]:
@@ -798,9 +885,11 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
 
     terms = ROOT / "terms/index.html"
     terms_html = terms.read_text()
-    for needle in ("Stripe", "one-time charge", "18 or older", "I will make it right"):
+    for needle in ("Stripe", "one-time charge", "18 or older", "Thirty-Day Guarantee", "within 30 days of purchase", "full-refund guarantee", "nothing is revoked"):
         validation.require(needle in terms_html, f"terms of service do not mention {needle}")
     validation.require(CONVERSION_JS_TAG in terms_html, "terms page script is stale")
+    for label, text in (("confirmed page", confirmed_html), ("article template", template_html), ("privacy page", privacy_html), ("terms page", terms_html)):
+        validate_no_retired_refund_copy(validation, label, text)
     return [confirmed, privacy, terms]
 
 
@@ -929,6 +1018,7 @@ def main() -> None:
     book_page = validate_book(validation)
     home_page = validate_home(validation)
     thanks_page = validate_thanks_page(validation)
+    validate_quiz_pages(validation)
     secondary_pages = validate_secondary_pages(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)

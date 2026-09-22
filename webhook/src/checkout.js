@@ -25,7 +25,7 @@ const CANCEL_PATH = /^\/[^\s\\#]{0,199}$/;
 // Amazon Pay and crypto add steps a $9.99 impulse buy does not need.
 const EXCLUDED_PAYMENT_METHODS = ["klarna", "amazon_pay", "crypto"];
 const SUBMIT_MESSAGE =
-  "One-time payment. You confirm you are 18 or older. Not happy? Email contact@howtokissbetter.com and I will make it right.";
+  "One-time payment. You confirm you are 18 or older. 30-day guarantee: not worth it? Email contact@howtokissbetter.com for a full refund. You keep it either way.";
 // Per-session branding: the Stripe account belongs to Blynk Studio, so the
 // Checkout page has to carry this site's name and colours itself.
 const BRANDING = {

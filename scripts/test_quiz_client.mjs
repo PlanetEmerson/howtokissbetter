@@ -6,7 +6,7 @@ import vm from "node:vm";
 const quizSource = readFileSync(new URL("../assets/quiz.js", import.meta.url), "utf8");
 
 // A fake DOM just big enough for quiz.js, which builds every node with
-// createElement, textContent, setAttribute and appendChild.
+// createElement, createTextNode, textContent, setAttribute and appendChild.
 function matches(node, selector) {
   const parts = selector.match(/^([a-z0-9]+)?(#[\w-]+)?((?:\.[\w-]+)*)((?:\[[^\]]+\])*)$/i);
   if (!parts) {
@@ -189,6 +189,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
     addEventListener(name, fn) { if (name === "DOMContentLoaded") ready = fn; },
     createElement: (tag) => new FakeElement(tag),
     createElementNS: (ns, tag) => new FakeElement(tag),
+    createTextNode: (text) => { const node = new FakeElement("#text"); node.ownText = String(text); return node; },
     get activeElement() { return FakeElement.active; },
     getElementById: (id) => body.querySelector(`#${id}`),
     querySelector: (sel) => body.querySelector(sel),
@@ -302,6 +303,9 @@ test("free render shows archetype, teasers and the paywall form, never the score
 
   const form = page.app.querySelector("form[data-report-checkout]");
   assert.equal(form.getAttribute("action"), "https://api.example/api/checkout");
+  assert.equal(form.querySelector("button").className, "conversion-button conversion-sheen quiz-paywall__button");
+  assert.equal(form.querySelectorAll(".kiss-guarantee[data-guarantee]").length, 1);
+  assert.equal(form.querySelector(".kiss-guarantee").textContent, "3030-day guarantee. Not worth it? One email, full refund. Keep it anyway. I can't take it back.");
   const hidden = Object.fromEntries(form.querySelectorAll("input").map((i) => [i.name, i.value]));
   assert.deepEqual(hidden, { product: "report", answers: ANSWERS, v: "1", src: "direct", placement: "quiz-paywall", entry: "direct", cancel: "/kiss-test/result/", ga_cid: "111.222", ga_sid: "333" });
 
