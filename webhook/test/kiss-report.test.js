@@ -1,13 +1,21 @@
 import assert from "node:assert/strict";
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { BLURBS } from "../src/kiss-report-data/blurbs.js";
 import { FIXES } from "../src/kiss-report-data/fixes.js";
 import { MOVES } from "../src/kiss-report-data/moves.js";
 import { NOTICING } from "../src/kiss-report-data/noticing.js";
 import { SAMPLE, scoreIntro } from "../src/kiss-report-data/sample.js";
+import { TONIGHT } from "../src/kiss-report-data/tonight.js";
+import { VERDICTS } from "../src/kiss-report-data/verdicts.js";
 
 const ARCHETYPES = ["natural", "slow-burn", "sweetheart", "overthinker", "explorer", "statue", "sprinter"];
+const BANDS = ["raw", "better", "dangerous", "podium"];
+const SECTION_IDS = ["verdict", "score", "strengths", "costs", "noticing", "move", "fix", "tonight"];
+const SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../src");
 const PRONOUN_TOKENS = new Set(["{he}", "{him}", "{his}", "{He}", "{His}"]);
 const DIMENSION_KEYS = ["R", "P", "T", "G", "H", "B", "V", "X"];
 
@@ -32,11 +40,12 @@ function* strings(value) {
   else if (value && typeof value === "object") for (const item of Object.values(value)) yield* strings(item);
 }
 
-function assertCleanCopy(value, label) {
+// `extra` admits template tokens a data file carries before the report fills them.
+function assertCleanCopy(value, label, extra = []) {
   for (const text of strings(value)) {
     assert.ok(!text.includes("\u2014"), `${label}: em dash in "${text.slice(0, 60)}"`);
     for (const token of text.match(/\{[^}]*\}/g) ?? []) {
-      assert.ok(PRONOUN_TOKENS.has(token) || /^\{v:[a-z]+\}$/.test(token), `${label}: unexpected token ${token} in "${text.slice(0, 60)}"`);
+      assert.ok(PRONOUN_TOKENS.has(token) || extra.includes(token) || /^\{v:[a-z]+\}$/.test(token), `${label}: unexpected token ${token} in "${text.slice(0, 60)}"`);
     }
   }
 }
@@ -93,11 +102,38 @@ test("all 40 blurbs exist with a title and at least one of strength or cost", ()
   assert.match(BLURBS.q3b.strength, /^Your tongue arrives when \{his\} tongue does/);
 });
 
-test("noticing bullets: three per archetype, five for the Overthinker, each about {he}", () => {
+test("noticing bullets: five per archetype about {he}, the Overthinker's verbatim, the rest 15 to 30 words", () => {
   assert.deepEqual(Object.keys(NOTICING).sort(), [...ARCHETYPES].sort());
   for (const id of ARCHETYPES) {
-    assert.equal(NOTICING[id].length, id === "overthinker" ? 5 : 3, id);
-    for (const bullet of NOTICING[id]) assert.match(bullet, /^\{He\}('s| \{v:is\})( not)? noticing /, `${id}: ${bullet}`);
+    assert.equal(NOTICING[id].length, 5, id);
+    for (const bullet of NOTICING[id]) {
+      assert.match(bullet, /^\{He\}('s| \{v:is\})( not)? noticing /, `${id}: ${bullet}`);
+      if (id === "overthinker") continue;
+      const words = wordCount([bullet]);
+      assert.ok(words >= 15 && words <= 30, `${id} bullet is ${words} words: ${bullet}`);
+    }
+  }
+});
+
+test("verdicts: one per archetype and band, 60 to 90 words, naming the top strength and cost", () => {
+  const keys = ARCHETYPES.flatMap((id) => BANDS.map((band) => `${id}.${band}`));
+  assert.deepEqual(Object.keys(VERDICTS).sort(), keys.sort());
+  for (const [key, verdict] of Object.entries(VERDICTS)) {
+    const words = wordCount([verdict]);
+    assert.ok(words >= 60 && words <= 90, `${key} verdict is ${words} words`);
+    assert.ok(verdict.includes("{strength}") && verdict.includes("{cost}"), `${key} verdict names the strength and the cost`);
+  }
+});
+
+test("tonight: three steps of 12 to 25 words and a sign-off per archetype", () => {
+  assert.deepEqual(Object.keys(TONIGHT).sort(), [...ARCHETYPES].sort());
+  for (const id of ARCHETYPES) {
+    assert.equal(TONIGHT[id].steps.length, 3, id);
+    for (const step of TONIGHT[id].steps) {
+      const words = wordCount([step]);
+      assert.ok(words >= 12 && words <= 25, `${id} step is ${words} words: ${step}`);
+    }
+    assert.ok(TONIGHT[id].signoff.length > 0, `${id} sign-off`);
   }
 });
 
@@ -135,6 +171,14 @@ test("data files carry no em dashes and only the five pronoun tokens", () => {
   assertCleanCopy(MOVES, "moves");
   assertCleanCopy(FIXES, "fixes");
   assertCleanCopy(SAMPLE, "sample");
+  assertCleanCopy(TONIGHT, "tonight");
+  assertCleanCopy(VERDICTS, "verdicts", ["{strength}", "{cost}"]);
+});
+
+test("no report source file carries an em dash", () => {
+  const files = [resolve(SRC, "kiss-report.js"), ...readdirSync(resolve(SRC, "kiss-report-data")).map((name) => resolve(SRC, "kiss-report-data", name))];
+  assert.ok(files.length >= 8, `${files.length} files`);
+  for (const file of files) assert.equal(readFileSync(file, "utf8").includes("\u2014"), false, file);
 });
 
 test("scoreIntro counts levels into the Appendix A sentence", () => {
@@ -145,24 +189,30 @@ test("scoreIntro counts levels into the Appendix A sentence", () => {
   );
   assert.equal(
     scoreIntro({ archetype: { id: "natural" }, dimensions: fakeDimensions(Array(8).fill("strong")) }),
-    "Computed from your ten answers, nothing else. Here's the honest shape of it: all eight of your dimensions are Strong.",
+    "Computed from your ten answers, nothing else. Here's the honest shape of it: almost everything is working, and the one or two places it isn't are habits you've never had to think about. All eight of your dimensions are Strong.",
   );
   assert.equal(
     scoreIntro({ archetype: { id: "statue" }, dimensions: fakeDimensions(["strong", "strong", "solid", "strong", "strong", "strong", "strong", "costing"]) }),
-    "Computed from your ten answers, nothing else. Here's the honest shape of it: six of your dimensions are Strong, one is Solid, and one is quietly paying for all of it.",
+    "Computed from your ten answers, nothing else. Here's the honest shape of it: the mouth is doing well, and everything that isn't the mouth is where the points went. Six of your dimensions are Strong, one is Solid, and one is quietly paying for all of it.",
   );
   assert.equal(
     scoreIntro({ archetype: { id: "sprinter" }, dimensions: fakeDimensions(["solid", "solid", "solid", "solid", "leaking", "leaking", "leaking", "leaking"]) }),
-    "Computed from your ten answers, nothing else. Here's the honest shape of it: four of your dimensions are Solid and four are Leaking.",
+    "Computed from your ten answers, nothing else. Here's the honest shape of it: commitment is carrying you, and the moment before the kiss, the one that makes commitment land, barely exists. Four of your dimensions are Solid and four are Leaking.",
   );
 });
 
-test("the Overthinker sample renders the six sections of Appendix A 5.3", needsEngine, () => {
+test("the Overthinker sample renders the six sections of Appendix A 5.3 between the verdict and tonight", needsEngine, () => {
   assert.deepEqual(SAMPLE, { answers: "dcbdacbdcc", pronoun: "him" });
   const { free, paid } = report.buildReport(SAMPLE.answers);
-  const [score, strengths, costs, noticing, move, fix] = paid.sections;
+  const [verdict, score, strengths, costs, noticing, move, fix, tonight] = paid.sections;
 
-  assert.deepEqual(paid.sections.map((s) => s.id), ["score", "strengths", "costs", "noticing", "move", "fix"]);
+  assert.deepEqual(paid.sections.map((s) => s.id), SECTION_IDS);
+  assert.equal(verdict.title, "The verdict");
+  assert.deepEqual(verdict.items, []);
+  assert.deepEqual(verdict.paragraphs, [
+    VERDICTS["overthinker.better"].replaceAll("{strength}", "The Guest").replaceAll("{cost}", "The Scoreboard Is Two Inches Away"),
+  ]);
+  assert.match(verdict.paragraphs[0], /^Better Than You Think, and you don't think so/);
   assert.equal(score.title, "Your Kiss Score");
   assert.equal(score.headline, "59. Better Than You Think.");
   assert.match(score.paragraphs[0], /^Computed from your ten answers, nothing else\. Here's the honest shape of it: your mouth/);
@@ -190,6 +240,10 @@ test("the Overthinker sample renders the six sections of Appendix A 5.3", needsE
   assert.equal(move.paragraphs.length, 4);
   assert.equal(fix.title, "Your 7-day fix");
   assert.deepEqual(fix.items.map((day) => day.day), [1, 2, 3, 4, 5, 6, 7]);
+  assert.equal(tonight.title, "Tonight, if you get the chance");
+  assert.deepEqual(tonight.items, TONIGHT.overthinker.steps.map((step, i) => `${i + 1}. ${step}`));
+  assert.match(tonight.items[0], /^1\. One hospital breath before you go in/);
+  assert.deepEqual(tonight.paragraphs, [TONIGHT.overthinker.signoff]);
 
   assert.equal(free.score, 59);
   assert.equal(free.archetype.id, "overthinker");
@@ -208,18 +262,27 @@ const WORKED = {
   "slow-burn": "bbdcbbdbbb",
 };
 
-test("every archetype gets six non-empty sections with clean copy", needsEngine, () => {
+test("every archetype gets eight non-empty sections, at least 850 words, with clean copy", needsEngine, () => {
   for (const [id, answers] of Object.entries(WORKED)) {
     const { free, paid } = report.buildReport(answers);
     assert.equal(free.archetype.id, id, answers);
-    assert.equal(paid.sections.length, 6, id);
+    assert.deepEqual(paid.sections.map((s) => s.id), SECTION_IDS, id);
     for (const section of paid.sections) {
       assert.ok(section.title.length > 0, `${id}/${section.id} title`);
       assert.ok(section.paragraphs.length + section.items.length > 0, `${id}/${section.id} is empty`);
     }
-    assert.equal(paid.sections[4].title, `The one move for ${free.archetype.name}: ${MOVES[id].title}`);
-    assert.deepEqual(paid.sections[3].items, NOTICING[id]);
-    assert.deepEqual(paid.sections[5].items, FIXES[id]);
+    const [verdict, , strengths, costs, noticing, move, fix, tonight] = paid.sections;
+    assert.deepEqual(verdict.paragraphs, [
+      VERDICTS[`${id}.${free.band.id}`].replaceAll("{strength}", strengths.items[0].title).replaceAll("{cost}", costs.items[0].title.replace(/^1\. /, "")),
+    ]);
+    assert.doesNotMatch(verdict.paragraphs[0], /\{strength\}|\{cost\}/, `${id} verdict`);
+    assert.deepEqual(noticing.items, NOTICING[id]);
+    assert.equal(move.title, `The one move for ${free.archetype.name}: ${MOVES[id].title}`);
+    assert.deepEqual(fix.items, FIXES[id]);
+    assert.deepEqual(tonight.items, TONIGHT[id].steps.map((step, i) => `${i + 1}. ${step}`));
+    assert.deepEqual(tonight.paragraphs, [TONIGHT[id].signoff]);
+    const words = wordCount([...strings(paid)]);
+    assert.ok(words >= 850, `${id} paid report is ${words} words`);
     assertCleanCopy(paid, id);
     assertCleanCopy(free.strongestBlurbs, id);
   }
@@ -228,13 +291,21 @@ test("every archetype gets six non-empty sections with clean copy", needsEngine,
 test("a perfect score has no costs and says so; the floor still gets a full report", needsEngine, () => {
   const perfect = report.buildReport("cbbcbbbbac");
   assert.equal(perfect.free.score, 100);
-  assert.deepEqual(perfect.paid.sections[2].items, []);
-  assert.deepEqual(perfect.paid.sections[2].paragraphs, [report.NO_COSTS_LINE]);
+  assert.deepEqual(perfect.paid.sections[3].items, []);
+  assert.deepEqual(perfect.paid.sections[3].paragraphs, [report.NO_COSTS_LINE]);
+  // No cost to name, so the verdict falls back instead of leaking its token.
+  assert.match(perfect.paid.sections[0].paragraphs[0], /^Podium\. I'd be suspicious/);
+  assert.match(perfect.paid.sections[0].paragraphs[0], /The closest thing you have to a weak spot is nothing I could find,/);
+  assert.ok(wordCount([...strings(perfect.paid)]) >= 850, "perfect paid words");
+  assertCleanCopy(perfect.paid, "perfect");
 
   const floor = report.buildReport("aaaaaaaacd");
   assert.equal(floor.free.score, 20);
-  assert.equal(floor.paid.sections[2].items.length, 3);
+  assert.equal(floor.paid.sections[3].items.length, 3);
   for (const section of floor.paid.sections) assert.ok(section.paragraphs.length + section.items.length > 0, section.id);
+  assert.match(floor.paid.sections[0].paragraphs[0], /^A Statue at Raw Material/);
+  assert.match(floor.paid.sections[0].paragraphs[0], /the instinct that made you take this test is the one part of you/);
+  assertCleanCopy(floor.paid, "floor");
 });
 
 test("flipping any single answer changes the report wherever the engine result changes", needsEngine, () => {
@@ -264,34 +335,37 @@ test("short strongest and costliest lists render without crashing", needsEngine,
   const anchor = { q: "q4", o: "d", key: "q4d", points: 2, max: 3, dimension: "H" };
 
   const one = report.renderReport(fakeResult({ strongest: [anchor], onlyOneStrength: true, costliest: [anchor] }));
-  const [, strengths, costs] = one.paid.sections;
+  const [, , strengths, costs] = one.paid.sections;
   assert.deepEqual(strengths.paragraphs, [report.ONLY_ONE_STRENGTH_LINE]);
   assert.equal(report.ONLY_ONE_STRENGTH_LINE, "Only one clear strength so far, which makes the next part unusually easy.");
   assert.deepEqual(strengths.items.map((item) => item.title), ["The Anchor"]);
   assert.deepEqual(costs.items.map((item) => item.title), ["1. The Anchor That Never Lifts"]);
-  assert.deepEqual(costs.paragraphs, ["Only one habit is costing you anything. Annoying, I know."]);
+  assert.deepEqual(costs.paragraphs, ["Only one habit is costing you anything. Annoying, I know. It gets the full treatment anyway, because at your level that's the whole gap between this score and the top of the band."]);
   assert.deepEqual(one.free.strongestBlurbs, strengths.items);
 
   const none = report.renderReport(fakeResult());
-  assert.deepEqual(none.paid.sections[1].items, []);
-  assert.deepEqual(none.paid.sections[1].paragraphs, [report.NO_STRENGTHS_LINE]);
   assert.deepEqual(none.paid.sections[2].items, []);
-  assert.deepEqual(none.paid.sections[2].paragraphs, [report.NO_COSTS_LINE]);
-  assert.equal(none.paid.sections[0].headline, "20. Raw Material.");
+  assert.deepEqual(none.paid.sections[2].paragraphs, [report.NO_STRENGTHS_LINE]);
+  assert.deepEqual(none.paid.sections[3].items, []);
+  assert.deepEqual(none.paid.sections[3].paragraphs, [report.NO_COSTS_LINE]);
+  assert.equal(none.paid.sections[1].headline, "20. Raw Material.");
+  assert.deepEqual(none.paid.sections[0].paragraphs, [
+    VERDICTS["sprinter.raw"].replaceAll("{strength}", "the instinct that made you take this test").replaceAll("{cost}", "nothing I could find"),
+  ]);
 
   const two = report.renderReport(fakeResult({ costliest: [{ key: "q1a" }, { key: "q2a" }] }));
-  assert.deepEqual(two.paid.sections[2].items.map((item) => item.title), ["1. The Lunge", "2. The Press"]);
-  assert.deepEqual(two.paid.sections[2].paragraphs, ["Only two habits are costing you anything. Annoying, I know."]);
+  assert.deepEqual(two.paid.sections[3].items.map((item) => item.title), ["1. The Lunge", "2. The Press"]);
+  assert.deepEqual(two.paid.sections[3].paragraphs, ["Only two habits are costing you anything. Annoying, I know. They get the full treatment anyway, because at your level that's the whole gap between this score and the top of the band."]);
 
   // A key without the matching blurb kind is skipped, never thrown.
   const odd = report.renderReport(fakeResult({ strongest: [{ key: "q1a" }, { key: "q99z" }], costliest: [{ key: "q1b" }] }));
-  assert.deepEqual(odd.paid.sections[1].items, []);
   assert.deepEqual(odd.paid.sections[2].items, []);
+  assert.deepEqual(odd.paid.sections[3].items, []);
 });
 
 // Every verb whose subject is {he} is written {v:word} (the list is exactly the
 // verbs the copy uses), so the they set must never read "they pulls".
-const HE_VERBS = ["is", "was", "has", "does", "pulls", "starts", "feels", "wants", "escalates", "comes", "closes", "chooses"];
+const HE_VERBS = ["is", "was", "has", "does", "pulls", "starts", "feels", "wants", "escalates", "comes", "closes", "chooses", "stops"];
 
 test("the they set renders every report without singular verbs or leftover tokens", needsEngine, () => {
   const they = engine.pronounSet("them");
@@ -312,5 +386,5 @@ test("the they set renders every report without singular verbs or leftover token
     }
   }
   assert.ok(checked > 100, `${checked} strings checked`);
-  assert.deepEqual(new Set(HE_VERBS), new Set([...strings([BLURBS, NOTICING, MOVES, FIXES])].flatMap((text) => (text.match(/\{v:([a-z]+)\}/g) ?? []).map((token) => token.slice(3, -1)))));
+  assert.deepEqual(new Set(HE_VERBS), new Set([...strings([BLURBS, NOTICING, MOVES, FIXES, VERDICTS, TONIGHT])].flatMap((text) => (text.match(/\{v:([a-z]+)\}/g) ?? []).map((token) => token.slice(3, -1)))));
 });

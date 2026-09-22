@@ -14,12 +14,27 @@
         from: "kt_from_v1",
         token: "kt_token_v1",
         paidAnswers: "kt_paid_answers_v1",
+        self: "kt_self_v1",
         api: "kt_api"
+    };
+    // Unscored. Stored in sessionStorage only; never in the URL, GA4 events, or checkout fields.
+    var SELF_TAP = {
+        label: "One more, only so the picture matches",
+        prompt: "And you?",
+        note: "This never leaves your phone. It only picks the illustration.",
+        options: [
+            { id: "woman", label: "A woman" },
+            { id: "man", label: "A man" },
+            { id: "skip", label: "Rather not say" }
+        ]
     };
     var QUESTION_COUNT = 10;
     var RESULT_PATH = "/kiss-test/result/";
     var QUIZ_PATH = "/kiss-test/";
     var SHARE_URL = "https://howtokissbetter.com/kiss-test/?ref=share";
+    var SHARE_TITLE = "The Kiss Test";
+    var SHARE_SUBJECT = "My Kiss Test result";
+    var IMAGE_ROOT = "/assets/images/kiss-test/archetypes/";
     var SUPPORT_EMAIL = "contact@howtokissbetter.com";
     var SCORING_DELAY = 1200;
     var SLUG = /^[a-z0-9-]{1,100}$/;
@@ -160,6 +175,25 @@
             }
             return word + (set.he === "they" ? "'re" : "'s");
         });
+    }
+
+    // Picks the illustration only: two men, two women, or the mixed default for
+    // every other combination (including "them", "nobody", and "rather not say").
+    function pairingFor(partnerId, selfId) {
+        if (partnerId === "him" && selfId === "man") {
+            return "mm";
+        }
+        if (partnerId === "her" && selfId === "woman") {
+            return "ww";
+        }
+        return "mw";
+    }
+
+    function storedPairing() {
+        return pairingFor(
+            safeStorage(window.sessionStorage, "getItem", KEYS.pronoun) || "",
+            safeStorage(window.sessionStorage, "getItem", KEYS.self) || ""
+        );
     }
 
     function blankAnswers() {
@@ -372,6 +406,7 @@
         var context = readContext();
         var answers = readAnswers();
         var pronoun = safeStorage(window.sessionStorage, "getItem", KEYS.pronoun) || "";
+        var selfChoice = safeStorage(window.sessionStorage, "getItem", KEYS.self) || "";
         var inProgress = false;
 
         function data() {
@@ -399,11 +434,32 @@
                 list.appendChild(optionButton(option.label, pronoun === option.id, function () {
                     pronoun = option.id;
                     safeStorage(window.sessionStorage, "setItem", KEYS.pronoun, pronoun);
-                    renderQuestion(nextIndex(answers, -1));
+                    renderSelf();
                 }));
             });
             screen.appendChild(list);
             screen.appendChild(el("p", "quiz-note", data().pronoun.note));
+            mount(app, screen);
+            focusHeading(screen.heading);
+        }
+
+        function renderSelf() {
+            inProgress = true;
+            var screen = progressScreen("quiz-screen--self", SELF_TAP.label, SELF_TAP.prompt);
+            var list = el("ul", "quiz-options");
+            SELF_TAP.options.forEach(function (option) {
+                list.appendChild(optionButton(option.label, selfChoice === option.id, function () {
+                    selfChoice = option.id;
+                    safeStorage(window.sessionStorage, "setItem", KEYS.self, selfChoice);
+                    renderQuestion(nextIndex(answers, -1));
+                }));
+            });
+            screen.appendChild(list);
+            screen.appendChild(el("p", "quiz-note", SELF_TAP.note));
+            var back = el("button", "quiz-back", "Back");
+            back.type = "button";
+            back.addEventListener("click", renderPronoun);
+            screen.appendChild(back);
             mount(app, screen);
             focusHeading(screen.heading);
         }
@@ -439,7 +495,7 @@
             back.type = "button";
             back.addEventListener("click", function () {
                 if (index === 0) {
-                    renderPronoun();
+                    renderSelf();
                 } else {
                     renderQuestion(index - 1);
                 }
@@ -499,7 +555,9 @@
             answers = blankAnswers();
             writeAnswers(answers);
             pronoun = "";
+            selfChoice = "";
             safeStorage(window.sessionStorage, "removeItem", KEYS.pronoun);
+            safeStorage(window.sessionStorage, "removeItem", KEYS.self);
             context = { from: handoff.from, hook: handoff.hook, placement: handoff.placement, entry: handoff.entry };
             writeContext(context);
             sendEvent("quiz_start", startPayload(context));
@@ -516,7 +574,9 @@
             answers[handoff.index] = handoff.a;
             writeAnswers(answers);
             pronoun = "";
+            selfChoice = "";
             safeStorage(window.sessionStorage, "removeItem", KEYS.pronoun);
+            safeStorage(window.sessionStorage, "removeItem", KEYS.self);
             context = { from: handoff.from, hook: handoff.hook, placement: handoff.placement, entry: "inline" };
             writeContext(context);
             sendEvent("quiz_start", startPayload(context));
@@ -532,29 +592,46 @@
         if (answeredCount(answers) > 0 && !isComplete(answers) && engine() && engine().DATA) {
             if (!pronoun) {
                 renderPronoun();
+            } else if (!selfChoice) {
+                renderSelf();
             } else {
                 renderQuestion(nextIndex(answers, -1));
             }
         }
     }
 
-    function archetypeImage(archetype) {
-        var media = el("div", "quiz-card__media");
+    function archetypeImageBase(archetype) {
         if (!ARCHETYPE_ID.test(String(archetype.id))) {
+            return "";
+        }
+        return IMAGE_ROOT + archetype.id + "-" + storedPairing();
+    }
+
+    // "thumb" is the 540px webp used where the card is decoration, not the artwork.
+    function archetypeImage(archetype, variant) {
+        var media = el("div", "quiz-card__media");
+        var base = archetypeImageBase(archetype);
+        if (!base) {
             return media;
         }
-        var base = "/assets/images/kiss-test/archetypes/" + archetype.id;
+        var img = el("img");
+        img.setAttribute("alt", archetype.name + " archetype card");
+        img.setAttribute("decoding", "async");
+        if (variant === "thumb") {
+            img.setAttribute("src", base + "-thumb.webp");
+            img.setAttribute("width", "540");
+            img.setAttribute("height", "675");
+            media.appendChild(img);
+            return media;
+        }
         var picture = el("picture");
         var source = el("source");
         source.setAttribute("srcset", base + ".webp");
         source.setAttribute("type", "image/webp");
         picture.appendChild(source);
-        var img = el("img");
         img.setAttribute("src", base + ".jpg");
-        img.setAttribute("alt", archetype.name + " archetype card");
         img.setAttribute("width", "1080");
         img.setAttribute("height", "1350");
-        img.setAttribute("decoding", "async");
         picture.appendChild(img);
         media.appendChild(picture);
         return media;
@@ -567,54 +644,259 @@
         return "I took the Kiss Test and got " + archetype.name + ". \"" + archetype.tagline + "\" " + middle + " Take it and tell me yours:";
     }
 
+    function shareLinks(text, url) {
+        var both = encodeURIComponent(text + " " + url);
+        return {
+            whatsapp: "https://wa.me/?text=" + both,
+            sms: "sms:?&body=" + both,
+            x: "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url),
+            facebook: "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url),
+            email: "mailto:?subject=" + encodeURIComponent(SHARE_SUBJECT) + "&body=" + both
+        };
+    }
+
     function copyText(text) {
-        if (window.navigator && window.navigator.clipboard && typeof window.navigator.clipboard.writeText === "function") {
-            return window.navigator.clipboard.writeText(text);
+        var clipboard = window.navigator && window.navigator.clipboard;
+        if (clipboard && typeof clipboard.writeText === "function") {
+            return clipboard.writeText(text);
         }
         return Promise.reject(new Error("clipboard_unavailable"));
     }
 
+    function shareIcon() {
+        var ns = "http://www.w3.org/2000/svg";
+        var svg = document.createElementNS(ns, "svg");
+        svg.setAttribute("class", "quiz-share-cta__icon");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        var path = document.createElementNS(ns, "path");
+        path.setAttribute("d", "M12 3v12m0-12 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7");
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "currentColor");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("stroke-linecap", "round");
+        path.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(path);
+        return svg;
+    }
+
+    // In-page fallback for browsers without Web Share: one dialog per opening,
+    // removed again on close so labels and focus never go stale.
+    function shareSheet(options) {
+        var dialog = el("dialog", "quiz-share");
+        dialog.setAttribute("aria-labelledby", "quiz-share-title");
+        var shell = el("div", "quiz-share__shell");
+        var header = el("div", "quiz-share__header");
+        var titles = el("div");
+        titles.appendChild(el("p", "quiz-share__eyebrow", "Share"));
+        var title = el("h2", "quiz-share__title", "Your archetype card");
+        title.id = "quiz-share-title";
+        titles.appendChild(title);
+        header.appendChild(titles);
+        var closeButton = el("button", "quiz-share__close", "Close");
+        closeButton.type = "button";
+        closeButton.setAttribute("aria-label", "Close share sheet");
+        header.appendChild(closeButton);
+        shell.appendChild(header);
+
+        var body = el("div", "quiz-share__body");
+        var media = archetypeImage(options.archetype);
+        media.className = "quiz-share__media";
+        body.appendChild(media);
+        body.appendChild(el("blockquote", "quiz-share__text", options.text + " " + SHARE_URL));
+        var grid = el("div", "quiz-share__grid");
+        var toast = el("p", "quiz-share__toast");
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        var focusables = [closeButton];
+        var lastFocused = null;
+
+        function copyAction(label, value, method) {
+            var button = el("button", "quiz-share__action", label);
+            button.type = "button";
+            button.addEventListener("click", function () {
+                copyText(value).then(function () {
+                    button.textContent = "Copied";
+                    toast.textContent = "Copied";
+                    options.report(method);
+                    window.setTimeout(function () {
+                        button.textContent = label;
+                        toast.textContent = "";
+                    }, 2000);
+                }, function () {
+                    toast.textContent = "Copy isn't available here. Try one of the other options.";
+                });
+            });
+            grid.appendChild(button);
+            focusables.push(button);
+        }
+
+        function linkAction(label, href, method, attrs) {
+            var link = el("a", "quiz-share__action", label);
+            link.setAttribute("href", href);
+            Object.keys(attrs || {}).forEach(function (name) {
+                link.setAttribute(name, attrs[name]);
+            });
+            link.addEventListener("click", function () {
+                options.report(method);
+            });
+            grid.appendChild(link);
+            focusables.push(link);
+        }
+
+        var links = shareLinks(options.text, SHARE_URL);
+        var external = { target: "_blank", rel: "noopener" };
+        copyAction("Copy link", SHARE_URL, "copy_link");
+        copyAction("Copy text", options.text + " " + SHARE_URL, "copy_text");
+        linkAction("WhatsApp", links.whatsapp, "whatsapp", external);
+        linkAction("Messages", links.sms, "sms");
+        linkAction("X", links.x, "x", external);
+        linkAction("Facebook", links.facebook, "facebook", external);
+        linkAction("Email", links.email, "email");
+        if (options.jpg) {
+            linkAction("Save image", options.jpg, "image", { download: "kiss-test-" + options.archetype.id + ".jpg" });
+        }
+        body.appendChild(grid);
+        body.appendChild(toast);
+        shell.appendChild(body);
+        dialog.appendChild(shell);
+
+        function dismiss() {
+            document.body.classList.remove("quiz-share-open");
+            if (dialog.parentNode) {
+                dialog.parentNode.removeChild(dialog);
+            }
+            if (lastFocused && typeof lastFocused.focus === "function") {
+                lastFocused.focus({ preventScroll: true });
+            }
+        }
+
+        function close() {
+            if (typeof dialog.close === "function" && dialog.open) {
+                dialog.close();
+            } else {
+                dialog.removeAttribute("open");
+                dismiss();
+            }
+        }
+
+        function open() {
+            lastFocused = document.activeElement || null;
+            document.body.appendChild(dialog);
+            if (typeof dialog.showModal === "function") {
+                dialog.showModal();
+            } else {
+                dialog.setAttribute("open", "");
+                document.body.classList.add("quiz-share-open");
+            }
+            closeButton.focus({ preventScroll: true });
+        }
+
+        closeButton.addEventListener("click", close);
+        dialog.addEventListener("close", dismiss);
+        dialog.addEventListener("click", function (event) {
+            if (event.target === dialog) {
+                close();
+            }
+        });
+        dialog.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                close();
+                return;
+            }
+            if (event.key !== "Tab") {
+                return;
+            }
+            var first = focusables[0];
+            var last = focusables[focusables.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
+        return { open: open, close: close, dialog: dialog };
+    }
+
+    // The archetype jpg as a File for Web Share; null when the image or the File
+    // API is unavailable, so the share degrades to text and url.
+    function shareFile(jpg, archetype) {
+        if (!jpg || typeof window.fetch !== "function" || typeof window.File !== "function") {
+            return Promise.resolve(null);
+        }
+        return window.fetch(jpg).then(function (response) {
+            if (!response.ok) {
+                throw new Error("image_unavailable");
+            }
+            return response.blob();
+        }).then(function (blob) {
+            return new window.File([blob], "kiss-test-" + archetype.id + ".jpg", { type: "image/jpeg" });
+        }).then(null, function () {
+            return null;
+        });
+    }
+
+    function webShare(nav, text, file) {
+        var data = { title: SHARE_TITLE, text: text, url: SHARE_URL };
+        if (file) {
+            var withFile = { files: [file], title: SHARE_TITLE, text: text, url: SHARE_URL };
+            if (nav.canShare(withFile)) {
+                data = withFile;
+            }
+        }
+        return nav.share(data);
+    }
+
+    // One primary button: the native share sheet where the browser has one, the
+    // in-page sheet everywhere else, and after a native share fails for any reason
+    // other than the visitor dismissing it.
     function shareActions(archetype, paid) {
         var actions = el("div", "quiz-card__actions");
-        var status = el("p", "quiz-card__status");
-        status.setAttribute("aria-live", "polite");
         var text = shareText(archetype, paid);
+        var base = archetypeImageBase(archetype);
+        var jpg = base ? base + ".jpg" : "";
+        var sharing = false;
 
         function report(method) {
             sendEvent("share_click", { method: method, archetype: archetype.id });
         }
 
-        function copyFallback(value, method) {
-            copyText(value).then(function () {
-                status.textContent = "Copied. Paste it anywhere.";
-                report(method);
-            }, function () {
-                status.textContent = "Copy this: " + value;
-            });
+        function openSheet() {
+            shareSheet({ archetype: archetype, text: text, jpg: jpg, report: report }).open();
         }
 
-        var share = el("button", "conversion-button", paid ? "Share with my score" : "Share my archetype");
-        share.type = "button";
-        share.addEventListener("click", function () {
-            if (window.navigator && typeof window.navigator.share === "function") {
-                window.navigator.share({ title: "The Kiss Test", text: text, url: SHARE_URL }).then(function () {
-                    report("web_share");
-                }, function () {
-                    status.textContent = "";
-                });
+        var button = el("button", "conversion-button quiz-share-cta__button");
+        button.type = "button";
+        button.appendChild(shareIcon());
+        button.appendChild(el("span", null, paid ? "Share my score" : "Share my result"));
+        button.addEventListener("click", function () {
+            var nav = window.navigator;
+            if (!nav || typeof nav.share !== "function" || typeof nav.canShare !== "function") {
+                openSheet();
                 return;
             }
-            copyFallback(text + " " + SHARE_URL, "copy");
+            if (sharing) {
+                return;
+            }
+            sharing = true;
+            shareFile(jpg, archetype).then(function (file) {
+                return webShare(nav, text, file);
+            }).then(function () {
+                sharing = false;
+                report("web_share");
+            }, function (error) {
+                sharing = false;
+                if (!error || error.name !== "AbortError") {
+                    openSheet();
+                }
+            });
         });
-        actions.appendChild(share);
-
-        var copy = el("button", "conversion-button conversion-button-secondary", "Copy link");
-        copy.type = "button";
-        copy.addEventListener("click", function () {
-            copyFallback(SHARE_URL, "copy_link");
-        });
-        actions.appendChild(copy);
-        actions.appendChild(status);
+        actions.appendChild(button);
+        actions.appendChild(el("p", "quiz-share-cta__sub", "Post your archetype. Your score stays private unless you choose."));
         return actions;
     }
 
@@ -905,6 +1187,15 @@
             });
             return dims;
         }
+        if (id === "tonight") {
+            var steps = el("ol", "quiz-steps");
+            items.forEach(function (item) {
+                if (typeof item === "string") {
+                    steps.appendChild(el("li", null, text(stripOrdinal(item))));
+                }
+            });
+            return steps;
+        }
         if (id === "fix") {
             var days = el("ol", "quiz-fix");
             items.forEach(function (item) {
@@ -938,19 +1229,78 @@
         return blurbs;
     }
 
+    // Paragraphs then items, except "tonight", whose paragraph is the sign-off
+    // and reads after the steps.
     function paidSection(section, state, local) {
-        var wrap = el("section", "quiz-paid-section" + (levelAttr(section.id) ? " quiz-paid-section--" + levelAttr(section.id) : ""));
+        var id = levelAttr(section.id);
+        var wrap = el("section", "quiz-paid-section" + (id ? " quiz-paid-section--" + id : ""));
         wrap.appendChild(el("h2", "quiz-section-title", applyPronouns(section.title || "", state.set)));
         if (section.headline) {
             wrap.appendChild(el("p", "quiz-score-headline", applyPronouns(section.headline, state.set)));
         }
-        (Array.isArray(section.paragraphs) ? section.paragraphs : []).forEach(function (paragraph) {
-            wrap.appendChild(el("p", "quiz-paid-paragraph", applyPronouns(paragraph, state.set)));
+        var paragraphClass = "quiz-paid-paragraph" + (id === "verdict" ? " quiz-verdict" : "") + (id === "tonight" ? " quiz-signoff" : "");
+        var paragraphs = (Array.isArray(section.paragraphs) ? section.paragraphs : []).map(function (paragraph) {
+            return el("p", paragraphClass, applyPronouns(paragraph, state.set));
         });
-        if (Array.isArray(section.items) && section.items.length) {
-            wrap.appendChild(paidItems(section, state, local));
-        }
+        var items = Array.isArray(section.items) && section.items.length ? paidItems(section, state, local) : null;
+        var order = id === "tonight" ? [items].concat(paragraphs) : paragraphs.concat([items]);
+        order.forEach(function (node) {
+            if (node) {
+                wrap.appendChild(node);
+            }
+        });
         return wrap;
+    }
+
+    // The server numbers list items ("1. ..."); the markup numbers them itself.
+    function stripOrdinal(value) {
+        return String(value || "").replace(/^\d+\.\s*/, "");
+    }
+
+    function firstItemTitle(sections, id) {
+        for (var i = 0; i < sections.length; i++) {
+            var section = sections[i];
+            if (!section || section.id !== id || !Array.isArray(section.items) || !section.items.length) {
+                continue;
+            }
+            var first = section.items[0];
+            var title = first && typeof first === "object" ? first.title : first;
+            return stripOrdinal(title);
+        }
+        return "";
+    }
+
+    // At a glance, above the first paid section: thumb, name, score and the two
+    // chips the rest of the report expands on.
+    function glanceCard(local, sections, state) {
+        var card = el("section", "quiz-glance");
+        card.setAttribute("aria-label", "Your result at a glance");
+        var media = archetypeImage(local.archetype, "thumb");
+        media.className = "quiz-glance__media";
+        card.appendChild(media);
+        var body = el("div", "quiz-glance__body");
+        body.appendChild(el("p", "quiz-glance__name", local.archetype.name));
+        body.appendChild(el("p", "quiz-glance__tagline", local.archetype.tagline));
+        var score = el("p", "quiz-glance__score");
+        score.appendChild(el("span", "quiz-glance__score-label", "Kiss Score"));
+        score.appendChild(el("strong", null, local.score));
+        score.appendChild(el("span", null, local.band.label));
+        body.appendChild(score);
+        var chips = el("ul", "quiz-glance__chips");
+        [["Strongest", firstItemTitle(sections, "strengths")], ["Costliest", firstItemTitle(sections, "costs")]].forEach(function (pair) {
+            if (!pair[1]) {
+                return;
+            }
+            var chip = el("li", "quiz-glance__chip");
+            chip.appendChild(el("span", "quiz-glance__chip-label", pair[0] + ": "));
+            chip.appendChild(el("span", null, applyPronouns(pair[1], state.set)));
+            chips.appendChild(chip);
+        });
+        if (chips.firstChild) {
+            body.appendChild(chips);
+        }
+        card.appendChild(body);
+        return card;
     }
 
     function renderPaid(root, state, paid) {
@@ -971,6 +1321,9 @@
         var heading = el("h1", null, "Unlocked. Here's the honest version.");
         header.appendChild(heading);
         root.appendChild(header);
+        if (local && local.archetype && local.band) {
+            root.appendChild(glanceCard(local, sections, state));
+        }
         sections.forEach(function (section) {
             if (section && typeof section === "object") {
                 root.appendChild(paidSection(section, state, local));
@@ -1093,7 +1446,9 @@
         parseHandoff: parseHandoff,
         nextIndex: nextIndex,
         buildCheckoutFields: buildCheckoutFields,
-        freeSummary: freeSummary
+        freeSummary: freeSummary,
+        pairingFor: pairingFor,
+        shareLinks: shareLinks
     };
 
     document.addEventListener("DOMContentLoaded", function () {

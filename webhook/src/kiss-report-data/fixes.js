@@ -66,3 +66,14 @@ export const FIXES = {
     { day: 7, title: "Retake the test.", text: "Same honesty as the first time. Watch Hands and Beyond the lips move." },
   ],
 };
+
+// One-paragraph lead-in to the week, per archetype.
+export const FIX_INTROS = {
+  natural: "Seven days, one thing each, and most of them are moves you've never needed. Don't stack them. You already have the instincts; this week is about adding range on purpose.",
+  "slow-burn": "Seven days, one thing each. Your whole result is about contrast, so treat the week the same way: don't do the same day twice, and don't rush any of them.",
+  sweetheart: "Seven days, one thing each, and every one of them is about going first. It will feel presumptuous on day one and natural by day five. That's the whole point.",
+  overthinker: "Seven days, one thing each, and never more than one. The narrator will want to run all seven at once. Don't let it. One thing a day is the exercise.",
+  explorer: "Seven days, one thing each, and for you the assignment is subtraction. Every day removes something from the tour. By day six you'll know which moves were ever wanted.",
+  sprinter: "Seven days, one thing each, and the theme is brakes. Nothing on this list is faster or harder than what you already do. Every day is about the moment before.",
+  statue: "Seven days, one thing each, starting with your hands, because once they move with purpose the rest of you follows. Nothing here needs a partner until day three.",
+};
