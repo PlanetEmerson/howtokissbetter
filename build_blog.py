@@ -32,7 +32,7 @@ BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
 ASSET_VERSION = "20260918"
 BOOK_PRICE = "9.99"
-CHECKOUT_API = "https://how-to-kiss-better-payhip-ga4.vercel.app"
+CHECKOUT_API = "https://api.howtokissbetter.com"
 # Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".
 DEFAULT_SURFACE = "buy"
 BUY_BUTTON_LABEL = f"Get the book · ${BOOK_PRICE}"

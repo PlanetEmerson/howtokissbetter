@@ -17,7 +17,7 @@ BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260918"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
-CHECKOUT_API = "https://how-to-kiss-better-payhip-ga4.vercel.app"
+CHECKOUT_API = "https://api.howtokissbetter.com"
 CHECKOUT_ACTION = f"{CHECKOUT_API}/api/checkout"
 SUPPORT_EMAIL = "contact@howtokissbetter.com"
 CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CONVERSION_ASSET_VERSION}">'
