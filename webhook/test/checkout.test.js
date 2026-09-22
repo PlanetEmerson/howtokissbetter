@@ -202,7 +202,7 @@ test("creates a branded book session with the exact form contract and redirects 
     "line_items[0][price_data][unit_amount]": "999",
     "line_items[0][price_data][product_data][name]": "Kiss Perfect Now (PDF + EPUB)",
     "line_items[0][price_data][product_data][description]": "The 183-page kissing playbook. Instant download after payment.",
-    "line_items[0][price_data][product_data][images][0]": "https://howtokissbetter.com/assets/images/book-cover.png",
+    "line_items[0][price_data][product_data][images][0]": "https://howtokissbetter.com/assets/images/book/cover-stripe.jpg",
     success_url: "https://howtokissbetter.com/book/thanks/?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "https://howtokissbetter.com/blog/how-to-kiss-someones-neck/?checkout=canceled",
     "metadata[kind]": "kiss_ebook",

@@ -82,19 +82,25 @@
 
 .quiz-hero__media img {
     height: 100%;
-    min-height: 34rem;
+    min-height: clamp(34rem, 78vh, 46rem);
     object-fit: cover;
-    object-position: 60% 40%;
+    object-position: 50% 30%;
     width: 100%;
 }
 
 .quiz-hero__media::after {
     background:
-        linear-gradient(180deg, rgba(25, 22, 25, 0.35) 0%, rgba(25, 22, 25, 0.72) 55%, rgba(25, 22, 25, 0.97) 100%),
+        linear-gradient(180deg, rgba(25, 22, 25, 0.28) 0%, rgba(25, 22, 25, 0.5) 38%, rgba(25, 22, 25, 0.86) 62%, rgba(25, 22, 25, 0.97) 100%),
         linear-gradient(90deg, rgba(74, 28, 35, 0.55), rgba(74, 28, 35, 0));
     content: "";
     inset: 0;
     position: absolute;
+}
+
+/* The gold kicker sits over the brightest part of the photo; a shadow
+   carries it without darkening the faces. */
+.quiz-hero__copy .conversion-kicker {
+    text-shadow: 0 1px 10px rgba(25, 22, 25, 0.9), 0 0 2px rgba(25, 22, 25, 0.8);
 }
 
 .quiz-hero__copy {
@@ -1313,6 +1319,7 @@
 @media (max-width: 767px) {
     .quiz-hero__media img {
         min-height: 27rem;
+        object-position: 50% 20%;
     }
 
     .quiz-app {

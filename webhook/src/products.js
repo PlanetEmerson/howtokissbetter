@@ -8,7 +8,7 @@ export const PRODUCTS = {
     name: "Kiss Perfect Now (PDF + EPUB)",
     description: "The 183-page kissing playbook. Instant download after payment.",
     unit_amount: 999,
-    image: "https://howtokissbetter.com/assets/images/book-cover.png",
+    image: "https://howtokissbetter.com/assets/images/book/cover-stripe.jpg",
     success_path: "/book/thanks/",
     statement_suffix: "KISSBOOK",
     payment_description: "Kiss Perfect Now ebook (howtokissbetter.com)",

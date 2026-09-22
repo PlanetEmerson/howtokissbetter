@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
-CONVERSION_ASSET_VERSION = "20260922"
+CONVERSION_ASSET_VERSION = "20260922b"
 HOME_ASSET_VERSION = "20260922"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
@@ -70,6 +70,25 @@ FAVICON_LINKS = (
 )
 SHARE_IMAGES = ("assets/images/og/home.jpg", "assets/images/og/book.jpg", "assets/images/og/blog.jpg", "assets/images/kiss-test/og.jpg")
 SHARE_IMAGE_MAX_BYTES = 300_000  # WhatsApp and Messenger drop the preview above this
+STRIPE_IMAGE_URL = "https://howtokissbetter.com/assets/images/book/cover-stripe.jpg"
+BOOK_HERO_IMG = '<img src="/assets/images/book/cover-hero-768.webp" width="768" height="960" alt="The Kiss Perfect Now ebook on a phone screen next to an open two-page spread of the book, on a deep wine backdrop with a gold hairline" fetchpriority="high" decoding="async">'
+KISS_TEST_HERO_DIR = "assets/images/kiss-test"
+KISS_TEST_HERO_IMAGE = "https://howtokissbetter.com/assets/images/kiss-test/hero-kitchen-1600.jpg"
+KISS_TEST_HERO_PHONE_SOURCE = '<source media="(max-width: 767px)" type="image/avif" srcset="/assets/images/kiss-test/hero-kitchen-4x5-600.avif 600w, /assets/images/kiss-test/hero-kitchen-4x5-900.avif 900w" sizes="100vw">'
+# Byte budgets where the brief set one; None is existence only.
+KISS_TEST_HERO_FILES = {
+    "hero-kitchen-800.avif": None,
+    "hero-kitchen-800.webp": None,
+    "hero-kitchen-1200.avif": None,
+    "hero-kitchen-1200.webp": None,
+    "hero-kitchen-1600.avif": 100_000,
+    "hero-kitchen-1600.webp": 140_000,
+    "hero-kitchen-1600.jpg": 260_000,
+    "hero-kitchen-4x5-600.avif": None,
+    "hero-kitchen-4x5-600.webp": None,
+    "hero-kitchen-4x5-900.avif": None,
+    "hero-kitchen-4x5-900.webp": 110_000,
+}
 KISS_TEST_LOCKED_LINES = (
     "$4.99, one time, 30-day guarantee",
     "Retakes free for 30 days.",
@@ -783,18 +802,20 @@ def validate_book(validation: Validation) -> Path:
         placement = form_placement(block)
         validate_checkout_form(validation, f"book {placement}", block, src="book", placement=placement, entry="book", cancel="/book/")
 
-    hero_media = [
-        ROOT / "assets/images/book-proof/cover-320.avif",
-        ROOT / "assets/images/book-proof/commandments-title-480.avif",
-        ROOT / "assets/images/book-proof/mirror-technique-480.avif",
-    ]
+    hero_media = [ROOT / f"assets/images/book/cover-hero-{width}.{extension}" for width in (480, 768, 1080) for extension in ("avif", "webp")]
     for asset in hero_media:
-        validation.require(asset.exists(), f"missing hero proof asset {asset.relative_to(ROOT)}")
+        validation.require(asset.exists(), f"missing book hero asset {asset.relative_to(ROOT)}")
+        validation.require(f"/{asset.relative_to(ROOT)}" in page_html, f"book hero does not reference {asset.name}")
+    validation.equal(page_html.count('<picture class="book-hero__media">'), 1, "book hero picture count")
+    validation.require(BOOK_HERO_IMG in page_html, "book hero fallback image changed")
+    validation.require("book-proof-stack" not in page_html, "retired book proof stack is still on the book page")
+    # A browser fetches exactly one candidate, so the initial media budget is the largest file.
     existing = [asset for asset in hero_media if asset.exists()]
-    validation.require(sum(asset.stat().st_size for asset in existing) < 500_000, "initial book proof media exceeds 500 KB")
-    cover = ROOT / "assets/images/book-proof/cover-320.avif"
-    if cover.exists():
-        validation.require(cover.stat().st_size < 200_000, "mobile hero cover exceeds 200 KB")
+    validation.require(all(asset.stat().st_size < 260_000 for asset in existing), "a book hero candidate exceeds 260 KB")
+    hero_768 = ROOT / "assets/images/book/cover-hero-768.avif"
+    if hero_768.exists():
+        validation.require(hero_768.stat().st_size < 120_000, "book hero 768 avif exceeds 120 KB")
+    validation.require(f'"image": "{STRIPE_IMAGE_URL}"' in page_html, "book schema image is not the Stripe cover")
     return page
 
 
@@ -897,6 +918,7 @@ def validate_home(validation: Validation) -> Path:
     validation.require(sum(asset.stat().st_size for asset in minis if asset.exists()) < 120_000, "homepage archetype minis exceed 120 KB combined")
     cover = ROOT / "assets/images/book-proof/cover-320.avif"
     validation.require(cover.exists() and cover.stat().st_size < 200_000, "homepage book cover exceeds 200 KB")
+    validation.require(f'"image": "{STRIPE_IMAGE_URL}"' in page_html, "homepage book schema image is not the Stripe cover")
     validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the homepage 80+ free guides claim outruns blog/posts.json")
     return page
 
@@ -980,6 +1002,7 @@ def validate_quiz_pages(validation: Validation) -> None:
         validation.require(QUIZ_JS_TAG in page_html, f"{relative} quiz script is stale")
         validate_no_retired_refund_copy(validation, relative, page_html)
     test_html = (ROOT / "kiss-test/index.html").read_text()
+    validate_kiss_test_hero(validation, test_html)
     validation.equal(test_html.count(GUARANTEE_BADGE), 1, "kiss test page guarantee badge count")
     for line in KISS_TEST_LOCKED_LINES:
         validation.equal(test_html.count(line), 1, f"kiss test page locked line count: {line[:40]}")
@@ -991,6 +1014,24 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.equal(result_html.count(GUARANTEE_BADGE), 1, "result page guarantee badge count")
     validation.equal(result_html.count(GUARANTEE_LINE), 1, "result page guarantee line count")
     validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")
+
+
+def validate_kiss_test_hero(validation: Validation, page_html: str) -> None:
+    for name, budget in KISS_TEST_HERO_FILES.items():
+        asset = ROOT / KISS_TEST_HERO_DIR / name
+        validation.require(asset.exists(), f"missing kiss test hero asset {name}")
+        validation.require(f"/{KISS_TEST_HERO_DIR}/{name}" in page_html, f"kiss test hero does not reference {name}")
+        if budget is not None and asset.exists():
+            validation.require(asset.stat().st_size < budget, f"kiss test hero {name} exceeds {budget // 1000} KB")
+    validation.equal(page_html.count(KISS_TEST_HERO_PHONE_SOURCE), 1, "kiss test hero 4:5 phone source count")
+    validation.require(f'"{KISS_TEST_HERO_IMAGE}",' in page_html, "kiss test schema image is not the kitchen hero")
+    hero_img = re.search(r'<img src="/assets/images/kiss-test/hero-kitchen-1600\.jpg"[^>]*\balt="([^"]*)"[^>]*>', page_html)
+    validation.require(hero_img is not None, "kiss test hero image is missing")
+    if hero_img is not None:
+        validation.require("star" not in hero_img.group(1).lower(), "kiss test hero alt mentions stars")
+        validation.require('fetchpriority="high"' in hero_img.group(0), "kiss test hero image is not fetch-priority high")
+    for retired in ("hero.jpg", "hero.webp"):
+        validation.require(not (ROOT / KISS_TEST_HERO_DIR / retired).exists(), f"retired kiss test {retired} still exists")
 
 
 def validate_head_icons(validation: Validation, label: str, page_html: str) -> None:
@@ -1035,6 +1076,23 @@ def validate_brand_assets(validation: Validation) -> None:
         if image.exists():
             validation.equal(build_blog.image_size(image), (1200, 630), f"{relative} size")
             validation.require(image.stat().st_size <= SHARE_IMAGE_MAX_BYTES, f"{relative} exceeds 300 KB")
+
+
+def validate_product_images(validation: Validation) -> None:
+    """The Stripe line-item image is read from products.js by regex (no import) and must be a square file that exists here under 200 KB."""
+    build_blog = load_build_blog()
+    source = (ROOT / "webhook/src/products.js").read_text()
+    urls = re.findall(r'^\s*image: "([^"]+)",$', source, flags=re.MULTILINE)
+    validation.equal(urls, [STRIPE_IMAGE_URL], "Stripe line-item image URLs in products.js")
+    prefix = f"{build_blog.SITE_URL}/"
+    for url in urls:
+        image = ROOT / url[len(prefix):]
+        validation.require(url.startswith(prefix) and image.exists(), f"Stripe line-item image is missing from the repo: {url}")
+        if url.startswith(prefix) and image.exists():
+            validation.equal(build_blog.image_size(image), (1200, 1200), "Stripe line-item image size")
+            validation.require(image.stat().st_size < 200_000, "Stripe line-item image exceeds 200 KB")
+    for retired in ("assets/images/book-cover.png", "assets/images/book-cover.webp"):
+        validation.require(not (ROOT / retired).exists(), f"retired {retired} still exists")
 
 
 def validate_listing_pages(validation: Validation) -> list[Path]:
@@ -1218,6 +1276,7 @@ def main() -> None:
     validate_quiz_pages(validation)
     secondary_pages = validate_secondary_pages(validation)
     validate_brand_assets(validation)
+    validate_product_images(validation)
     listing_pages = validate_listing_pages(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)

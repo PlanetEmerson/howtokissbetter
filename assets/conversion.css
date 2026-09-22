@@ -547,81 +547,12 @@ body {
     margin: 0.2rem 0;
 }
 
-.book-proof-stack {
-    height: 34rem;
-    isolation: isolate;
-    margin: 0 auto;
-    max-width: 31rem;
-    position: relative;
-    width: 100%;
-}
-
-.book-proof-stack::before {
-    background: rgba(212, 175, 55, 0.17);
-    border-radius: 50%;
-    content: "";
-    filter: blur(55px);
-    inset: 14% 4% 10%;
-    position: absolute;
-    z-index: -2;
-}
-
-.book-proof-stack picture,
-.book-proof-stack img {
+.book-hero__media img {
+    border-radius: var(--conversion-radius);
+    box-shadow: var(--conversion-shadow);
     display: block;
-}
-
-.book-proof-stack img {
-    border-radius: 0.35rem;
-    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.48);
     height: auto;
     width: 100%;
-}
-
-.book-proof-stack__cover {
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%) rotate(-1.2deg);
-    width: min(55%, 15rem);
-    z-index: 3;
-}
-
-.book-proof-stack__page {
-    position: absolute;
-    top: 13%;
-    width: min(47%, 13rem);
-    z-index: 1;
-}
-
-.book-proof-stack__page--left {
-    left: 2%;
-    transform: rotate(-7deg);
-}
-
-.book-proof-stack__page--right {
-    right: 2%;
-    transform: rotate(7deg);
-}
-
-.book-proof-stack__note {
-    background: rgba(25, 22, 25, 0.93);
-    border: 1px solid rgba(212, 175, 55, 0.28);
-    border-radius: 999px;
-    bottom: 0;
-    color: #c8c1c6;
-    font-size: 0.75rem;
-    left: 50%;
-    margin: 0;
-    padding: 0.72rem 1rem;
-    position: absolute;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    z-index: 5;
-}
-
-.book-proof-stack__note strong {
-    color: var(--conversion-gold);
 }
 
 .book-section {
@@ -1313,24 +1244,6 @@ body {
 
     .book-hero__assurance {
         margin-top: 0.75rem;
-    }
-
-    .book-proof-stack {
-        height: 22.5rem;
-        max-width: 20rem;
-    }
-
-    .book-proof-stack__cover {
-        width: 48%;
-    }
-
-    .book-proof-stack__page {
-        top: 12%;
-        width: 43%;
-    }
-
-    .book-proof-stack__note {
-        font-size: 0.68rem;
     }
 
     .book-section {

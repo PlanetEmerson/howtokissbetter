@@ -30,7 +30,7 @@ SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
-ASSET_VERSION = "20260922"
+ASSET_VERSION = "20260922b"
 BOOK_PRICE = "9.99"
 CHECKOUT_API = "https://api.howtokissbetter.com"
 # Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".

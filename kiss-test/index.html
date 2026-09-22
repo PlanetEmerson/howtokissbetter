@@ -50,7 +50,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
+    <link rel="stylesheet" href="/assets/conversion.css?v=20260922b">
     <link rel="stylesheet" href="/assets/quiz.css?v=20260922">
 
     <script type="application/ld+json">
@@ -91,7 +91,7 @@
                 "@type": "Product",
                 "name": "Kiss Test full report",
                 "image": [
-                    "https://howtokissbetter.com/assets/images/kiss-test/hero.jpg",
+                    "https://howtokissbetter.com/assets/images/kiss-test/hero-kitchen-1600.jpg",
                     "https://howtokissbetter.com/assets/images/kiss-test/kiss-icon-1024.png",
                     "https://howtokissbetter.com/assets/images/kiss-test/og.jpg"
                 ],
@@ -177,8 +177,11 @@
         <section class="quiz-hero" aria-labelledby="kiss-test-title">
             <div class="quiz-hero__media">
                 <picture>
-                    <source srcset="/assets/images/kiss-test/hero.webp" type="image/webp">
-                    <img src="/assets/images/kiss-test/hero.jpg" alt="Sketched lips on a gold plaque with a ruler laid across them, a fountain pen, and five gold stars" width="1600" height="900" decoding="async" fetchpriority="high">
+                    <source media="(max-width: 767px)" type="image/avif" srcset="/assets/images/kiss-test/hero-kitchen-4x5-600.avif 600w, /assets/images/kiss-test/hero-kitchen-4x5-900.avif 900w" sizes="100vw">
+                    <source media="(max-width: 767px)" type="image/webp" srcset="/assets/images/kiss-test/hero-kitchen-4x5-600.webp 600w, /assets/images/kiss-test/hero-kitchen-4x5-900.webp 900w" sizes="100vw">
+                    <source type="image/avif" srcset="/assets/images/kiss-test/hero-kitchen-800.avif 800w, /assets/images/kiss-test/hero-kitchen-1200.avif 1200w, /assets/images/kiss-test/hero-kitchen-1600.avif 1600w" sizes="100vw">
+                    <source type="image/webp" srcset="/assets/images/kiss-test/hero-kitchen-800.webp 800w, /assets/images/kiss-test/hero-kitchen-1200.webp 1200w, /assets/images/kiss-test/hero-kitchen-1600.webp 1600w" sizes="100vw">
+                    <img src="/assets/images/kiss-test/hero-kitchen-1600.jpg" width="1600" height="900" alt="Two people laughing forehead to forehead across a sunlit kitchen counter, a wine-coloured mug between them" fetchpriority="high" decoding="async">
                 </picture>
             </div>
             <div class="quiz-hero__copy">
@@ -377,6 +380,6 @@
 
     <script src="/assets/kiss-score.js?v=20260918-e1" defer></script>
     <script src="/assets/quiz.js?v=20260922d" defer></script>
-    <script src="/assets/conversion.js?v=20260922" defer></script>
+    <script src="/assets/conversion.js?v=20260922b" defer></script>
 </body>
 </html>
