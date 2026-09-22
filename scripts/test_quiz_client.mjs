@@ -423,8 +423,8 @@ test("paid render writes server strings as text, applies the stored pronoun, and
   assert.equal(glance.classList.contains("quiz-glance--compact"), true);
   assert.equal(glance.querySelector("img"), null);
   assert.equal(page.app.children[3].classList.contains("quiz-paid-section--verdict"), true);
-  assert.match(glance.textContent, /The Overthinker/);
-  assert.match(glance.textContent, /Your instincts are fine\. Your narrator won't shut up\./);
+  assert.match(hero.textContent, /The Overthinker/);
+  assert.match(hero.textContent, /Your instincts are fine\. Your narrator won't shut up\./);
   assert.equal(glance.querySelector(".quiz-glance__score strong").textContent, "73");
   assert.match(glance.querySelector(".quiz-glance__score").textContent, /Kiss Score73Dangerous, in a Good Way/);
   assert.deepEqual(glance.querySelectorAll(".quiz-glance__chip").map((c) => c.textContent), ["Strongest: You wait", "Costliest: You rush her"]);
