@@ -86,8 +86,7 @@ REQUIRED_OFFER_ATTRIBUTES = (
     "data-chapter-id",
 )
 FORM_BLOCK = re.compile(r"<form\b[^>]*>.*?</form>", re.DOTALL)
-# Sales copy ("Payhip delivery"), product links, and checkout hooks. The GA linker domain list and
-# the API host name (which carries "-payhip-") stay, so lowercase "payhip.com" alone is not enough.
+# Sales copy ("Payhip delivery"), product links, and checkout hooks.
 PAYHIP_COPY = re.compile(r"\bPayhip\b")
 
 

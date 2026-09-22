@@ -640,7 +640,7 @@ GA_SNIPPET = f"""    <!-- Google tag (gtag.js), with a localhost event spy for c
         gtag('js', new Date());
         gtag('config', '{GA_MEASUREMENT_ID}', {{
           linker: {{
-            domains: ['howtokissbetter.com', 'payhip.com'],
+            domains: ['howtokissbetter.com'],
             accept_incoming: true
           }}
         }});
