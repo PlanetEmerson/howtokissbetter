@@ -1,0 +1,113 @@
+/* Post-purchase feedback form: the book download page and the paid Kiss Test report. */
+.kiss-feedback {
+    color: var(--conversion-text);
+    display: grid;
+    font-family: Inter, system-ui, sans-serif;
+    font-size: 0.95rem;
+    gap: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+    text-align: left;
+}
+
+.kiss-feedback[hidden] {
+    display: none;
+}
+
+.book-thanks .kiss-feedback,
+.book-thanks [data-feedback-sent] {
+    margin: 1.75rem auto 0;
+    max-width: 34rem;
+}
+
+.quiz-result .kiss-feedback,
+.quiz-result [data-feedback-sent] {
+    border-top: 1px solid rgba(212, 175, 55, 0.22);
+    padding-top: 1.5rem;
+}
+
+.kiss-feedback fieldset {
+    border: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+}
+
+.kiss-feedback legend {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    padding: 0;
+}
+
+.kiss-feedback label {
+    display: block;
+}
+
+.kiss-feedback input[type="radio"],
+.kiss-feedback input[type="checkbox"] {
+    accent-color: var(--conversion-gold);
+    margin: 0 0.4rem 0 0;
+    vertical-align: -0.1em;
+}
+
+.kiss-feedback textarea,
+.kiss-feedback input[type="text"] {
+    background: rgba(253, 248, 243, 0.06);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 0.6rem;
+    color: var(--conversion-cream);
+    font: inherit;
+    padding: 0.55rem 0.7rem;
+}
+
+.kiss-feedback textarea {
+    display: block;
+    margin-top: 0.35rem;
+    resize: vertical;
+    width: 100%;
+}
+
+.kiss-feedback input[type="text"] {
+    width: min(100%, 16rem);
+}
+
+.kiss-feedback textarea:focus-visible,
+.kiss-feedback input:focus-visible {
+    outline: 2px solid var(--conversion-gold);
+    outline-offset: 2px;
+}
+
+.kiss-feedback .conversion-button {
+    justify-self: start;
+}
+
+/* Visually hidden honeypot; the server drops any post that fills it. */
+.kiss-feedback__hp {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+[data-feedback-sent] {
+    color: var(--conversion-cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    margin: 0;
+}
+
+@media (max-width: 390px) {
+    .kiss-feedback fieldset {
+        flex-direction: column;
+    }
+}

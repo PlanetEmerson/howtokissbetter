@@ -34,6 +34,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/app.css">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
+    <link rel="stylesheet" href="/assets/feedback.css?v=20260922">
 </head>
 
 <body class="conversion-shell font-sans antialiased" data-page-kind="book-thanks" data-kiss-api="https://api.howtokissbetter.com">
@@ -55,6 +56,21 @@
                 <span class="kiss-guarantee__mark" aria-hidden="true">30</span>
                 <span><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>
             </p>
+            <form class="kiss-feedback" method="post" action="https://api.howtokissbetter.com/api/kiss-feedback">
+                <input type="hidden" name="product" value="book">
+                <input type="hidden" name="back" value="/book/thanks/">
+                <fieldset>
+                    <legend>Worth it?</legend>
+                    <label><input type="radio" name="worth" value="yes" required> Worth it</label>
+                    <label><input type="radio" name="worth" value="no"> Not yet</label>
+                </fieldset>
+                <label>One line, if you like <textarea name="note" maxlength="500" rows="2"></textarea></label>
+                <label><input type="checkbox" name="quote_ok" value="1"> You may quote me on the site as</label>
+                <input type="text" name="name" maxlength="40" placeholder="first name or initial" aria-label="First name or initial" autocomplete="off">
+                <div class="kiss-feedback__hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+                <button type="submit" class="conversion-button conversion-button-secondary">Send</button>
+            </form>
+            <p hidden data-feedback-sent>Got it. Thank you.</p>
         </section>
 
         <section class="max-w-3xl mx-auto mt-12 grid sm:grid-cols-2 gap-5">
@@ -73,6 +89,12 @@
         <p>&copy; 2026 C.J. McKenna. <a href="/privacy/" class="text-gold hover:underline">Privacy</a> <span aria-hidden="true">·</span> <a href="/terms/" class="text-gold hover:underline">Terms</a></p>
     </footer>
 
+    <script>
+        if (new URLSearchParams(location.search).get("feedback") === "sent") {
+            document.querySelector("[data-feedback-sent]").hidden = false;
+            document.querySelector(".kiss-feedback").hidden = true;
+        }
+    </script>
     <script src="/assets/conversion.js?v=20260922" defer></script>
 </body>
 </html>

@@ -26,7 +26,10 @@ HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VER
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
 QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922c" defer></script>'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922d" defer></script>'
+FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
+FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
+FEEDBACK_SENT = "Got it. Thank you."
 GUARANTEE_BADGE = '<p class="kiss-guarantee" data-guarantee>'
 GUARANTEE_LINE = '<span class="kiss-guarantee--line"><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>'
 GUARANTEE_KEEP = '<span class="kiss-guarantee__keep">Keep it anyway. I can\'t take it back.</span>'
@@ -918,7 +921,25 @@ def validate_thanks_page(validation: Validation) -> Path:
     validation.require(RETIRED_PRICE not in page_html and not mentions_payhip(page_html), "book download page carries retired sales copy")
     validation.require(CONVERSION_CSS_TAG in page_html, "book download page stylesheet is missing or stale")
     validation.require(CONVERSION_JS_TAG in page_html, "book download page script is missing or stale")
+    validate_feedback_form(validation, "book download page", page_html, "book", "/book/thanks/")
+    validation.require('.get("feedback") === "sent"' in page_html, "book download page feedback sent script is missing")
     return page
+
+
+def validate_feedback_form(validation: Validation, label: str, page_html: str, product: str, back: str) -> None:
+    """The post-purchase form posts to the feedback function and comes back to its own page."""
+    validation.require(FEEDBACK_CSS_TAG in page_html, f"{label} feedback stylesheet is missing or stale")
+    validation.equal(page_html.count(f'<form class="kiss-feedback" method="post" action="{FEEDBACK_ACTION}"'), 1, f"{label} feedback form count")
+    validation.require(f'<input type="hidden" name="product" value="{product}">' in page_html, f"{label} feedback form product is wrong")
+    validation.require(f'<input type="hidden" name="back" value="{back}">' in page_html, f"{label} feedback form back path is wrong")
+    validation.require('<legend>Worth it?</legend>' in page_html and 'name="worth" value="yes" required' in page_html, f"{label} feedback form worth choice is missing")
+    validation.require('<textarea name="note" maxlength="500" rows="2"></textarea>' in page_html, f"{label} feedback note field is wrong")
+    validation.require('name="quote_ok" value="1"' in page_html and 'name="name" maxlength="40"' in page_html, f"{label} feedback quote consent is wrong")
+    validation.require('<input type="text" name="website" tabindex="-1" autocomplete="off">' in page_html, f"{label} feedback honeypot is missing")
+    validation.require(f"<p hidden data-feedback-sent>{FEEDBACK_SENT}</p>" in page_html, f"{label} feedback sent message is missing")
+    for needle in ('> Worth it</label>', '> Not yet</label>', 'One line, if you like', '> You may quote me on the site as</label>',
+                   'placeholder="first name or initial"', '>Send</button>'):
+        validation.require(needle in page_html, f"{label} feedback form copy drifted: {needle}")
 
 
 def validate_faq_twins(validation: Validation, label: str, page_html: str) -> None:
@@ -945,6 +966,7 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.require('el("span", "kiss-guarantee__keep", "Keep it anyway. I can\'t take it back.")' in quiz_js, "paywall badge keep line is missing from quiz.js")
     validation.require('"conversion-button conversion-sheen quiz-paywall__button"' in quiz_js, "paywall button is missing the sheen class")
     validate_no_retired_refund_copy(validation, "quiz.js", quiz_js)
+    validation.require('params.get("feedback") === "sent" ? "[data-feedback-sent]" : "form.kiss-feedback"' in quiz_js, "paid report feedback move is missing from quiz.js")
     for relative in QUIZ_PAGES:
         page = ROOT / relative
         validation.require(page.exists(), f"{relative} is missing")
@@ -963,6 +985,9 @@ def validate_quiz_pages(validation: Validation) -> None:
         validation.equal(test_html.count(line), 1, f"kiss test page locked line count: {line[:40]}")
     validate_faq_twins(validation, "kiss test page", test_html)
     result_html = (ROOT / "kiss-test/result/index.html").read_text()
+    validate_feedback_form(validation, "result page", result_html, "report", "/kiss-test/result/")
+    validation.require(f'action="{FEEDBACK_ACTION}" hidden>' in result_html and "<p hidden data-feedback-sent>" in result_html, "result page feedback markup must start hidden")
+    validation.require(FEEDBACK_CSS_TAG not in (ROOT / "kiss-test/index.html").read_text(), "kiss test page loads the feedback stylesheet it does not use")
     validation.equal(result_html.count(GUARANTEE_BADGE), 1, "result page guarantee badge count")
     validation.equal(result_html.count(GUARANTEE_LINE), 1, "result page guarantee line count")
     validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")

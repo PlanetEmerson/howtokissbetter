@@ -1390,6 +1390,14 @@
         retakeFresh(retake);
         signoff.appendChild(retake);
         root.appendChild(signoff);
+        // The feedback form and its sent line are static markup after the
+        // root, hidden until a paid render moves the right one into place.
+        var params = new URLSearchParams(window.location.search);
+        var feedback = document.querySelector(params.get("feedback") === "sent" ? "[data-feedback-sent]" : "form.kiss-feedback");
+        if (feedback) {
+            feedback.removeAttribute("hidden");
+            root.appendChild(feedback);
+        }
         if (local && local.archetype) {
             var share = el("section", "quiz-paid-share");
             share.appendChild(el("h2", "quiz-section-title", "Tell someone. Or don't."));

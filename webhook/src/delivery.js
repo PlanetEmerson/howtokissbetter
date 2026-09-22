@@ -5,6 +5,7 @@ const DEFAULT_PDF_PATH = "kiss-perfect-now/kiss-perfect-now.pdf";
 const DEFAULT_EPUB_PATH = "kiss-perfect-now/kiss-perfect-now.epub";
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 const DEFAULT_SENDER_EMAIL = "contact@howtokissbetter.com";
+const FEEDBACK_RECIPIENT = "contact@howtokissbetter.com";
 
 async function presignPrivateGet({ pathname, validUntil }) {
   const signed = await issueSignedToken({ pathname, operations: ["get"], validUntil });
@@ -65,15 +66,8 @@ function bookEmailHtml(thanksUrl) {
   ].join("\n");
 }
 
-export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
-  const message = {
-    sender: { name: "C.J. McKenna", email: env.BREVO_SENDER_EMAIL || DEFAULT_SENDER_EMAIL },
-    to: [{ email: to }],
-    subject: "Your copy of Kiss Perfect Now",
-    textContent: bookEmailText(thanksUrl),
-    htmlContent: bookEmailHtml(thanksUrl),
-  };
-
+// One Brevo call for every email the functions send.
+async function sendBrevoEmail(env, fetchImpl, message) {
   try {
     const response = await fetchImpl(BREVO_ENDPOINT, {
       method: "POST",
@@ -107,4 +101,35 @@ export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
     console.warn("brevo_send_failed", "network", error?.name ?? "");
     return false;
   }
+}
+
+function sender(env) {
+  return { name: "C.J. McKenna", email: env.BREVO_SENDER_EMAIL || DEFAULT_SENDER_EMAIL };
+}
+
+export async function sendBookEmail(env, fetchImpl, { to, thanksUrl }) {
+  return sendBrevoEmail(env, fetchImpl, {
+    sender: sender(env),
+    to: [{ email: to }],
+    subject: "Your copy of Kiss Perfect Now",
+    textContent: bookEmailText(thanksUrl),
+    htmlContent: bookEmailHtml(thanksUrl),
+  });
+}
+
+// Post-purchase feedback reaches the owner as plain text: the five form
+// fields and nothing about the sender.
+export async function sendFeedbackEmail(env, fetchImpl, { product, worth, note, quoteOk, name }) {
+  return sendBrevoEmail(env, fetchImpl, {
+    sender: sender(env),
+    to: [{ email: FEEDBACK_RECIPIENT }],
+    subject: `Feedback: ${product} · ${worth}`,
+    textContent: [
+      `worth: ${worth}`,
+      `note: ${note}`,
+      `quote consent: ${quoteOk ? "yes" : "no"}`,
+      `name: ${name}`,
+      `product: ${product}`,
+    ].join("\n"),
+  });
 }

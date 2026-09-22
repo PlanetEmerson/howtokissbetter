@@ -62,7 +62,7 @@ class FakeElement {
   get parentNode() { return this.parent; }
   get innerHTML() { throw new Error("innerHTML is off limits"); }
   set innerHTML(value) { throw new Error("innerHTML is off limits"); }
-  appendChild(child) { child.parent = this; this.children.push(child); return child; }
+  appendChild(child) { if (child.parent) child.parent.removeChild(child); child.parent = this; this.children.push(child); return child; }
   insertBefore(child, ref) { child.parent = this; const i = this.children.indexOf(ref); this.children.splice(i < 0 ? this.children.length : i, 0, child); return child; }
   removeChild(child) { this.children = this.children.filter((c) => c !== child); }
   setAttribute(name, value) { this.attributes[name] = String(value); if (name.startsWith("data-")) this.dataset[name.slice(5).replace(/-([a-z])/g, (m, c) => c.toUpperCase())] = String(value); }
@@ -173,6 +173,14 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   const app = main.appendChild(new FakeElement("div"));
   app.id = pageKind === "quiz" ? "kiss-test-app" : "kiss-test-result";
   app.appendChild(new FakeElement("p")).textContent = "static fallback";
+  // The feedback form and its sent line start hidden after the root, as on the result page.
+  const feedbackForm = main.appendChild(new FakeElement("form"));
+  feedbackForm.className = "kiss-feedback";
+  feedbackForm.setAttribute("hidden", "");
+  const feedbackSent = main.appendChild(new FakeElement("p"));
+  feedbackSent.setAttribute("hidden", "");
+  feedbackSent.setAttribute("data-feedback-sent", "");
+  feedbackSent.textContent = "Got it. Thank you.";
   const lede = main.appendChild(new FakeElement("p"));
   lede.setAttribute("data-email-lede", "");
   lede.textContent = "free lede";
@@ -221,7 +229,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   window.window = window;
   vm.runInNewContext(quizSource, { Array, Boolean, Error, JSON, Math, Number, Object, Promise, String, URLSearchParams, document, window });
   ready();
-  return { app, body, document, engine, events, lede, navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
+  return { app, body, document, engine, events, feedbackForm, feedbackSent, lede, navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
 }
 
 const settle = async () => { for (let i = 0; i < 6; i++) await new Promise((resolve) => setImmediate(resolve)); };
@@ -410,11 +418,52 @@ test("paid render adds the sighted count-up beside the real score, then the sign
   assert.equal(link.getAttribute("href"), "/kiss-test/#kiss-test-app");
   const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
   assert.equal(at("quiz-paid-signoff"), at("quiz-paid-section--tonight") + 1);
-  assert.equal(at("quiz-paid-share"), at("quiz-paid-signoff") + 1);
+  assert.equal(at("kiss-feedback"), at("quiz-paid-signoff") + 1);
+  assert.equal(at("quiz-paid-share"), at("kiss-feedback") + 1);
 
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), ANSWERS);
   link.dispatch("click");
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), null);
+});
+
+test("paid render moves the static feedback form into place between the sign-off and the share block", async () => {
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  const form = page.app.querySelector("form.kiss-feedback");
+  assert.equal(form, page.feedbackForm);
+  assert.equal(form.getAttribute("hidden"), null);
+  assert.equal(form.parent, page.app);
+  const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
+  assert.equal(at("kiss-feedback"), at("quiz-paid-signoff") + 1);
+  assert.equal(at("quiz-paid-share"), at("kiss-feedback") + 1);
+  assert.equal(page.app.querySelector("[data-feedback-sent]"), null);
+  assert.equal(page.feedbackSent.getAttribute("hidden"), "");
+  assert.equal(page.feedbackSent.parent.tagName, "MAIN");
+});
+
+test("a paid render with feedback=sent in the URL shows the thank-you line and leaves the form hidden", async () => {
+  const page = runPage({ pageKind: "quiz-result", search: "?feedback=sent", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  assert.equal(page.app.querySelector("form.kiss-feedback"), null);
+  assert.equal(page.feedbackForm.getAttribute("hidden"), "");
+  assert.equal(page.feedbackForm.parent.tagName, "MAIN");
+  const sent = page.app.querySelector("[data-feedback-sent]");
+  assert.equal(sent, page.feedbackSent);
+  assert.equal(sent.getAttribute("hidden"), null);
+  assert.equal(sent.textContent, "Got it. Thank you.");
+  const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
+  assert.equal(page.app.children.indexOf(sent), at("quiz-paid-signoff") + 1);
+  assert.equal(at("quiz-paid-share"), page.app.children.indexOf(sent) + 1);
+  assert.match(page.app.textContent, /Kiss Score 73/);
+});
+
+test("a free render leaves the feedback form and its sent line hidden outside the result", async () => {
+  const page = runPage({ pageKind: "quiz-result", search: "?feedback=sent", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch() });
+  await settle();
+  assert.equal(page.app.querySelector("form.kiss-feedback"), null);
+  assert.equal(page.app.querySelector("[data-feedback-sent]"), null);
+  assert.equal(page.feedbackForm.getAttribute("hidden"), "");
+  assert.equal(page.feedbackSent.getAttribute("hidden"), "");
 });
 
 test("share text ends with the dare: the free line hides the score, the paid line carries it", async () => {

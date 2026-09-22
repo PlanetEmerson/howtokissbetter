@@ -47,6 +47,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922">
+    <link rel="stylesheet" href="/assets/feedback.css?v=20260922">
     <link rel="stylesheet" href="/assets/quiz.css?v=20260922">
 </head>
 
@@ -74,6 +75,21 @@
                 <a class="conversion-button" href="/kiss-test/">Take the Kiss Test</a>
             </section>
         </div>
+        <form class="kiss-feedback" method="post" action="https://api.howtokissbetter.com/api/kiss-feedback" hidden>
+            <input type="hidden" name="product" value="report">
+            <input type="hidden" name="back" value="/kiss-test/result/">
+            <fieldset>
+                <legend>Worth it?</legend>
+                <label><input type="radio" name="worth" value="yes" required> Worth it</label>
+                <label><input type="radio" name="worth" value="no"> Not yet</label>
+            </fieldset>
+            <label>One line, if you like <textarea name="note" maxlength="500" rows="2"></textarea></label>
+            <label><input type="checkbox" name="quote_ok" value="1"> You may quote me on the site as</label>
+            <input type="text" name="name" maxlength="40" placeholder="first name or initial" aria-label="First name or initial" autocomplete="off">
+            <div class="kiss-feedback__hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+            <button type="submit" class="conversion-button conversion-button-secondary">Send</button>
+        </form>
+        <p hidden data-feedback-sent>Got it. Thank you.</p>
 
         <section class="quiz-section quiz-email" aria-labelledby="email-title">
             <div class="quiz-section__inner">
@@ -147,7 +163,7 @@
     </footer>
 
     <script src="/assets/kiss-score.js?v=20260918-e1" defer></script>
-    <script src="/assets/quiz.js?v=20260922c" defer></script>
+    <script src="/assets/quiz.js?v=20260922d" defer></script>
     <script src="/assets/conversion.js?v=20260922" defer></script>
 </body>
 </html>

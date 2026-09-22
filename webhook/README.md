@@ -109,6 +109,39 @@ or forwarded anywhere except the Brevo send.
 Subscribe the endpoint to exactly those two events, with its own signing
 secret (never Blynk Studio's).
 
+### `POST /api/kiss-feedback`
+
+Plain HTML form post (`application/x-www-form-urlencoded`, 4 KiB cap) from
+the book download page and the paid Kiss Test report, forwarded to the owner
+as one plain-text email through Brevo: to `contact@howtokissbetter.com`,
+subject `Feedback: {product} · {worth}`, body lines `worth`, `note`,
+`quote consent`, `name`, `product`. Nothing is stored, the sender's email
+address is never known, and the IP lives only in a per-instance rate map.
+The `Origin` and `Referer` rule is the one `/api/checkout` uses.
+
+| Field | Rule |
+|---|---|
+| `product` | `book` or `report` |
+| `back` | `/book/thanks/` or `/kiss-test/result/` |
+| `worth` | `yes` or `no` |
+| `note` | up to 500 characters, optional |
+| `quote_ok` | `1` when the buyer allows a quote; anything else means no |
+| `name` | up to 40 characters of `[A-Za-z .'-]`, optional |
+| `website` | honeypot; must stay empty |
+
+Outcomes, in the order they are checked:
+
+- `405`, `403 bad_origin`, `413` as JSON. `OPTIONS` answers `204`.
+- Honeypot filled: `303 {site}{back}?feedback=sent`, no email.
+- Any field invalid: `303 {site}{back}?feedback=invalid`, no email. When
+  `back` itself is invalid the redirect lands on `{site}/`.
+- More than 5 posts from one IP (`x-forwarded-for`, first hop) in 10
+  minutes: `303 {site}{back}?feedback=sent`, no email. The counter is per
+  function instance, so a cold start forgets it; a courtesy limit, not a wall.
+- Otherwise the email is sent and the answer is `303 {site}{back}?feedback=sent`
+  whether or not Brevo accepted it (a refusal is logged as `brevo_send_failed`
+  with the provider status and error code only).
+
 ### `POST /api/payhip-paid` and `GET /api/health`
 
 The Payhip to GA4 bridge (unchanged; see `src/payhip-ga4.js`) and a fixed
@@ -122,11 +155,11 @@ availability check returning `{ ok: true, service: "howtokissbetter-functions" }
 | `STRIPE_WEBHOOK_SECRET` | stripe-webhook | Signing secret of this project's own webhook endpoint |
 | `KISS_UNLOCK_SECRET` | verify | HMAC key for unlock tokens; `openssl rand -hex 32` |
 | `KISS_SITE_ORIGIN` | all | Site origin for success, cancel and thanks URLs; default `https://howtokissbetter.com` |
-| `KISS_EXTRA_ORIGINS` | checkout, verify | Comma-separated extra allowed origins for QA (for example `http://localhost:8000`); leave unset in production |
+| `KISS_EXTRA_ORIGINS` | checkout, verify, kiss-feedback | Comma-separated extra allowed origins for QA (for example `http://localhost:8000`); leave unset in production |
 | `KISS_BOOK_PDF_PATH` | verify | Blob pathname of the PDF; default `kiss-perfect-now/kiss-perfect-now.pdf` |
 | `KISS_BOOK_EPUB_PATH` | verify | Blob pathname of the EPUB; default `kiss-perfect-now/kiss-perfect-now.epub` |
-| `BREVO_API_KEY` | stripe-webhook | Brevo transactional key (the book delivery email) |
-| `BREVO_SENDER_EMAIL` | stripe-webhook | Verified sender; default `contact@howtokissbetter.com` |
+| `BREVO_API_KEY` | stripe-webhook, kiss-feedback | Brevo transactional key (the book delivery email and the feedback email) |
+| `BREVO_SENDER_EMAIL` | stripe-webhook, kiss-feedback | Verified sender; default `contact@howtokissbetter.com` |
 | `GA_MEASUREMENT_ID` | stripe-webhook, payhip-paid | GA4 measurement id (`G-...`) |
 | `GA_API_SECRET` | stripe-webhook, payhip-paid | GA4 Measurement Protocol secret |
 | `PAYHIP_SIGNATURE_SHA256` | payhip-paid | Payhip webhook signature |
