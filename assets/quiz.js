@@ -1303,17 +1303,28 @@
         return card;
     }
 
-    function renderPaid(root, state, paid) {
+    function renderPaid(root, state, report) {
+        // The report describes the answers that were paid for, which can differ
+        // from this browser's latest run (a receipt link, or a retake in
+        // progress). Its own free summary drives the header, not local state.
+        var paid = report && report.paid ? report.paid : report;
         var sections = paid && Array.isArray(paid.sections) ? paid.sections : [];
         if (!sections.length) {
             statusScreen(root, "Unlocked.", "The report came back empty. Email " + SUPPORT_EMAIL + " with your receipt and I will fix it.", null);
             return;
         }
         var local = null;
-        try {
-            local = engine() && state.answers ? engine().score(state.answers) : null;
-        } catch (error) {
-            local = null;
+        if (report && report.free && report.free.archetype && report.free.band) {
+            local = report.free;
+            if (typeof local.answers === "string" && local.answers) {
+                state.answers = local.answers;
+            }
+        } else {
+            try {
+                local = engine() && state.answers ? engine().score(state.answers) : null;
+            } catch (error) {
+                local = null;
+            }
         }
         clear(root);
         var header = el("header", "quiz-paid-header");
@@ -1417,7 +1428,7 @@
                     if (sessionId && window.history && typeof window.history.replaceState === "function") {
                         window.history.replaceState(null, "", window.location.pathname);
                     }
-                    renderPaid(root, state, data.payload && data.payload.report ? data.payload.report.paid : null);
+                    renderPaid(root, state, data.payload && data.payload.report ? data.payload.report : null);
                     return;
                 }
                 if (result.status === 401 && mode === "token") {
