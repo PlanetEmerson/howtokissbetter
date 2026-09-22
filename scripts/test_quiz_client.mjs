@@ -396,7 +396,7 @@ test("paid render writes server strings as text, applies the stored pronoun, and
   assert.match(text, /Then stop counting\. She's not\./);
   const tags = new Set();
   walk(page.app, (n) => tags.add(n.tagName));
-  assert.deepEqual(page.app.querySelectorAll("img").map((i) => i.getAttribute("src")), ["/assets/images/kiss-test/archetypes/overthinker-ww-thumb.webp"]);
+  assert.deepEqual(page.app.querySelectorAll("img").map((i) => i.getAttribute("src")), ["/assets/images/kiss-test/archetypes/overthinker-ww.jpg"]);
   assert.equal(tags.has("B"), false);
 
   // Sections render generically, in the order the server sent them.
@@ -413,11 +413,16 @@ test("paid render writes server strings as text, applies the stored pronoun, and
   assert.deepEqual(page.app.querySelector(".quiz-paid-section--score").children.map((c) => c.tagName), ["H2", "P", "P", "UL"]);
   assert.deepEqual(page.app.querySelector(".quiz-paid-section--fix").children.map((c) => c.tagName), ["H2", "OL"]);
 
-  // At a glance sits between the header and the first section, with the pairing-aware thumb.
+  // The full-size archetype card follows the header, then the compact glance, then the first section.
+  const hero = page.app.children[1];
+  assert.equal(hero.classList.contains("quiz-card"), true);
+  assert.equal(hero.querySelector("img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-ww.jpg");
+  assert.equal(hero.querySelector(".quiz-card__title").textContent, "You're The Overthinker.");
   const glance = page.app.querySelector(".quiz-glance");
-  assert.equal(page.app.children.indexOf(glance), 1);
-  assert.equal(page.app.children[2].classList.contains("quiz-paid-section--verdict"), true);
-  assert.equal(glance.querySelector("img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-ww-thumb.webp");
+  assert.equal(page.app.children.indexOf(glance), 2);
+  assert.equal(glance.classList.contains("quiz-glance--compact"), true);
+  assert.equal(glance.querySelector("img"), null);
+  assert.equal(page.app.children[3].classList.contains("quiz-paid-section--verdict"), true);
   assert.match(glance.textContent, /The Overthinker/);
   assert.match(glance.textContent, /Your instincts are fine\. Your narrator won't shut up\./);
   assert.equal(glance.querySelector(".quiz-glance__score strong").textContent, "73");
@@ -445,7 +450,7 @@ test("a paid render without a costs section drops that chip and still shows the 
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl });
   await settle();
   assert.deepEqual(page.app.querySelectorAll(".quiz-glance__chip").map((c) => c.textContent), ["Strongest: You wait"]);
-  assert.equal(page.app.querySelector(".quiz-glance img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-mw-thumb.webp");
+  assert.equal(page.app.querySelector(".quiz-card img").getAttribute("src"), "/assets/images/kiss-test/archetypes/overthinker-mw.jpg");
 });
 
 test("pairingFor picks the illustration: mm, ww, or the mixed default", () => {
