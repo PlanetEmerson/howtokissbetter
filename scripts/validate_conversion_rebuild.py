@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260922d"
-HOME_ASSET_VERSION = "20260922d"
+HOME_ASSET_VERSION = "20260923a"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
@@ -893,6 +893,7 @@ def validate_home(validation: Validation) -> Path:
         ('class="home-q1__option"', 4, "homepage Q1 option count"),
         ('class="home-archetypes__card"', 7, "homepage archetype card count"),
         ('class="home-guides__chip"', 8, "homepage guide chip count"),
+        ('<li><a href="/blog/', 10, "homepage most-read guide count"),
         ('class="home-share"', 1, "homepage share loop count"),
     ):
         validation.equal(page_html.count(needle), count, label)

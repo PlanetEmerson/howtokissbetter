@@ -15,6 +15,7 @@ import functools
 import html
 import json
 import re
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,43 @@ CATEGORY_DIR = BLOG_DIR / "category"
 SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 SERP_TITLE_LIMIT = 60
+# Search Console top pages by clicks, 28 days to 2026-09-21. They get a small
+# boost in Keep Reading; refresh after each audit.
+MOST_READ = [
+    "how-to-kiss-someones-neck",
+    "how-to-kiss-slowly",
+    "how-to-kiss-your-boyfriend",
+    "too-much-saliva-when-kissing",
+    "how-to-practice-kissing",
+    "how-to-kiss-with-a-height-difference",
+    "signs-youre-a-good-kisser",
+    "kissing-positions",
+    "lip-biting-while-kissing",
+    "what-does-a-kiss-on-the-cheek-mean",
+]
+# /blog/ "New here? Start with these": the two pillars, then the fundamentals readers search for most.
+START_HERE = [
+    "how-to-kiss",
+    "how-to-kiss-someone-for-the-first-time",
+    "how-to-be-a-better-kisser",
+    "how-to-kiss-slowly",
+    "how-to-french-kiss",
+    "how-to-practice-kissing",
+    "kissing-positions",
+    "signs-youre-a-good-kisser",
+]
+RELATED_COUNT = 6
+RELATED_MIN = 3
+COVERAGE_SLOTS = 4
+# No post fills more than this many Keep Reading slots, so the links spread
+# across the library instead of piling onto a few posts (the old picker sent
+# 83 posts to the same two articles and left 34 with none).
+RELATED_CAP = 9
+RELATED_STOPWORDS = {
+    "a", "after", "and", "are", "can", "complete", "do", "does", "for", "guide", "how", "in", "is",
+    "it", "kiss", "kisse", "kisser", "kissing", "of", "on", "our", "really", "someone", "that",
+    "the", "to", "what", "when", "while", "why", "with", "without", "you", "your",
+}
 ROBOTS_CONTENT = "index, follow, max-image-preview:large, max-snippet:-1"
 ORGANIZATION_ID = f"{SITE_URL}/#organization"
 PUBLISHER = {
@@ -1487,18 +1525,61 @@ def render_post_card(post: dict[str, Any], include_date: bool = True) -> str:
                 </article>"""
 
 
-def render_related_posts(posts: list[dict[str, Any]], slug: str, category: str) -> str:
-    """Render a static related-posts grid for new posts.
+def related_terms(post: dict[str, Any]) -> set[str]:
+    """Topic words from a post's H1, search title and slug, singularised."""
+    text = " ".join((post["title"], post.get("seo_title", ""), post["slug"].replace("-", " ")))
+    words = {word.rstrip("s") for word in re.findall(r"[a-z]+", text.lower())}
+    return {word for word in words if len(word) > 2 and word not in RELATED_STOPWORDS}
 
-    Picks up to 6 related posts — 4 from same category first, then fill with
-    other categories. More links = more crawl paths for Google.
+
+def pick_related(posts: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    """Choose RELATED_COUNT Keep Reading posts for every post.
+
+    Candidates score on shared topic words, then shared category, then
+    MOST_READ. A coverage pass first puts every post in the lists of the
+    RELATED_MIN posts closest to it (using at most COVERAGE_SLOTS of each
+    list), then every list fills with its best-scoring posts. Nothing fills
+    more than RELATED_CAP slots, so no post hogs the links.
     """
-    same_category = [post for post in posts if post["slug"] != slug and post["category"] == category]
-    others = [post for post in posts if post["slug"] != slug and post["category"] != category]
-    related = (same_category[:4] + others)[:6]
-    if not related:
-        return ""
+    terms = {post["slug"]: related_terms(post) for post in posts}
 
+    def score(post: dict[str, Any], other: dict[str, Any]) -> int:
+        return (
+            4 * len(terms[post["slug"]] & terms[other["slug"]])
+            + 3 * (post["category"] == other["category"])
+            + (other["slug"] in MOST_READ)
+        )
+
+    ranked = {
+        post["slug"]: sorted(
+            (other for other in posts if other["slug"] != post["slug"]),
+            key=lambda other: (-score(post, other), other["slug"]),
+        )
+        for post in posts
+    }
+    picks: dict[str, list[dict[str, Any]]] = {post["slug"]: [] for post in posts}
+    load: Counter[str] = Counter()
+    for other in posts:
+        for post in ranked[other["slug"]]:
+            if load[other["slug"]] == RELATED_MIN:
+                break
+            if len(picks[post["slug"]]) < COVERAGE_SLOTS:
+                picks[post["slug"]].append(other)
+                load[other["slug"]] += 1
+    for post in posts:
+        chosen = picks[post["slug"]]
+        for other in ranked[post["slug"]]:
+            if len(chosen) == RELATED_COUNT:
+                break
+            if other not in chosen and load[other["slug"]] < RELATED_CAP:
+                chosen.append(other)
+                load[other["slug"]] += 1
+        chosen.sort(key=lambda other: (-score(post, other), other["slug"]))
+    return picks
+
+
+def render_related_posts(related: list[dict[str, Any]]) -> str:
+    """Render the Keep Reading cards."""
     cards = []
     for post in related:
         cards.append(
@@ -1514,6 +1595,28 @@ def render_related_posts(posts: list[dict[str, Any]], slug: str, category: str) 
                 </a>"""
         )
     return "\n".join(cards)
+
+
+def rebuild_related(check: bool = False) -> None:
+    """Rewrite the Keep Reading grid on every post from posts.json; with check, only report drift."""
+    posts = read_posts()
+    picks = pick_related(posts)
+    grid = re.compile(r'(<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="related-posts">\n).*?(\n            </div>)', re.S)
+    changed = []
+    for post in posts:
+        page = BLOG_DIR / post["slug"] / "index.html"
+        page_html = page.read_text()
+        cards = render_related_posts(picks[post["slug"]])
+        new_html, hits = grid.subn(lambda match: match.group(1) + cards + match.group(2), page_html, count=1)
+        if not hits:
+            raise SystemExit(f"{page} has no Keep Reading grid")
+        if new_html != page_html:
+            changed.append(post["slug"])
+            if not check:
+                page.write_text(new_html)
+    if check and changed:
+        raise SystemExit(f"Keep Reading differs from build_blog.py on: {', '.join(changed)}")
+    print(f"Keep Reading: {len(changed)} of {len(posts)} posts {'differ' if check else 'changed'}")
 
 
 def category_metadata(category_slug: str) -> dict[str, str]:
@@ -1669,6 +1772,11 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
     """Render a fully static blog index from posts.json."""
     cards = "\n".join(render_post_card(post) for post in posts)
     category_nav = render_category_nav(posts)
+    titles = {post["slug"]: post["title"] for post in posts}
+    start_here = "\n".join(
+        f'                    <a href="/blog/{slug}/" class="text-gray-200 hover:text-gold transition-colors">→ {html.escape(titles[slug])}</a>'
+        for slug in START_HERE
+    )
     schema = {
         "@context": "https://schema.org",
         "@type": "Blog",
@@ -1727,13 +1835,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
             <div class="bg-wine/20 border border-gold/20 rounded-2xl p-6 sm:p-8">
                 <p class="text-gold font-medium tracking-widest uppercase text-xs mb-4 text-center">New Here? Start With These</p>
                 <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-[0.98rem]">
-                    <a href="/blog/how-to-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Better: The Complete Guide</a>
-                    <a href="/blog/how-to-be-a-better-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ How to Be a Better Kisser: 7 Techniques That Actually Work</a>
-                    <a href="/blog/how-to-kiss-someone-for-the-first-time/" class="text-gray-200 hover:text-gold transition-colors">→ How to Kiss Someone for the First Time</a>
-                    <a href="/blog/how-to-practice-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ How to Practice Kissing: 7 Methods That Actually Work</a>
-                    <a href="/blog/science-of-kissing/" class="text-gray-200 hover:text-gold transition-colors">→ The Science of Kissing: What Actually Happens When Lips Touch</a>
-                    <a href="/blog/what-makes-a-good-kisser/" class="text-gray-200 hover:text-gold transition-colors">→ What Makes a Good Kisser: The Honest Answer</a>
-                    <a href="/blog/how-to-french-kiss/" class="text-gray-200 hover:text-gold transition-colors">→ How to French Kiss: A Complete Guide</a>
+{start_here}
                 </div>
             </div>
         </div>
@@ -1953,7 +2055,6 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     template = TEMPLATE_FILE.read_text()
 
     existing_posts = read_posts()
-    related_posts = render_related_posts(existing_posts, slug, category)
 
     page_html = template
     replacements = {
@@ -1971,7 +2072,8 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
         "{{CONTENT}}": content,
         "{{TOC_ITEMS}}": extract_toc(content),
         "{{CATEGORY_SLUG}}": slugify_category(category),
-        "{{RELATED_POSTS}}": related_posts,
+        # Filled below by rebuild_related, which needs the new post in posts.json.
+        "{{RELATED_POSTS}}": "",
         "{{OG_IMAGE_DIMENSIONS}}": og_image_dimensions(slug),
     }
     for placeholder, value in replacements.items():
@@ -2003,6 +2105,7 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     print(f"Updated: {POSTS_JSON}")
 
     rebuild_archive_pages()
+    rebuild_related()
     if rebuild_conversions:
         rebuild_conversion_surfaces()
 
@@ -2018,6 +2121,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rebuild-listings", action="store_true", help="Regenerate /blog/ and /blog/category/* pages from posts.json")
     parser.add_argument("--rebuild-all", action="store_true", help="DESTRUCTIVE: rebuild every post that has a post.json (needs --allow-destructive)")
     parser.add_argument("--allow-destructive", action="store_true", help="Confirm --rebuild-all after reading why it is refused")
+    parser.add_argument("--rebuild-related", action="store_true", help="Re-pick the Keep Reading posts on every article")
+    parser.add_argument("--check", action="store_true", help="With --rebuild-related: fail on drift instead of writing")
     parser.add_argument("--rebuild-conversions", action="store_true", help="Regenerate clustered offers for every article route")
     return parser.parse_args()
 
@@ -2061,6 +2166,10 @@ def main() -> None:
 
     if args.rebuild_listings:
         rebuild_archive_pages()
+        return
+
+    if args.rebuild_related:
+        rebuild_related(check=args.check)
         return
 
     if args.from_n8n:

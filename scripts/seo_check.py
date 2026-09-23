@@ -26,6 +26,10 @@ TITLE_LIMIT = 60
 DESCRIPTION_LIMIT = 160
 MIN_HOME_POST_LINKS = 8
 MIN_INBOUND_BODY_LINKS = 3
+# Publishing rule: every post gets 3+ links from other posts, body plus Keep Reading.
+# build_blog.py --rebuild-related guarantees it, so a shortfall means the grid broke.
+MIN_INBOUND_POST_LINKS = 3
+RELATED_GRID = '<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="related-posts">'
 POST_PATH = re.compile(r"^/blog/(?!category/)([a-z0-9-]+)/$")
 
 
@@ -144,6 +148,7 @@ def main() -> None:
     post_paths = {url_path for url_path in indexable if POST_PATH.match(url_path)}
 
     inbound: dict[str, set[str]] = defaultdict(set)
+    linked: dict[str, set[str]] = defaultdict(set)
     for url_path, page_html in sources.items():
         # JSON-LD must parse, or the page silently loses every rich result.
         for block in json_ld_blocks(page_html):
@@ -195,6 +200,11 @@ def main() -> None:
                 resolved = resolve_link(url_path, href, pages)
                 if resolved and resolved[0] in post_paths and resolved[0] != url_path:
                     inbound[resolved[0]].add(url_path)
+                    linked[resolved[0]].add(url_path)
+            for href in re.findall(r'href="([^"]+)"', div_inner(page_html, RELATED_GRID)):
+                resolved = resolve_link(url_path, href, pages)
+                if resolved and resolved[0] in post_paths and resolved[0] != url_path:
+                    linked[resolved[0]].add(url_path)
 
         # FAQ answers in JSON-LD must be readable on the page, word for word.
         faq_answers = []
@@ -253,6 +263,19 @@ def main() -> None:
         count = len(inbound[url_path])
         if count < MIN_INBOUND_BODY_LINKS:
             report.warn(f"posts have {MIN_INBOUND_BODY_LINKS}+ in-body inbound links", f"{url_path}: {count}")
+        if len(linked[url_path]) < MIN_INBOUND_POST_LINKS:
+            report.error(
+                f"posts have {MIN_INBOUND_POST_LINKS}+ inbound links from other posts",
+                f"{url_path}: {len(linked[url_path])}",
+            )
+
+    # Keep Reading is generated, never hand-written: a grid that drifts from the
+    # builder's pick is an edit the bot gate would otherwise wave through.
+    related = subprocess.run(
+        [sys.executable, "build_blog.py", "--rebuild-related", "--check"], cwd=ROOT, capture_output=True, text=True
+    )
+    if related.returncode:
+        report.error("Keep Reading matches build_blog.py", (related.stderr or related.stdout).strip())
 
     print(f"SEO check: {len(pages)} pages, {len(indexable)} indexable, {len(post_paths)} posts, {len(locs)} sitemap URLs")
     for check, details in sorted(report.warnings.items()):

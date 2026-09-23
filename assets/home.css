@@ -644,6 +644,48 @@ video {
     margin: 2rem 0 1.5rem;
 }
 
+.home-guides__popular {
+    margin: 0 0 1.5rem;
+}
+
+.home-guides__popular h3 {
+    color: var(--home-gold-light);
+    font-family: var(--home-sans);
+    font-size: clamp(0.74rem, 0.62rem + 0.3vw, 0.86rem);
+    font-weight: 700;
+    letter-spacing: 0.19em;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+}
+
+.home-guides__popular ol {
+    display: grid;
+    gap: 0 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.home-guides__popular a {
+    align-items: center;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.14);
+    color: rgba(253, 248, 243, 0.86);
+    display: flex;
+    font-size: clamp(0.92rem, 0.8rem + 0.3vw, 1.02rem);
+    min-height: 2.75rem;
+    text-decoration: none;
+}
+
+.home-guides__popular a:hover {
+    color: var(--home-gold-light);
+}
+
+@media (min-width: 640px) {
+    .home-guides__popular ol {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 .home-guides__chip {
     border-radius: 999px;
     font-size: clamp(0.86rem, 0.7rem + 0.3vw, 0.98rem);
