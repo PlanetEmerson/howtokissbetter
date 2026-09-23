@@ -674,6 +674,8 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         validation.require('/assets/offer-catalog.js' not in page_html, f"{slug} still loads the retired runtime offer catalog")
         validation.require(CONVERSION_CSS_TAG in page_html, f"{slug} conversion stylesheet is missing or stale")
         validation.require(CONVERSION_JS_TAG in page_html, f"{slug} conversion script is incomplete or stale")
+        if '"FAQPage"' in page_html:
+            validate_faq_twins(validation, slug, page_html, min_questions=1)
 
         if surface == "quiz":
             validate_quiz_article(validation, slug, page_html, offer)
@@ -997,8 +999,19 @@ def validate_feedback_form(validation: Validation, label: str, page_html: str, p
         validation.require(needle in page_html, f"{label} feedback form copy drifted: {needle}")
 
 
-def validate_faq_twins(validation: Validation, label: str, page_html: str) -> None:
-    """Every FAQPage answer in the JSON-LD must appear verbatim as visible text."""
+def reader_text(text: str) -> str:
+    """Text as a reader sees it: no head, scripts or tags, entities decoded, whitespace collapsed."""
+    text = re.sub(r"<(script|style|template)\b[^>]*>.*?</\1>", " ", text, flags=re.S | re.I)
+    text = re.sub(r"<head>.*?</head>", " ", text, flags=re.S | re.I)
+    # Inline tags vanish without a gap ("<a>link</a>." reads "link."); block tags break words.
+    text = re.sub(r"</?(?:a|strong|em|b|i|span|code)\b[^>]*>", "", text, flags=re.I)
+    text = html.unescape(re.sub(r"<[^>]+>", " ", text))
+    text = text.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def validate_faq_twins(validation: Validation, label: str, page_html: str, min_questions: int = 5) -> None:
+    """Every FAQPage answer in the JSON-LD must appear verbatim as visible text, not just inside the JSON-LD."""
     faq = None
     for block in re.findall(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", page_html, re.S):
         data = json.loads(block)
@@ -1010,10 +1023,14 @@ def validate_faq_twins(validation: Validation, label: str, page_html: str) -> No
     if faq is None:
         return
     questions = faq.get("mainEntity", [])
-    validation.require(len(questions) >= 5, f"{label} FAQPage lists fewer than five questions")
+    validation.require(len(questions) >= min_questions, f"{label} FAQPage lists fewer than {min_questions} questions")
+    visible = reader_text(page_html)
     for question in questions:
         answer = question.get("acceptedAnswer", {}).get("text", "")
-        validation.require(bool(answer) and answer in page_html, f"{label} FAQ answer is not visible on the page: {question.get('name', '')[:48]}")
+        validation.require(
+            bool(answer) and reader_text(answer) in visible,
+            f"{label} FAQ answer is not visible on the page: {question.get('name', '')[:48]}",
+        )
 
 
 def validate_quiz_pages(validation: Validation) -> None:

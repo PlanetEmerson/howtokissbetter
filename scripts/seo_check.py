@@ -61,6 +61,8 @@ def site_pages() -> dict[str, Path]:
 
 
 def norm_text(text: str) -> str:
+    # Inline tags vanish without a gap ("<a>link</a>." reads "link."); block tags break words.
+    text = re.sub(r"</?(?:a|strong|em|b|i|span|code)\b[^>]*>", "", text, flags=re.I)
     text = html.unescape(re.sub(r"<[^>]+>", " ", text))
     text = text.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
     return re.sub(r"\s+", " ", text).strip()
