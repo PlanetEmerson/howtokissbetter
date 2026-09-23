@@ -340,21 +340,28 @@
             deck.push({ play: play, pause: function () { if (video) { video.pause(); } } });
         });
         if (!deck.length || typeof window.IntersectionObserver !== "function") { return; }
-        // The deck ripples while it is on screen, front card first (the last
-        // card in the markup sits on top of the fan): a card starts every
-        // 1.8 s, a short rest after the last one, then round again. Off
-        // screen it stops.
-        deck.reverse();
+        // The deck ripples while it is on screen: a card starts every 1.8 s,
+        // a short rest after the last one, then round again. Off screen it
+        // stops. From 900px the deck is a fan whose last card sits on top, so
+        // the ripple runs front to back there; the narrow row runs in markup
+        // order, the cards a phone sees first.
         var timer = null;
         var index = 0;
+        var fan = false;
         function step() {
-            deck[index % deck.length].play();
+            var at = index % deck.length;
+            deck[fan ? deck.length - 1 - at : at].play();
             index += 1;
             timer = window.setTimeout(step, index % deck.length ? 1800 : 4200);
         }
         new window.IntersectionObserver(function (entries) {
             window.clearTimeout(timer);
-            if (entries[entries.length - 1].isIntersecting) { step(); } else { deck.forEach(function (card) { card.pause(); }); }
+            if (entries[entries.length - 1].isIntersecting) {
+                fan = mq("(min-width: 900px)").matches;
+                step();
+            } else {
+                deck.forEach(function (card) { card.pause(); });
+            }
         }, { threshold: 0.25 }).observe(row);
     })();
     </script>
