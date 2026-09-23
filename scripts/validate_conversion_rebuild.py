@@ -624,6 +624,7 @@ def validate_buy_article(validation: Validation, slug: str, page_html: str, offe
 
 
 def validate_articles(validation: Validation, catalog: dict[str, dict[str, object]]) -> list[Path]:
+    build_blog = load_build_blog()
     posts = json.loads((BLOG / "posts.json").read_text())
     validate_manifest_cardinality(validation, posts, catalog)
     for post in posts:
@@ -676,6 +677,15 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         validation.require(CONVERSION_JS_TAG in page_html, f"{slug} conversion script is incomplete or stale")
         if '"FAQPage"' in page_html:
             validate_faq_twins(validation, slug, page_html, min_questions=1)
+        source = page.parent / "post.json"
+        if source.exists():
+            short_answer = build_blog.parse_frontmatter(json.loads(source.read_text())["frontmatter"]).get("short_answer", "")
+            if short_answer:
+                # A box edited only in the HTML would vanish on the next rebuild.
+                validation.require(
+                    build_blog.render_short_answer(short_answer) in page_html,
+                    f"{slug} Short Answer box differs from its post.json short_answer",
+                )
 
         if surface == "quiz":
             validate_quiz_article(validation, slug, page_html, offer)

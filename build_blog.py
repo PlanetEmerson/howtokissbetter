@@ -848,6 +848,26 @@ def markdown_to_html(markdown: str) -> str:
     return "\n\n".join(paragraphs)
 
 
+def render_short_answer(text: str) -> str:
+    """The Short Answer box above the article, from the short_answer frontmatter line; empty without one.
+
+    It answers the post's top query in the first sentence so search and AI answers can lift it whole.
+    Inline markdown (bold, italics, links) works; the result ends where the article comment begins.
+    """
+    if not text:
+        return ""
+    answer = markdown_to_html(text).removeprefix("<p>").removesuffix("</p>")
+    return f"""<!-- Answer-First Summary -->
+            <div class="mb-10 p-6 bg-wine/10 border-l-4 border-gold rounded-r-lg">
+                <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-2">The Short Answer</p>
+                <p class="text-cream text-lg leading-relaxed">
+                    {answer}
+                </p>
+            </div>
+
+            """
+
+
 def extract_toc(html_content: str) -> str:
     """Extract TOC items from H2 tags with IDs."""
     toc_items = []
@@ -2070,6 +2090,7 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
         "{{CATEGORY}}": category,
         "{{KEYWORD}}": keyword,
         "{{CONTENT}}": content,
+        "{{SHORT_ANSWER}}": render_short_answer(fm.get("short_answer", "")),
         "{{TOC_ITEMS}}": extract_toc(content),
         "{{CATEGORY_SLUG}}": slugify_category(category),
         # Filled below by rebuild_related, which needs the new post in posts.json.
