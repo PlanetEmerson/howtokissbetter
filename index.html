@@ -340,8 +340,11 @@
             deck.push({ play: play, pause: function () { if (video) { video.pause(); } } });
         });
         if (!deck.length || typeof window.IntersectionObserver !== "function") { return; }
-        // The deck ripples while it is on screen: a card starts every 1.8 s,
-        // a short rest after the last one, then round again. Off screen it stops.
+        // The deck ripples while it is on screen, front card first (the last
+        // card in the markup sits on top of the fan): a card starts every
+        // 1.8 s, a short rest after the last one, then round again. Off
+        // screen it stops.
+        deck.reverse();
         var timer = null;
         var index = 0;
         function step() {
