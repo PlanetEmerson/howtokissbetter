@@ -55,7 +55,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922d">
-    <link rel="stylesheet" href="/assets/home.css?v=20260922c">
+    <link rel="stylesheet" href="/assets/home.css?v=20260922d">
 
     <script type="application/ld+json">
     {
@@ -172,11 +172,13 @@
         <section class="home-share" aria-labelledby="home-share-kicker">
             <div class="home-section-inner home-share__inner">
                 <div class="home-share__scene">
-                    <picture class="home-share__photo home-reveal">
+                    <div class="home-share__photo home-reveal">
+                    <picture>
                         <source type="image/avif" srcset="/assets/images/home/share-backseat-960.avif 960w, /assets/images/home/share-backseat-1440.avif 1440w" sizes="(min-width: 1200px) 47rem, (min-width: 900px) 66vw, (min-width: 768px) 100vw, 205vw">
                         <source type="image/webp" srcset="/assets/images/home/share-backseat-960.webp 960w, /assets/images/home/share-backseat-1440.webp 1440w" sizes="(min-width: 1200px) 47rem, (min-width: 900px) 66vw, (min-width: 768px) 100vw, 205vw">
                         <img src="/assets/images/home/share-backseat-960.webp" alt="A couple in the back seat of a car, laughing together at something on his phone" width="1440" height="810" loading="lazy" decoding="async">
                     </picture>
+                    </div>
                     <div class="home-share__phone home-reveal" aria-hidden="true">
                         <div class="home-share__screen">
                             <p class="home-share__bubble home-share__bubble--out">I got The Slow Burn 💀 what are you</p>
@@ -340,6 +342,41 @@
             card.addEventListener("mouseenter", play);
             deck.push({ play: play, pause: function () { if (video) { video.pause(); } } });
         });
+        // On phones the share photo comes alive too: the back-seat clip
+        // fades in over the still while the scene is on screen, rests, and
+        // plays again. Wider screens keep the still.
+        var photo = document.querySelector(".home-share__photo");
+        if (photo && mq("(max-width: 767px)").matches && typeof window.IntersectionObserver === "function") {
+            var clip = null;
+            var rest = null;
+            var seen = false;
+            var ride = function () {
+                if (!clip) {
+                    clip = document.createElement("video");
+                    [["muted", ""], ["playsinline", ""], ["preload", "auto"], ["aria-hidden", "true"]].forEach(function (pair) { clip.setAttribute(pair[0], pair[1]); });
+                    clip.muted = true;
+                    var take = document.createElement("source");
+                    take.setAttribute("src", "/assets/video/home/share-backseat-mobile.mp4");
+                    take.setAttribute("type", "video/mp4");
+                    clip.appendChild(take);
+                    clip.addEventListener("playing", function () { clip.className = "is-playing"; });
+                    clip.addEventListener("ended", function () {
+                        clip.className = "";
+                        window.clearTimeout(rest);
+                        rest = window.setTimeout(function () { if (seen) { ride(); } }, 3200);
+                    });
+                    photo.appendChild(clip);
+                }
+                if (clip.ended) { clip.currentTime = 0; }
+                var going = clip.play();
+                if (going && going.then) { going.then(null, function () {}); }
+            };
+            new window.IntersectionObserver(function (entries) {
+                seen = entries[entries.length - 1].isIntersecting;
+                window.clearTimeout(rest);
+                if (seen) { ride(); } else if (clip) { clip.pause(); }
+            }, { threshold: 0.3 }).observe(photo);
+        }
         if (!deck.length || typeof window.IntersectionObserver !== "function") { return; }
         // The deck ripples while it is on screen: a card starts every 1.8 s,
         // a short rest after the last one, then round again. Off screen it

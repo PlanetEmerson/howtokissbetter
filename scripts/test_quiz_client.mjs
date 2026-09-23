@@ -173,7 +173,7 @@ function stubEngine() {
 // default (the stub matched every query before), so the scoring beat keeps its zero delay.
 // `landing` adds the archetype row and the tier demo figure; `observers` collects every
 // IntersectionObserver quiz.js creates so a test can drive visibility by hand.
-function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, connection, landing = false, observers }) {
+function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, phone = true, connection, landing = false, hero = false, observers }) {
   FakeElement.active = null;
   const body = new FakeElement("body");
   body.dataset.pageKind = pageKind;
@@ -197,6 +197,12 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   startButtons.forEach((b) => { b.setAttribute("data-quiz-start", ""); main.appendChild(b); });
   let landingCards = [];
   let demoFigure = null;
+  let heroMedia = null;
+  if (hero) {
+    heroMedia = main.appendChild(new FakeElement("div"));
+    heroMedia.className = "quiz-hero__media";
+    heroMedia.appendChild(new FakeElement("picture")).appendChild(new FakeElement("img"));
+  }
   if (landing) {
     const row = main.appendChild(new FakeElement("ul"));
     row.className = "quiz-archetypes";
@@ -218,6 +224,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   const timeouts = [];
   const navigations = [];
   let ready;
+  let loaded;
   const document = {
     body,
     title: "Test",
@@ -242,7 +249,8 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
       reload: () => navigations.push(["reload"]),
     },
     history: { replaceState: (...args) => navigations.push(["replaceState", ...args]) },
-    matchMedia: (query) => ({ matches: /reduce/.test(query) ? reducedMotion : /hover/.test(query) ? hover : true }),
+    matchMedia: (query) => ({ matches: /reduce/.test(query) ? reducedMotion : /hover/.test(query) ? hover : /max-width/.test(query) ? phone : true }),
+    addEventListener(name, fn) { if (name === "load") loaded = fn; },
     navigator: { share, canShare, clipboard, connection },
     File: fileImpl,
     setTimeout(fn, delay) { timeouts.push({ fn, delay }); return timeouts.length; },
@@ -263,7 +271,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
   window.window = window;
   vm.runInNewContext(quizSource, { Array, Boolean, Error, JSON, Math, Number, Object, Promise, String, URLSearchParams, document, window });
   ready();
-  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, landingCards, lede, navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
+  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, heroMedia, landingCards, lede, load: () => loaded && loaded(), navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
 }
 
 const settle = async () => { for (let i = 0; i < 6; i++) await new Promise((resolve) => setImmediate(resolve)); };
@@ -1022,6 +1030,40 @@ test("landing row with a fine pointer: a hover builds the card's clip once, play
   assert.equal(video.playCalls, 3);
   assert.equal(natural.querySelector("video"), null);
   assert.equal(page.demoFigure.querySelector("video"), null, "the demo needs an IntersectionObserver");
+});
+
+test("hero: on phones the kitchen clip comes in after load, rests on the still, and replays only while on screen", () => {
+  const observers = [];
+  const page = runPage({ pageKind: "quiz", hero: true, reducedMotion: false, observers });
+  assert.equal(page.body.querySelectorAll("video").length, 0, "no bytes before the load event");
+  page.load();
+  const clip = page.heroMedia.querySelector("video");
+  assert.equal(clip.className, "quiz-hero__video");
+  assert.equal(clip.querySelector("source").getAttribute("src"), "/assets/video/kiss-test/hero-kitchen-mobile.mp4");
+  assert.equal(clip.getAttribute("preload"), "auto");
+  assert.equal(clip.getAttribute("poster"), null, "the hero still is the poster");
+  assert.equal(clip.playCalls, 1);
+  assert.deepEqual(observers.map((o) => o.options.threshold), [0.3]);
+  assert.deepEqual(observers[0].targets, [page.heroMedia]);
+  clip.dispatch("playing");
+  assert.equal(clip.classList.contains("is-playing"), true);
+  clip.ended = true;
+  clip.dispatch("ended");
+  assert.equal(clip.classList.contains("is-playing"), false, "the still shows between plays");
+  const rest = page.timeouts[page.timeouts.length - 1];
+  assert.equal(rest.delay, 3200);
+  rest.fn();
+  assert.equal(clip.currentTime, 0);
+  assert.equal(clip.playCalls, 2, "it plays again after the rest");
+  observers[0].callback([{ target: page.heroMedia, isIntersecting: false }]);
+  assert.equal(clip.pauseCalls, 1, "off screen it stops");
+
+  const wide = runPage({ pageKind: "quiz", hero: true, reducedMotion: false, phone: false, observers: [] });
+  wide.load();
+  assert.equal(wide.body.querySelectorAll("video").length, 0, "wider screens keep the still");
+  const still = runPage({ pageKind: "quiz", hero: true, reducedMotion: true, observers: [] });
+  still.load();
+  assert.equal(still.body.querySelectorAll("video").length, 0, "reduced motion keeps the still");
 });
 
 test("landing row: the deck ripples while on screen on any pointer, the tier demo loops only while on screen", () => {

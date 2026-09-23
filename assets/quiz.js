@@ -570,6 +570,31 @@
         }, { threshold: 0.4 }).observe(demo);
     }
 
+    // On phones the hero still comes alive once the page has loaded: the
+    // kitchen clip fades in over it, fades back to the still when it ends,
+    // rests, and plays again while the hero is on screen. Wider screens keep
+    // the still; the clip is portrait and a wide hero would crop the faces.
+    function setupHeroMotion() {
+        var media = document.querySelector(".quiz-hero__media");
+        if (!media || !motionAllowed() || !window.matchMedia("(max-width: 767px)").matches) {
+            return;
+        }
+        function start() {
+            var video = quietVideo("quiz-hero__video", "/assets/video/kiss-test/hero-kitchen-mobile.mp4", "", "auto");
+            video.addEventListener("ended", function () {
+                video.classList.remove("is-playing");
+            });
+            media.appendChild(video);
+            keepAlive(video, media);
+            playQuietly(video);
+        }
+        if (document.readyState === "complete") {
+            start();
+        } else {
+            window.addEventListener("load", start);
+        }
+    }
+
     function setupQuizPage() {
         if (document.body.dataset.pageKind !== "quiz") {
             return;
@@ -579,6 +604,7 @@
             return;
         }
         setupLandingMotion();
+        setupHeroMotion();
         var handoff = parseHandoff(window.location.search);
         var context = readContext();
         var answers = readAnswers();

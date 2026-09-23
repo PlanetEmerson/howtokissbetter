@@ -15,7 +15,7 @@ from urllib.parse import unquote, urlparse
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
 CONVERSION_ASSET_VERSION = "20260922d"
-HOME_ASSET_VERSION = "20260922c"
+HOME_ASSET_VERSION = "20260922d"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"
 CHECKOUT_API = "https://api.howtokissbetter.com"
@@ -25,8 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922c">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922f" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922d">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922g" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
@@ -140,7 +140,12 @@ MOTION_BUDGETS = {
     **{f"assets/video/archetypes/{archetype}-mw.mp4": 650_000 for archetype in HOME_ARCHETYPES},
     "assets/video/score-plate.mp4": 400_000,
     "assets/video/score-demo.mp4": 450_000,
+    # Phone-only scene clips over the Kiss Test hero and the homepage share photo.
+    "assets/video/kiss-test/hero-kitchen-mobile.mp4": 650_000,
+    "assets/video/home/share-backseat-mobile.mp4": 650_000,
 }
+QUIZ_HERO_CLIP = '"/assets/video/kiss-test/hero-kitchen-mobile.mp4"'
+HOME_SHARE_MARKER = 'take.setAttribute("src", "/assets/video/home/share-backseat-mobile.mp4");'
 SCORE_DEMO_POSTER = "assets/images/kiss-test/score-demo-poster.webp"
 SCORE_DEMO_FIGURE = (
     '<figure class="quiz-tier__demo" data-score-demo><img src="/assets/images/kiss-test/score-demo-poster.webp" width="536" height="670" '
@@ -1056,7 +1061,10 @@ def validate_motion(validation: Validation) -> None:
     validation.require((ROOT / SCORE_DEMO_POSTER).exists(), f"score demo poster is missing: {SCORE_DEMO_POSTER}")
     validation.equal((ROOT / "kiss-test/index.html").read_text().count(SCORE_DEMO_FIGURE), 1, "kiss test page score demo figure count")
     validation.equal((ROOT / "index.html").read_text().count(HOME_FAN_MARKER), 1, "homepage fan hover script count")
+    validation.equal((ROOT / "index.html").read_text().count(HOME_SHARE_MARKER), 1, "homepage share clip script count")
+    validation.equal((ROOT / "index.html").read_text().count('<div class="home-share__photo home-reveal">'), 1, "homepage share photo wrapper count")
     validation.require(QUIZ_VIDEO_ROOT in (ROOT / "assets/quiz.js").read_text(), "quiz.js video root changed")
+    validation.require(QUIZ_HERO_CLIP in (ROOT / "assets/quiz.js").read_text(), "quiz.js hero clip is not wired")
 
 
 def validate_kiss_test_hero(validation: Validation, page_html: str) -> None:
