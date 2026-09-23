@@ -28,6 +28,7 @@ CATEGORY_DIR = BLOG_DIR / "category"
 
 SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
+SERP_TITLE_LIMIT = 60
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
 ASSET_VERSION = "20260922d"
@@ -1882,12 +1883,26 @@ def og_image_dimensions(slug: str) -> str:
     )
 
 
+def suffixed_title(title: str) -> str:
+    """The <title> for a post without seo_title: the brand suffix only when the whole thing fits a SERP."""
+    with_suffix = f"{title} | {SITE_NAME}"
+    return with_suffix if len(with_suffix) <= SERP_TITLE_LIMIT else title
+
+
 def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     """Build a blog post from n8n data."""
     fm = parse_frontmatter(data["frontmatter"])
 
     title = fm.get("title", "Untitled")
     description = fm.get("description", "")
+    # seo_title and seo_description steer the search result only; the H1, dek,
+    # breadcrumb and cards keep title and description. The dek also feeds
+    # classify_conversion_cluster, so a CTR rewrite must not touch it.
+    seo_title_override = fm.get("seo_title", "")
+    seo_description_override = fm.get("seo_description", "")
+    social_title = seo_title_override or title
+    seo_title = seo_title_override or suffixed_title(title)
+    seo_description = seo_description_override or description
     slug = fm.get("slug", title.lower().replace(" ", "-"))
     date = fm.get("date", datetime.now().strftime("%Y-%m-%d"))
     date_formatted = format_date(date)
@@ -1904,6 +1919,9 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
 
     page_html = template
     replacements = {
+        "{{SEO_TITLE}}": seo_title,
+        "{{SOCIAL_TITLE}}": social_title,
+        "{{SEO_DESCRIPTION}}": seo_description,
         "{{TITLE}}": title,
         "{{DESCRIPTION}}": description,
         "{{SLUG}}": slug,
@@ -1926,19 +1944,22 @@ def build_post(data: dict[str, Any], rebuild_conversions: bool = True) -> None:
     post_dir.joinpath("index.html").write_text(page_html)
     print(f"Created: {post_dir / 'index.html'}")
 
-    posts = [post for post in existing_posts if post.get("slug") != slug]
-    posts.insert(
-        0,
+    entry = {"title": title, "description": description}
+    if seo_title_override:
+        entry["seo_title"] = seo_title_override
+    if seo_description_override:
+        entry["seo_description"] = seo_description_override
+    entry.update(
         {
-            "title": title,
-            "description": description,
             "slug": slug,
             "date": date_formatted,
             "category": category,
             "category_slug": slugify_category(category),
             "tags": tags if isinstance(tags, list) else [tags],
-        },
+        }
     )
+    posts = [post for post in existing_posts if post.get("slug") != slug]
+    posts.insert(0, entry)
     posts.sort(key=lambda item: parse_date(item["date"]), reverse=True)
     POSTS_JSON.write_text(json.dumps(posts, indent=4))
     print(f"Updated: {POSTS_JSON}")
@@ -1957,15 +1978,35 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("path", nargs="?", help="Path to a post JSON file")
     parser.add_argument("--from-n8n", dest="from_n8n", help="Raw n8n JSON payload")
     parser.add_argument("--rebuild-listings", action="store_true", help="Regenerate /blog/ and /blog/category/* pages from posts.json")
-    parser.add_argument("--rebuild-all", action="store_true", help="Rebuild all posts from their post.json files with fresh dateModified")
+    parser.add_argument("--rebuild-all", action="store_true", help="DESTRUCTIVE: rebuild every post that has a post.json (needs --allow-destructive)")
+    parser.add_argument("--allow-destructive", action="store_true", help="Confirm --rebuild-all after reading why it is refused")
     parser.add_argument("--rebuild-conversions", action="store_true", help="Regenerate clustered offers for every article route")
     return parser.parse_args()
+
+
+REBUILD_ALL_REFUSAL = """Refusing --rebuild-all without --allow-destructive.
+
+Rebuilding every post from post.json throws away work that lives only in the HTML:
+  - FAQPage JSON-LD (added by _private/automation/seo_boost.py --faq) and the
+    hand-added "The Short Answer" boxes live only in the HTML, so rebuilt
+    posts lose them;
+  - title and description tweaks made in the HTML revert unless they are in
+    post.json as seo_title and seo_description;
+  - every dateModified becomes today, a fake freshness signal;
+  - only posts with a post.json are rebuilt, so the site ends up half old, half new.
+
+Rebuild one post instead: python3 build_blog.py blog/<slug>/post.json
+then restore its FAQPage schema with _private/automation/seo_boost.py --faq.
+For site-wide markup changes, patch apply_conversion_to_article_page and run
+--rebuild-conversions, which edits every article in place."""
 
 
 def main() -> None:
     args = parse_args()
 
     if args.rebuild_all:
+        if not args.allow_destructive:
+            raise SystemExit(REBUILD_ALL_REFUSAL)
         post_jsons = sorted(BLOG_DIR.glob("*/post.json"))
         print(f"Rebuilding {len(post_jsons)} posts from post.json files...")
         for post_json in post_jsons:

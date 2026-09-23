@@ -1187,8 +1187,8 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
     validate_head_icons(validation, "article template", template_html)
     for needle in (
         '<meta property="og:image" content="https://howtokissbetter.com/blog/{{SLUG}}/featured.jpg">{{OG_IMAGE_DIMENSIONS}}',
-        '<meta property="og:image:alt" content="{{TITLE}}">',
-        '<meta name="twitter:image:alt" content="{{TITLE}}">',
+        '<meta property="og:image:alt" content="{{SOCIAL_TITLE}}">',
+        '<meta name="twitter:image:alt" content="{{SOCIAL_TITLE}}">',
     ):
         validation.equal(template_html.count(needle), 1, f"article template share image line count: {needle[:40]}")
     validation.require(RETIRED_PRICE not in template_html, f"article template contains the retired {RETIRED_PRICE} price")
