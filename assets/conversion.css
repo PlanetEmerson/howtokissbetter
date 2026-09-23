@@ -1192,7 +1192,7 @@ body {
         min-height: 4rem;
     }
 
-    .book-nav > a:not(.conversion-button) {
+    .book-nav > .book-nav__more {
         display: none;
     }
 

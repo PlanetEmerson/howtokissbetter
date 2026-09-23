@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOG = ROOT / "blog"
-CONVERSION_ASSET_VERSION = "20260922b"
+CONVERSION_ASSET_VERSION = "20260922c"
 HOME_ASSET_VERSION = "20260922c"
 BOOK_PRICE = "9.99"
 RETIRED_PRICE = "$4.95"

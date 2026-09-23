@@ -30,7 +30,7 @@ SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
-ASSET_VERSION = "20260922b"
+ASSET_VERSION = "20260922c"
 BOOK_PRICE = "9.99"
 CHECKOUT_API = "https://api.howtokissbetter.com"
 # Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".
@@ -1551,8 +1551,9 @@ def render_site_header(active_blog: bool = False) -> str:
                 <span class="hidden sm:inline">How to <span class="gradient-text">Kiss Better</span></span>
             </a>
             <nav class="flex gap-4 sm:gap-8 items-center">
-                <a href="/blog/" class="{blog_class} transition-colors text-sm sm:text-base">Blog</a>
-                <a href="{BOOK_URL}" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The Book</a>
+                <a href="/kiss-test/" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base">Kiss Test</a>
+                <a href="/blog/" class="{blog_class} transition-colors text-sm sm:text-base hidden sm:inline">Free guides</a>
+                <a href="{BOOK_URL}" class="text-gray-400 hover:text-cream transition-colors text-sm sm:text-base hidden sm:inline">The book</a>
                 <a href="{BOOK_URL}?utm_source=howtokissbetter&utm_medium=site&utm_campaign=proof_led_rebuild&utm_content=archive_nav" data-offer-link data-offer-placement="archive-nav" class="bg-gold text-charcoal font-semibold py-2 px-4 sm:px-6 rounded-lg hover:bg-gold-dark transition-colors text-sm sm:text-base whitespace-nowrap">
                     <span class="sm:hidden">Get Book</span>
                     <span class="hidden sm:inline">Get the Book</span>
@@ -1571,12 +1572,14 @@ def render_footer() -> str:
                 <div class="text-center md:text-left">
                     <a href="/" class="font-serif text-xl text-cream hover:text-gold transition-colors">How to <span class="gradient-text">Kiss Better</span></a>
                 </div>
-                <div class="flex gap-6 text-sm text-gray-500">
-                    <a href="/" class="hover:text-gold transition-colors">Home</a>
-                    <a href="/blog/" class="hover:text-gold transition-colors">Blog</a>
-                    <a href="/privacy/" class="hover:text-gold transition-colors">Privacy Policy</a>
-                    <a href="/terms/" class="hover:text-gold transition-colors">Terms of Service</a>
-                </div>
+                <nav class="flex flex-wrap justify-center md:justify-end gap-x-6 gap-y-2 text-sm text-gray-500">
+                    <a href="/" class="hover:text-gold transition-colors whitespace-nowrap">Home</a>
+                    <a href="/kiss-test/" class="hover:text-gold transition-colors whitespace-nowrap">Kiss Test</a>
+                    <a href="/blog/" class="hover:text-gold transition-colors whitespace-nowrap">Free guides</a>
+                    <a href="/book/" class="hover:text-gold transition-colors whitespace-nowrap">The book</a>
+                    <a href="/privacy/" class="hover:text-gold transition-colors whitespace-nowrap">Privacy</a>
+                    <a href="/terms/" class="hover:text-gold transition-colors whitespace-nowrap">Terms</a>
+                </nav>
             </div>
             <div class="site-footer-meta">
                 <p class="site-footer-copyright">&copy; 2026 C.J. McKenna. All rights reserved.</p>
