@@ -14,6 +14,7 @@ import json
 import re
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 from collections import defaultdict
 from pathlib import Path
 
@@ -175,6 +176,10 @@ def main() -> None:
         for srcset in re.findall(r'\ssrcset="([^"]+)"', markup):
             refs += [candidate.split()[0] for candidate in srcset.split(",") if candidate.strip()]
         for attr_value in refs:
+            if attr_value.startswith("#") and len(attr_value) > 1:
+                if f'id="{attr_value[1:]}"' not in page_html:
+                    report.error("link anchors exist", f"{url_path} -> {attr_value}")
+                continue
             resolved = resolve_link(url_path, attr_value, pages)
             if not resolved:
                 continue
@@ -182,7 +187,7 @@ def main() -> None:
             if not target_exists(target, pages, files):
                 report.error("internal links resolve", f"{url_path} -> {attr_value}")
             elif fragment and target in sources and f'id="{fragment}"' not in sources[target]:
-                report.warn("link anchors exist", f"{url_path} -> {attr_value}")
+                report.error("link anchors exist", f"{url_path} -> {attr_value}")
 
         if url_path in post_paths:
             body = div_inner(page_html, '<div class="article-content">')
@@ -209,6 +214,10 @@ def main() -> None:
 
     # Sitemap: every URL is a live, indexable page, and every indexable page is listed.
     sitemap = (ROOT / "sitemap.xml").read_text()
+    try:
+        ET.fromstring(sitemap)
+    except ET.ParseError as exc:
+        report.error("sitemap is valid XML", str(exc))
     locs = re.findall(r"<loc>([^<]+)</loc>", sitemap)
     listed = set()
     for loc in locs:
@@ -216,6 +225,10 @@ def main() -> None:
             report.error("sitemap URLs on this site", loc)
             continue
         url_path = loc[len(SITE_URL):]
+        entry = sitemap[sitemap.find(f"<loc>{loc}</loc>"):]
+        entry = entry[: entry.find("</url>")]
+        if POST_PATH.match(url_path) and f"<image:loc>{loc}featured.jpg</image:loc>" not in entry:
+            report.warn("sitemap posts list their featured image", loc)
         if url_path in listed:
             report.error("sitemap has no duplicates", loc)
         listed.add(url_path)

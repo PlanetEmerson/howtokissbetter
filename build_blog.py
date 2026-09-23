@@ -29,6 +29,16 @@ CATEGORY_DIR = BLOG_DIR / "category"
 SITE_NAME = "How to Kiss Better"
 SITE_URL = "https://howtokissbetter.com"
 SERP_TITLE_LIMIT = 60
+ROBOTS_CONTENT = "index, follow, max-image-preview:large, max-snippet:-1"
+ORGANIZATION_ID = f"{SITE_URL}/#organization"
+PUBLISHER = {
+    "@type": "Organization",
+    "@id": ORGANIZATION_ID,
+    "name": SITE_NAME,
+    "url": SITE_URL,
+    "logo": {"@type": "ImageObject", "url": f"{SITE_URL}/assets/images/kiss-icon-512.png", "width": 512, "height": 512},
+}
+AUTHOR_AVATAR_SRC = "/assets/images/author-avatar.webp"
 BOOK_URL = "/book/"
 GA_MEASUREMENT_ID = "G-YNQ785TC90"
 ASSET_VERSION = "20260922d"
@@ -1366,6 +1376,36 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         '            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing."',
         '            "description": "Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better."',
     )
+    # Upgrade only the old default, so a post someone set to noindex stays noindex.
+    page_html = page_html.replace('<meta name="robots" content="index, follow">', f'<meta name="robots" content="{ROBOTS_CONTENT}">', 1)
+    if 'property="og:site_name"' not in page_html:
+        page_html = page_html.replace(
+            '<meta property="og:type" content="article">',
+            f'<meta property="og:type" content="article">\n    <meta property="og:site_name" content="{SITE_NAME}">',
+            1,
+        )
+    publisher_json = json.dumps(PUBLISHER, indent=4).replace("\n", "\n        ")
+    page_html = re.sub(
+        r'"publisher":\s*\{\s*"@type":\s*"Organization",\s*"name":\s*"How to Kiss Better",\s*"url":\s*"https://howtokissbetter\.com"\s*\}',
+        lambda _match: f'"publisher": {publisher_json}',
+        page_html,
+        count=1,
+    )
+    page_html = re.sub(
+        r'<img src="/assets/images/author-silhouette\.png" alt="C\.J\. McKenna" class="([^"]*)">',
+        lambda match: (
+            f'<img src="{AUTHOR_AVATAR_SRC}" alt="C.J. McKenna" width="80" height="80" '
+            f'loading="lazy" decoding="async" class="{match.group(1)}">'
+        ),
+        page_html,
+        count=1,
+    )
+    # In-body "free chapter" links jump to the email capture on the same page.
+    page_html = page_html.replace(
+        '<!-- Native Brevo email capture -->\n            <div class="mt-10">',
+        '<!-- Native Brevo email capture -->\n            <div class="mt-10" id="free-chapter">',
+        1,
+    )
     # The header button follows the arm: look inside /book/ on the buy arm, the Kiss Test on the quiz arm.
     page_html = re.sub(
         r'href="(?:/book/\?[^"]*utm_content=post[-_]nav[^"]*|/kiss-test/\?[^"]*placement=post-nav[^"]*)"',
@@ -1506,12 +1546,13 @@ def build_archive_head(title: str, description: str, canonical: str, schema: dic
     <title>{title_attr}</title>
     <meta name="description" content="{description_attr}">
     <meta name="author" content="C.J. McKenna">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="{ROBOTS_CONTENT}">
     <link rel="canonical" href="{canonical_attr}">
     <link rel="alternate" type="application/rss+xml" title="How to Kiss Better Blog" href="/blog/feed.xml">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{SITE_NAME}">
     <meta property="og:url" content="{canonical_attr}">
     <meta property="og:title" content="{title_attr}">
     <meta property="og:description" content="{description_attr}">
@@ -1648,11 +1689,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
             ],
             "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing.",
         },
-        "publisher": {
-            "@type": "Organization",
-            "name": SITE_NAME,
-            "url": SITE_URL,
-        },
+        "publisher": PUBLISHER,
     }
     post_count = len(posts)
     head = build_archive_head(
@@ -1722,7 +1759,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
     <section class="py-16 px-6 bg-wine/5 border-t border-gold/10">
         <div class="max-w-4xl mx-auto">
             <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-2 border-gold/30 flex-shrink-0">
+                <img src="{AUTHOR_AVATAR_SRC}" alt="C.J. McKenna" width="112" height="112" loading="lazy" decoding="async" class="w-24 h-24 md:w-28 md:h-28 rounded-full border-2 border-gold/30 flex-shrink-0">
                 <div class="text-center md:text-left">
                     <p class="text-gold font-medium text-xs uppercase tracking-widest mb-2">About the Author</p>
                     <h2 class="font-serif text-2xl sm:text-3xl text-cream mb-3">C.J. McKenna</h2>
@@ -1759,6 +1796,7 @@ def render_category_page(category_slug: str, category_posts: list[dict[str, Any]
             "name": f"{SITE_NAME} Blog",
             "url": f"{SITE_URL}/blog/",
         },
+        "publisher": PUBLISHER,
     }
     head = build_archive_head(
         metadata["title"],

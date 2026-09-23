@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://howtokissbetter.com/</loc>
     <lastmod>2026-09-23</lastmod>
@@ -29,414 +29,621 @@
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-to-do-with-your-teeth-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-standing-up/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-standing-up/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-while-lying-down/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-while-lying-down/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-back/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-back/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-lipstick-on/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-lipstick-on/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-get-rid-of-a-hickey/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-get-rid-of-a-hickey/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-to-do-with-your-nose-when-kissing/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-to-do-with-your-nose-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-good-kiss-feel-like/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-good-kiss-feel-like/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/where-to-put-your-tongue-when-kissing/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/where-to-put-your-tongue-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-hand-kiss-mean/</loc>
     <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-hand-kiss-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/signs-youre-a-good-kisser/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/signs-youre-a-good-kisser/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-give-the-perfect-goodnight-kiss/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-give-the-perfect-goodnight-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-glasses-on/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-glasses-on/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-cheek-mean/</loc>
     <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-cheek-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-chapped-lips/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-chapped-lips/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-give-a-hickey/</loc>
     <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-give-a-hickey/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-your-crush/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-your-crush/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-forehead-kiss-mean/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-forehead-kiss-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/does-kissing-count-as-cheating/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/does-kissing-count-as-cheating/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/too-much-saliva-when-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/too-much-saliva-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-in-public/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-in-public/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-in-a-car/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-in-a-car/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-some-kisses-feel-electric/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-some-kisses-feel-electric/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-tell-someone-theyre-a-bad-kisser/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-tell-someone-theyre-a-bad-kisser/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-surprise-someone-with-a-kiss/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-surprise-someone-with-a-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-kissing-does-to-your-body/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-kissing-does-to-your-body/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-stop-overthinking-when-you-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-stop-overthinking-when-you-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/where-to-kiss-someone/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/where-to-kiss-someone/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-passionately/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-passionately/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-some-people-dont-like-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-some-people-dont-like-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-do-we-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-do-we-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/never-been-kissed/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/never-been-kissed/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-kissing-feels-awkward/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-kissing-feels-awkward/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-make-someone-want-to-kiss-you/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-make-someone-want-to-kiss-you/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-someone-new/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someone-new/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-long-should-a-kiss-last/</loc>
     <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-long-should-a-kiss-last/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-makes-a-good-kisser/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-makes-a-good-kisser/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-a-friend/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-a-friend/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-we-close-our-eyes-when-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-we-close-our-eyes-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-slowly/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-slowly/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-to-do-after-a-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-to-do-after-a-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-ask-for-a-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-ask-for-a-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-breathe-while-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-breathe-while-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-tease-with-a-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/lip-biting-while-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/lip-biting-while-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-tell-if-someone-wants-to-kiss-you/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-tell-if-someone-wants-to-kiss-you/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/when-to-kiss-on-a-date/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/when-to-kiss-on-a-date/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-a-height-difference/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-a-height-difference/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-someone-with-a-beard/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someone-with-a-beard/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-braces/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-braces/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-match-your-partners-kissing-style/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-match-your-partners-kissing-style/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-initiate-a-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-initiate-a-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/fresh-breath-before-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/fresh-breath-before-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-practice-kissing/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-practice-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-make-out/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-make-out/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-someone-for-the-first-time/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someone-for-the-first-time/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-lips-are-so-sensitive/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-lips-are-so-sensitive/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-someones-neck/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someones-neck/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/wedding-first-kiss/</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/wedding-first-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/kissing-with-eyes-open/</loc>
     <lastmod>2026-07-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/kissing-with-eyes-open/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-do-we-tilt-our-heads-when-we-kiss/</loc>
     <lastmod>2026-07-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-do-we-tilt-our-heads-when-we-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/science-of-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/science-of-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/why-couples-stop-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/why-couples-stop-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-to-do-with-your-hands-while-kissing/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-to-do-with-your-hands-while-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-french-kiss/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-french-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/types-of-kisses-and-what-they-mean/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/types-of-kisses-and-what-they-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/first-kiss-nerves-what-actually-matters/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/first-kiss-nerves-what-actually-matters/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-be-a-better-kisser/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-be-a-better-kisser/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/signs-youre-a-bad-kisser/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/signs-youre-a-bad-kisser/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/category/techniques/</loc>
@@ -497,119 +704,179 @@
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/kissing-positions/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/kissing-positions/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-a-girl/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-a-girl/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-a-guy/</loc>
     <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-a-guy/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/should-you-use-tongue-on-a-first-kiss/</loc>
     <lastmod>2026-06-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/should-you-use-tongue-on-a-first-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-your-girlfriend/</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-your-girlfriend/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-your-boyfriend/</loc>
     <lastmod>2026-07-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-your-boyfriend/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-make-your-lips-soft-for-kissing/</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-make-your-lips-soft-for-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/kissing-with-morning-breath/</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/kissing-with-morning-breath/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/bad-first-kiss/</loc>
     <lastmod>2026-07-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/bad-first-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/average-age-of-first-kiss/</loc>
     <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/average-age-of-first-kiss/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-head-mean/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-head-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-neck-kiss-mean/</loc>
     <lastmod>2026-07-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-neck-kiss-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-without-tongue/</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-without-tongue/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-move-your-lips-when-kissing/</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-move-your-lips-when-kissing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/kiss-too-wet/</loc>
     <lastmod>2026-08-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/kiss-too-wet/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-kiss-with-a-tongue-piercing/</loc>
     <lastmod>2026-08-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-a-tongue-piercing/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-lingering-kiss-mean/</loc>
     <lastmod>2026-08-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-lingering-kiss-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-lips-mean/</loc>
     <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-lips-mean/featured.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-long-does-it-take-for-a-hickey-to-form/</loc>
     <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-long-does-it-take-for-a-hickey-to-form/featured.jpg</image:loc>
+    </image:image>
   </url>
 </urlset>

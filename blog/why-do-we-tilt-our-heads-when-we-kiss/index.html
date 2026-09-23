@@ -29,12 +29,13 @@
     <meta name="description" content="Why do we tilt our heads when we kiss? Noses started it, but two in three of us tilt right, and you picked your side before birth. Here's the science.">
     <meta name="keywords" content="why do we tilt our heads when we kiss, kissing tips, how to kiss, kissing techniques">
     <meta name="author" content="C.J. McKenna">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
     <link rel="canonical" href="https://howtokissbetter.com/blog/why-do-we-tilt-our-heads-when-we-kiss/">
     <link rel="alternate" type="application/rss+xml" title="How to Kiss Better Blog" href="/blog/feed.xml">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
+    <meta property="og:site_name" content="How to Kiss Better">
     <meta property="og:url" content="https://howtokissbetter.com/blog/why-do-we-tilt-our-heads-when-we-kiss/">
     <meta property="og:title" content="Why Do We Tilt Our Heads When We Kiss? (And Which Way to Go)">
     <meta property="og:description" content="Why do we tilt our heads when we kiss? Noses started it, but two in three of us tilt right, and you picked your side before birth. Here's the science.">
@@ -162,8 +163,15 @@
         },
         "publisher": {
             "@type": "Organization",
+            "@id": "https://howtokissbetter.com/#organization",
             "name": "How to Kiss Better",
-            "url": "https://howtokissbetter.com"
+            "url": "https://howtokissbetter.com",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://howtokissbetter.com/assets/images/kiss-icon-512.png",
+                "width": 512,
+                "height": 512
+            }
         },
         "datePublished": "2026-07-08",
         "dateModified": "2026-07-08",
@@ -398,7 +406,7 @@
             <!-- Author Box -->
             <div class="mt-16 p-6 sm:p-8 bg-wine/20 border border-gold/20 rounded-xl">
                 <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 text-center sm:text-left">
-                    <img src="/assets/images/author-silhouette.png" alt="C.J. McKenna" class="w-20 h-20 rounded-full border-2 border-gold/30 flex-shrink-0">
+                    <img src="/assets/images/author-avatar.webp" alt="C.J. McKenna" width="80" height="80" loading="lazy" decoding="async" class="w-20 h-20 rounded-full border-2 border-gold/30 flex-shrink-0">
                     <div>
                         <p class="text-gold font-medium text-sm uppercase tracking-wider mb-1">Written by</p>
                         <p class="font-serif text-2xl text-cream">C.J. McKenna</p>
@@ -408,7 +416,7 @@
             </div>
 
             <!-- Native Brevo email capture -->
-            <div class="mt-10">
+            <div class="mt-10" id="free-chapter">
                 <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-3">Free chapter</p>
                 <div class="brevo-form-wrap">
                     <iframe

@@ -1,33 +1,28 @@
 User-agent: *
 Allow: /
 Disallow: /downloads/
+Disallow: /blog/_template.html
+Disallow: /docs/
+Disallow: /scripts/
+Disallow: /webhook/
 
-# AI Search Engine Crawlers
+# AI search crawlers. A crawler that matches a named group ignores the * group,
+# so this group repeats the private paths.
 User-agent: GPTBot
-Allow: /
-
 User-agent: OAI-SearchBot
-Allow: /
-
 User-agent: ChatGPT-User
-Allow: /
-
 User-agent: ClaudeBot
-Allow: /
-
 User-agent: anthropic-ai
-Allow: /
-
 User-agent: PerplexityBot
-Allow: /
-
 User-agent: Google-Extended
-Allow: /
-
 User-agent: Applebot-Extended
-Allow: /
-
 User-agent: cohere-ai
 Allow: /
+Disallow: /downloads/
+Disallow: /blog/_template.html
+Disallow: /docs/
+Disallow: /scripts/
+Disallow: /webhook/
 
 Sitemap: https://howtokissbetter.com/sitemap.xml
+Sitemap: https://howtokissbetter.com/blog/feed.xml
