@@ -45,6 +45,17 @@ RETURN_POLICY_FIELDS = (
     '"refundType": "https://schema.org/FullRefund"',
     '"returnFees": "https://schema.org/FreeReturn"',
 )
+SHIPPING_DETAILS_FIELDS = (
+    '"@type": "OfferShippingDetails"',
+    '"value": "0"',
+    '"currency": "USD"',
+    '"@type": "DefinedRegion"',
+    '"addressCountry": "US"',
+    '"@type": "ShippingDeliveryTime"',
+    '"minValue": 0',
+    '"maxValue": 0',
+    '"unitCode": "DAY"',
+)
 QUIZ_HOOK_ARCHETYPES = ("natural", "sprinter", "overthinker")
 VALID_CLUSTERS = {
     "practice",
@@ -1025,6 +1036,10 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.equal(test_html.count(GUARANTEE_BADGE), 1, "kiss test page guarantee badge count")
     for line in KISS_TEST_LOCKED_LINES:
         validation.equal(test_html.count(line), 1, f"kiss test page locked line count: {line[:40]}")
+    # Search Console flags a Product offer without these as a merchant-listing issue.
+    for needle in RETURN_POLICY_FIELDS + SHIPPING_DETAILS_FIELDS:
+        validation.require(needle in test_html, f"kiss test schema offer is missing {needle}")
+    validation.require('"returnMethod"' not in test_html, "kiss test schema return policy names a return method")
     validate_faq_twins(validation, "kiss test page", test_html)
     result_html = (ROOT / "kiss-test/result/index.html").read_text()
     validate_feedback_form(validation, "result page", result_html, "report", "/kiss-test/result/")
