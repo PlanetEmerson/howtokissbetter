@@ -806,8 +806,10 @@ def validate_book(validation: Validation) -> Path:
     validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the 80+ free guides claim outruns blog/posts.json")
     validation.require(PROCESS_LINE in page_html, "book hero is missing the checkout process line")
     validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "book FAQ is missing the guarantee sentence")
-    for needle in RETURN_POLICY_FIELDS:
-        validation.require(needle in page_html, f"book schema return policy is missing {needle}")
+    # Co-typed as Product so the book qualifies for merchant listings.
+    validation.require('"@type": ["Book", "Product"]' in page_html, "book schema is not co-typed Book and Product")
+    for needle in RETURN_POLICY_FIELDS + SHIPPING_DETAILS_FIELDS:
+        validation.require(needle in page_html, f"book schema offer is missing {needle}")
     validation.require('"returnMethod"' not in page_html, "book schema return policy names a return method")
     validate_no_retired_refund_copy(validation, "book page", page_html)
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/">' in page_html, "book canonical URL changed")

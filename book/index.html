@@ -56,11 +56,15 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "Book",
+        "@type": ["Book", "Product"],
         "name": "Kiss Perfect Now: A Master Class in Kissology",
         "author": {
             "@type": "Person",
             "name": "C.J. McKenna"
+        },
+        "brand": {
+            "@type": "Brand",
+            "name": "How to Kiss Better"
         },
         "url": "https://howtokissbetter.com/book/",
         "image": "https://howtokissbetter.com/assets/images/book/cover-stripe.jpg",
@@ -74,6 +78,33 @@
             "price": "9.99",
             "priceCurrency": "USD",
             "availability": "https://schema.org/InStock",
+            "shippingDetails": {
+                "@type": "OfferShippingDetails",
+                "shippingRate": {
+                    "@type": "MonetaryAmount",
+                    "value": "0",
+                    "currency": "USD"
+                },
+                "shippingDestination": {
+                    "@type": "DefinedRegion",
+                    "addressCountry": "US"
+                },
+                "deliveryTime": {
+                    "@type": "ShippingDeliveryTime",
+                    "handlingTime": {
+                        "@type": "QuantitativeValue",
+                        "minValue": 0,
+                        "maxValue": 0,
+                        "unitCode": "DAY"
+                    },
+                    "transitTime": {
+                        "@type": "QuantitativeValue",
+                        "minValue": 0,
+                        "maxValue": 0,
+                        "unitCode": "DAY"
+                    }
+                }
+            },
             "hasMerchantReturnPolicy": {
                 "@type": "MerchantReturnPolicy",
                 "applicableCountry": "US",
