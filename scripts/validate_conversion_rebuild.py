@@ -25,7 +25,7 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922d">'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922e">'
 QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922g" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
