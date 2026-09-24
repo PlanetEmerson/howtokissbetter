@@ -17,7 +17,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (92 posts)
+- /blog/ — Full article index (95 posts)
 
 ## Techniques (17 articles)
 
@@ -60,10 +60,13 @@ Initiating, timing, nerves, reading signals, and first-kiss mechanics.
 - /blog/how-to-kiss-someone-for-the-first-time/ — How to Kiss Someone for the First Time: The Only Guide You'll Need
 - /blog/first-kiss-nerves-what-actually-matters/ — Why Do People Get Nervous When Kissing? How to Calm Down
 
-## Relationships (22 articles)
+## Relationships (25 articles)
 
 Kissing inside real relationships, kiss meanings, and keeping chemistry alive.
 
+- /blog/signs-the-kiss-meant-something-to-him/ — Signs the Kiss Meant Something to Him (And When It Didn't)
+- /blog/what-does-a-kiss-on-the-ear-mean/ — What Does a Kiss on the Ear Mean? (And How to Do It Well)
+- /blog/what-does-it-mean-when-someone-gives-you-a-hickey/ — What Does It Mean When Someone Gives You a Hickey?
 - /blog/what-does-a-peck-on-the-lips-mean/ — What Does a Peck on the Lips Mean? Who Gave It Matters
 - /blog/what-does-a-kiss-on-the-nose-mean/ — What Does a Kiss on the Nose Mean? (Plus the Nose Rub)
 - /blog/what-does-a-kiss-on-the-shoulder-mean/ — What Does a Kiss on the Shoulder Mean? (Sweater or Skin)
