@@ -173,7 +173,7 @@ function stubEngine() {
 // default (the stub matched every query before), so the scoring beat keeps its zero delay.
 // `landing` adds the archetype row and the tier demo figure; `observers` collects every
 // IntersectionObserver quiz.js creates so a test can drive visibility by hand.
-function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, phone = true, connection, landing = false, hero = false, observers }) {
+function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, phone = true, connection, landing = false, hero = false, observers }) {
   FakeElement.active = null;
   const body = new FakeElement("body");
   body.dataset.pageKind = pageKind;
@@ -243,7 +243,7 @@ function runPage({ pageKind, search = "", session = {}, local = {}, fetchImpl, g
     localStorage: makeStorage(local),
     sessionStorage: makeStorage(session),
     location: {
-      search, pathname: pageKind === "quiz" ? "/kiss-test/" : "/kiss-test/result/", hash: "",
+      search, pathname: pageKind === "quiz" ? "/kiss-test/" : "/kiss-test/result/", hash,
       assign: (url) => navigations.push(["assign", url]),
       replace: (url) => navigations.push(["replace", url]),
       reload: () => navigations.push(["reload"]),
@@ -302,6 +302,18 @@ test("parseHandoff keeps valid card values, drops junk, and maps ref=share", () 
   assert.equal(KissQuiz.parseHandoff("?ref=share").entry, "share");
   assert.equal(KissQuiz.parseHandoff("?from=slow-kiss").entry, "article");
   assert.equal(KissQuiz.parseHandoff("").entry, "direct");
+  assert.equal(KissQuiz.parseHandoff("ref=share").entry, "share");
+});
+
+test("a fragment handoff starts the quiz like the old query string, and wins over a stale query", () => {
+  const page = runPage({
+    pageKind: "quiz",
+    search: "?from=old-post&hook=practice&placement=post-nav",
+    hash: "#from=slow-kiss&hook=technique&placement=quiz-article-quarter&q=q1&a=b",
+  });
+  assert.deepEqual(plain(named(page.events, "quiz_start")[0].params), { entry: "inline", article: "slow-kiss", offer_key: "technique", placement: "quiz-article-quarter" });
+  assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "b_________");
+  assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/"]]);
 });
 
 test("nextIndex walks forward and skips the question answered on the card", () => {
@@ -655,7 +667,7 @@ test("pairingFor picks the illustration: mm, ww, or the mixed default", () => {
 test("shareLinks encodes the text and url for every network", () => {
   const { KissQuiz } = runPage({ pageKind: "quiz" });
   const text = "I got \"The Natural\" & more. Tell me yours:";
-  const url = "https://howtokissbetter.com/kiss-test/?ref=share";
+  const url = "https://howtokissbetter.com/kiss-test/#ref=share";
   const both = encodeURIComponent(`${text} ${url}`);
   assert.deepEqual(plain(KissQuiz.shareLinks(text, url)), {
     whatsapp: `https://wa.me/?text=${both}`,
@@ -668,7 +680,7 @@ test("shareLinks encodes the text and url for every network", () => {
 });
 
 const SHARE_TEXT = "I took the Kiss Test and got The Overthinker. \"Your instincts are fine. Your narrator won't shut up.\" I'm not telling you my score. Take it. Lower score buys dinner:";
-const SHARE_URL = "https://howtokissbetter.com/kiss-test/?ref=share";
+const SHARE_URL = "https://howtokissbetter.com/kiss-test/#ref=share";
 
 test("without Web Share, the button opens an in-page sheet: copy flips to Copied, links are encoded, focus returns", async () => {
   const written = [];

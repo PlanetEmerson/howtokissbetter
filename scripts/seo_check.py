@@ -193,7 +193,8 @@ def main() -> None:
             target, fragment = resolved
             if not target_exists(target, pages, files):
                 report.error("internal links resolve", f"{url_path} -> {attr_value}")
-            elif fragment and target in sources and f'id="{fragment}"' not in sources[target]:
+            # A key=value fragment is a Kiss Test handoff read by quiz.js, not an element id.
+            elif fragment and "=" not in fragment and target in sources and f'id="{fragment}"' not in sources[target]:
                 report.error("link anchors exist", f"{url_path} -> {attr_value}")
 
         if url_path in post_paths:

@@ -48,7 +48,7 @@ class QuizHookTests(unittest.TestCase):
         self.assertEqual(offer["surface"], "quiz")
         markup = build_blog.render_article_quiz_hook(offer)
         question = build_blog.quiz_question(offer["quiz"]["question_id"])
-        base = f"/kiss-test/?from=signs-youre-a-good-kisser&amp;hook={offer['offer_key']}&amp;placement=quiz-article-quarter"
+        base = f"/kiss-test/#from=signs-youre-a-good-kisser&amp;hook={offer['offer_key']}&amp;placement=quiz-article-quarter"
 
         option_links = re.findall(r'<a class="quiz-hook__option" href="([^"]+)" data-offer-link="true"', markup)
         self.assertEqual(
@@ -131,7 +131,7 @@ class QuizHookTests(unittest.TestCase):
             self.assertNotIn("BUY_RAIL_", quiz_page)
             self.assertNotIn("PROOF_LED_", quiz_page)
             self.assertIn(
-                'href="/kiss-test/?from=signs-youre-a-good-kisser&amp;hook=touch&amp;placement=post-nav" data-offer-link',
+                'href="/kiss-test/#from=signs-youre-a-good-kisser&amp;hook=touch&amp;placement=post-nav" data-offer-link',
                 quiz_page,
             )
             self.assertIn('<span class="sm:hidden">Kiss Test</span>', quiz_page)

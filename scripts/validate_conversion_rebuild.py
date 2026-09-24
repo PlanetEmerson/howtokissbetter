@@ -26,7 +26,7 @@ HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VER
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
 QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260922e">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260922g" defer></script>'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260924a" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
@@ -168,7 +168,7 @@ SCORE_DEMO_FIGURE = (
 )
 HOME_FAN_MARKER = 'source.setAttribute("src", "/assets/video/archetypes/" + match[1] + "-mw.mp4");'
 QUIZ_VIDEO_ROOT = 'var VIDEO_ROOT = "/assets/video/archetypes/";'
-HOME_HANDOFF = "/kiss-test/?from=homepage&amp;hook=complete-guide&amp;placement="
+HOME_HANDOFF = "/kiss-test/#from=homepage&amp;hook=complete-guide&amp;placement="
 HOME_BANNED = (
     "conversion_repair",
     "exit-popup",
@@ -459,7 +459,7 @@ def validate_quiz_article(validation: Validation, slug: str, page_html: str, off
 
     question = build_blog.quiz_question(str(hook.get("question_id")))
     option_ids = [str(option["id"]) for option in question["options"]]
-    bases = {placement: f"{QUIZ_URL}?from={slug}&amp;hook={cluster}&amp;placement={placement}" for placement in QUIZ_PLACEMENTS}
+    bases = {placement: f"{QUIZ_URL}#from={slug}&amp;hook={cluster}&amp;placement={placement}" for placement in QUIZ_PLACEMENTS}
     for placement, base in bases.items():
         asides = re.findall(rf'<aside\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>', page_html)
         links = re.findall(rf'<a\b[^>]*data-offer-placement="{re.escape(placement)}"[^>]*>', page_html)
@@ -533,7 +533,7 @@ def validate_quiz_article(validation: Validation, slug: str, page_html: str, off
     nav_match = re.search(r'<a\b[^>]*href="([^"]+)"[^>]*data-offer-placement="post-nav"[^>]*>', page_html)
     validation.require(nav_match is not None, f"{slug} post-nav link is missing")
     if nav_match:
-        validation.equal(nav_match.group(1), f"{QUIZ_URL}?from={slug}&amp;hook={cluster}&amp;placement=post-nav", f"{slug} post-nav URL contract")
+        validation.equal(nav_match.group(1), f"{QUIZ_URL}#from={slug}&amp;hook={cluster}&amp;placement=post-nav", f"{slug} post-nav URL contract")
     validation.equal(page_html.count('data-offer-placement="post-nav"'), 1, f"{slug} post-nav link count")
     validation.require('<span class="hidden sm:inline">Take the Kiss Test</span>' in page_html, f"{slug} post-nav label is stale")
     validation.require('<span class="sm:hidden">Kiss Test</span>' in page_html, f"{slug} post-nav mobile label is stale")

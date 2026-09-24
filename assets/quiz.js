@@ -31,7 +31,7 @@
     var QUESTION_COUNT = 10;
     var RESULT_PATH = "/kiss-test/result/";
     var QUIZ_PATH = "/kiss-test/";
-    var SHARE_URL = "https://howtokissbetter.com/kiss-test/?ref=share";
+    var SHARE_URL = "https://howtokissbetter.com/kiss-test/#ref=share";
     var SHARE_TITLE = "The Kiss Test";
     var SHARE_SUBJECT = "My Kiss Test result";
     var IMAGE_ROOT = "/assets/images/kiss-test/archetypes/";
@@ -363,7 +363,7 @@
         return null;
     }
 
-    // Query string from an article hook card; unknown values are dropped, never echoed.
+    // Handoff from an article hook card (fragment or query string); unknown values are dropped, never echoed.
     function parseHandoff(search) {
         var params = new URLSearchParams(search || "");
         var handoff = { from: "", hook: "", placement: "", q: "", a: "", index: -1, entry: "direct" };
@@ -605,7 +605,10 @@
         }
         setupLandingMotion();
         setupHeroMotion();
-        var handoff = parseHandoff(window.location.search);
+        // Hooks carry the handoff in the fragment so Google indexes one /kiss-test/ URL;
+        // links shared or indexed before 2026-09-24 still carry it in the query string.
+        var fragment = window.location.hash.slice(1);
+        var handoff = parseHandoff(fragment.indexOf("=") >= 0 ? fragment : window.location.search);
         var context = readContext();
         var answers = readAnswers();
         var pronoun = safeStorage(window.sessionStorage, "getItem", KEYS.pronoun) || "";

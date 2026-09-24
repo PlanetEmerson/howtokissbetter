@@ -1219,9 +1219,10 @@ def quiz_text(text: str, pronouns: dict[str, str]) -> str:
 def quiz_hook_href(
     offer: dict[str, Any], placement: str, question_id: str | None = None, option_id: str | None = None
 ) -> str:
-    """Build the article-to-quiz link; the query string carries the handoff so it works with JavaScript off."""
+    """Build the article-to-quiz link. The handoff rides in the fragment: Google drops it, so every hook
+    points at the one indexable /kiss-test/ URL instead of hundreds of query-string duplicates."""
     href = (
-        f"{QUIZ_URL}?from={html.escape(str(offer['article_slug']), quote=True)}"
+        f"{QUIZ_URL}#from={html.escape(str(offer['article_slug']), quote=True)}"
         f"&amp;hook={html.escape(str(offer['offer_key']), quote=True)}"
         f"&amp;placement={html.escape(placement, quote=True)}"
     )
@@ -1471,7 +1472,7 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     )
     # The header button follows the arm: look inside /book/ on the buy arm, the Kiss Test on the quiz arm.
     page_html = re.sub(
-        r'href="(?:/book/\?[^"]*utm_content=post[-_]nav[^"]*|/kiss-test/\?[^"]*placement=post-nav[^"]*)"',
+        r'href="(?:/book/\?[^"]*utm_content=post[-_]nav[^"]*|/kiss-test/[?#][^"]*placement=post-nav[^"]*)"',
         lambda _match: f'href="{nav_href}"',
         page_html,
         count=1,
