@@ -92,6 +92,9 @@ class QuizHookTests(unittest.TestCase):
             ("signs-youre-a-bad-kisser", "buy"),
             ("how-to-kiss-slowly", "quiz"),
             ("kissing-positions", "quiz"),
+            ("how-to-kiss-someones-neck", "quiz"),
+            ("how-to-french-kiss", "quiz"),
+            ("how-to-kiss-with-a-height-difference", "quiz"),
         ):
             self.assertEqual(self.offer(slug)["surface"], surface, slug)
 
@@ -119,7 +122,7 @@ class QuizHookTests(unittest.TestCase):
 
     def test_apply_replaces_any_final_family_and_follows_the_arm(self):
         quiz_offer = self.offer("signs-youre-a-good-kisser")
-        buy_offer = self.offer("how-to-kiss-someones-neck")
+        buy_offer = self.offer("what-to-do-with-your-hands-while-kissing")
         for marker in ("PROOF_LED_FINAL", "BUY_RAIL_FINAL", "QUIZ_HOOK_FINAL"):
             quiz_page = build_blog.apply_conversion_to_article_page(page_with_final(marker), quiz_offer)
             self.assertNotIn("old final", quiz_page)

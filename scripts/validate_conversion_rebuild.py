@@ -109,7 +109,7 @@ KISS_TEST_LOCKED_LINES = (
     "The scoring file runs in your browser and is public. The paid report uses the same file, byte for byte. Same answers, same number, nothing to fudge.",
 )
 # The arm split, restated independently of the builder: quiz categories, the self-assessment posts
-# outside them, and the four crossed tests (two per arm).
+# outside them, and the crossed tests (two self-assessment posts on buy, five technique posts on quiz).
 QUIZ_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
 QUIZ_SLUGS = {"what-makes-a-good-kisser", "what-does-a-good-kiss-feel-like"}
 CROSSED_SURFACES = {
@@ -117,6 +117,9 @@ CROSSED_SURFACES = {
     "signs-youre-a-bad-kisser": "buy",
     "how-to-kiss-slowly": "quiz",
     "kissing-positions": "quiz",
+    "how-to-kiss-someones-neck": "quiz",
+    "how-to-french-kiss": "quiz",
+    "how-to-kiss-with-a-height-difference": "quiz",
 }
 QUIZ_HOOK_FIELDS = (
     "question_id",

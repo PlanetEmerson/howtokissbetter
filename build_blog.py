@@ -100,7 +100,9 @@ QUIZ_URL = "/kiss-test/"
 QUIZ_ENGINE_PATH = ROOT_DIR / "assets" / "kiss-score.js"
 QUIZ_DATA_PATTERN = re.compile(r"/\* QUIZ_DATA_START \*/(.*?)/\* QUIZ_DATA_END \*/", re.S)
 QUIZ_SURFACE_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
-# Self-assessment posts outside those categories, plus the technique-side crossed tests.
+# Self-assessment posts outside those categories, plus the technique posts on the quiz side of the
+# crossed test. Neck, French kiss and height joined on 2026-09-24 (their buy rail: 1 open in 216 views)
+# so both sides reach 1,500 views in weeks, not months.
 QUIZ_SURFACE_OVERRIDES = {
     "how-to-practice-kissing",
     "too-much-saliva-when-kissing",
@@ -112,6 +114,9 @@ QUIZ_SURFACE_OVERRIDES = {
     "why-kissing-feels-awkward",
     "how-to-kiss-slowly",
     "kissing-positions",
+    "how-to-kiss-someones-neck",
+    "how-to-french-kiss",
+    "how-to-kiss-with-a-height-difference",
 }
 # Crossed tests: two self-assessment posts keep the buy rail so surface can be read apart from intent.
 BUY_SURFACE_OVERRIDES = {"how-to-practice-kissing", "signs-youre-a-bad-kisser"}
