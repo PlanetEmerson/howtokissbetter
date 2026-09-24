@@ -942,7 +942,7 @@
     },
     {
         "title": "Why Some Kisses Feel Electric (And Others Feel Like Nothing)",
-        "description": "You've kissed someone and forgotten your own name. You've also kissed someone and felt absolutely nothing. Same you, same lips, completely different experience. Here's the neuroscience of why.",
+        "description": "Electric with one person, nothing with another? What makes a kiss spark, how to tell if a flat kiss was the person or the moment, and when to try again.",
         "slug": "why-some-kisses-feel-electric",
         "date": "April 15, 2026",
         "category": "Science",
@@ -1063,7 +1063,7 @@
     },
     {
         "title": "Why Some People Don't Like Kissing (And What It Actually Means)",
-        "description": "You're not broken. Among people who skip kissing during sex, about 1 in 5 say they just don't enjoy it. Here's why some people feel nothing when they kiss, what's behind it, and what to do about it.",
+        "description": "You're not broken, and you're far from alone. Here's why some people feel nothing when they kiss, what's behind it, and what to do about it.",
         "slug": "why-some-people-dont-like-kissing",
         "date": "March 30, 2026",
         "category": "Relationships",
@@ -1076,7 +1076,9 @@
             "kissing feels weird",
             "not into kissing"
         ],
-        "category_slug": "relationships"
+        "category_slug": "relationships",
+        "seo_title": "Why Don't I Like Kissing? What's Behind It and What to Do",
+        "seo_description": "Not liking kissing is common and usually has a reason: sensory overload, anxiety, asexuality, medication or the person. How to find yours and what to say."
     },
     {
         "title": "Why Do We Kiss? (The Answer Goes Deeper Than You Think)",
@@ -1224,7 +1226,7 @@
     },
     {
         "title": "Why Do We Close Our Eyes When We Kiss?",
-        "description": "Your brain can't fully focus on kissing and seeing at the same time. Here's the neuroscience behind why we close our eyes when kissing, and what it means for better kisses.",
+        "description": "Probably so your brain can spend more of its attention on touch. What the one real study found, what it doesn't prove, and whether you're supposed to close them.",
         "slug": "why-we-close-our-eyes-when-kissing",
         "date": "March 06, 2026",
         "category": "Science",
@@ -1344,10 +1346,8 @@
         "category_slug": "techniques"
     },
     {
-        "title": "How to Tell If Someone Wants to Kiss You (12 Signs That Never Lie)",
-        "description": "Not sure if they want to be kissed? Learn the 12 research-backed body language signals that reveal when someone is ready, plus the one rule that makes them reliable.",
-        "seo_title": "12 Signs Someone Wants You to Kiss Them (The Signals That Never Lie)",
-        "seo_description": "Leaning in. The triangle gaze. The lip-lick. 12 research-backed body language signals that prove someone wants you to kiss them \u2014 plus the rule that makes them reliable.",
+        "title": "How to Tell If Someone Wants to Kiss You (8 Honest Signs)",
+        "description": "They close the gap, glance at your mouth and stall at goodbye. 8 signs someone wants to kiss you, what else each can mean, and how to know for sure.",
         "slug": "how-to-tell-if-someone-wants-to-kiss-you",
         "date": "February 18, 2026",
         "category": "First Kiss",
@@ -1364,8 +1364,8 @@
         "category_slug": "first-kiss"
     },
     {
-        "title": "When to Kiss on a Date (And How to Make It Count)",
-        "description": "Not sure when to go for the kiss on a date? Learn exactly how to read the moment, choose the right timing, and make that first date kiss one neither of you forgets.",
+        "title": "When to Kiss on a Date: First Date, Second or Third?",
+        "description": "Should you kiss on the first date? How to decide, the best moments during the date, exact words to say, and what it means when nobody goes for it.",
         "slug": "when-to-kiss-on-a-date",
         "date": "February 16, 2026",
         "category": "First Kiss",
@@ -1599,7 +1599,7 @@
     },
     {
         "title": "What to Do with Your Hands While Kissing",
-        "description": "Stop the awkward T-Rex arms. Learn exactly where to put your hands while kissing to amplify connection, build chemistry, and make every kiss unforgettable.",
+        "description": "Stop the awkward T-Rex arms. Where to put your hands for a first kiss, a height gap, sitting down or making out, and what to do if they move your hand.",
         "slug": "what-to-do-with-your-hands-while-kissing",
         "date": "December 26, 2025",
         "category": "Techniques",
