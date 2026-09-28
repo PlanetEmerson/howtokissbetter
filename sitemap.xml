@@ -942,4 +942,13 @@
       <image:loc>https://howtokissbetter.com/blog/kiss-on-the-corner-of-the-mouth/featured.jpg</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://howtokissbetter.com/blog/what-counts-as-a-first-kiss/</loc>
+    <lastmod>2026-09-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-counts-as-a-first-kiss/featured.jpg</image:loc>
+    </image:image>
+  </url>
 </urlset>
