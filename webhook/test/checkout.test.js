@@ -274,7 +274,7 @@ test("creates a report session carrying the canonical answers and engine version
     "line_items[0][price_data][currency]": "usd",
     "line_items[0][price_data][unit_amount]": "499",
     "line_items[0][price_data][product_data][name]": "Kiss Test: your full report",
-    "line_items[0][price_data][product_data][description]": "Your score, the three habits costing you most, the fixes, and your 7-day plan.",
+    "line_items[0][price_data][product_data][description]": "Where every point went, the three habits costing you most with the fixes, and your 7-day plan.",
     success_url: "https://howtokissbetter.com/kiss-test/result/?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "https://howtokissbetter.com/kiss-test/result/?from=signs-youre-a-bad-kisser&checkout=canceled",
     "metadata[kind]": "kiss_report",

@@ -1,9 +1,10 @@
 import { corsHeaders, emptyResponse, jsonResponse, originAllowed } from "./http.js";
 import { loadKissReport, loadKissScore } from "./kiss-engine.js";
 
-// The free tier of the result page: the two strongest-habit blurbs, computed
-// server side so the blurb library never ships to the browser. Answers only;
-// no pronoun, no identity, nothing stored.
+// The free tier of the result page: the two strongest-habit blurbs and the
+// name of the single costliest habit (title and points, never its fix),
+// computed server side so the blurb library never ships to the browser.
+// Answers only; no pronoun, no identity, nothing stored.
 export function createKissFreeHandler({ env, loadScore = loadKissScore, loadReport = loadKissReport }) {
   return async function handleKissFree(request) {
     const origin = request.headers?.origin;
@@ -42,6 +43,11 @@ export function createKissFreeHandler({ env, loadScore = loadKissScore, loadRepo
     }
 
     const free = reporter.buildReport(answers).free || {};
-    return jsonResponse(200, { ok: true, free: { strongestBlurbs: free.strongestBlurbs || [] } }, cors);
+    const tier = { strongestBlurbs: free.strongestBlurbs || [] };
+    if (free.costliestHabit) {
+      const { title, points, max } = free.costliestHabit;
+      tier.costliestHabit = { title, points, max };
+    }
+    return jsonResponse(200, { ok: true, free: tier }, cors);
   };
 }

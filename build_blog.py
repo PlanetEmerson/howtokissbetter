@@ -104,7 +104,7 @@ QUIZ_DATA_PATTERN = re.compile(r"/\* QUIZ_DATA_START \*/(.*?)/\* QUIZ_DATA_END \
 BUY_SURFACE_OVERRIDES: set[str] = set()
 
 QUIZ_FINAL_EYEBROW = "Before you go"
-QUIZ_FINAL_COPY = "Ten questions, about a minute. Your kisser archetype and the two habits already working for you. Free result."
+QUIZ_FINAL_COPY = "Ten questions, one honest number, and the habit costing you most. Free result."
 QUIZ_FINAL_LABEL = "Take the Kiss Test"
 QUIZ_META_SUFFIX = "10 questions · free result"
 QUIZ_BOOK_LINK_LABEL = f"Or skip straight to the full playbook: Kiss Perfect Now, ${BOOK_PRICE}"
@@ -343,7 +343,7 @@ QUIZ_HOOKS: dict[str, dict[str, str]] = {
         "q1",
         "Before you practice anything",
         "Find out what you'd actually do.",
-        "Ten instinct questions. No experience required. You get an archetype and the habits to build first.",
+        "Ten instinct questions. No experience required. You get an archetype, a score, and the habit to build first.",
         "Take the Kiss Test",
         "Never kissed anyone? Still scoreable.",
         "10 questions on instinct, 60 seconds",
@@ -363,7 +363,7 @@ QUIZ_HOOKS: dict[str, dict[str, str]] = {
         "q10",
         "You know where. Do you know how?",
         "Rate your hands, your pace, and everything below the jaw.",
-        "Ten questions, one about their neck. An honest score, an archetype, and the fix.",
+        "Ten questions, one about their neck. An honest score, an archetype, and the habit costing you most.",
         "Score me",
         "How good are your hands, honestly?",
         "Kiss Test, 60 seconds",
@@ -383,7 +383,7 @@ QUIZ_HOOKS: dict[str, dict[str, str]] = {
         "q9",
         "You already have the person.",
         "Which kisser do they have?",
-        "Ten questions about what you do, two about what they do back. Scored, with the three habits to change first.",
+        "Ten questions about what you do, two about what they do back. Scored, and it names the habit to change first.",
         "Take the test",
         "What kind of kisser do they have?",
         "For people who've kissed the same mouth a thousand times",
@@ -403,9 +403,9 @@ QUIZ_HOOKS: dict[str, dict[str, str]] = {
         "q1",
         "Before you read all of it",
         "Find out what to skip.",
-        "Ten questions, and the report tells you which three chapters you actually need.",
+        "Ten questions tell you where to start: one honest number and the habit costing you most.",
         "Take the Kiss Test",
-        "Which three habits should you fix first?",
+        "Which habit should you fix first?",
         "Kiss Test, scored",
         "Take it",
     ),
@@ -419,7 +419,7 @@ QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "eyebrow": "You're on the neck post, so",
         "title": "How good are you, really, below the jaw?",
         "final_title": "How good are you, really, below the jaw?",
-        "copy": "Ten questions. One is about the neck. The score is honest and the fix is specific.",
+        "copy": "Ten questions. One is about the neck. An honest score, and the habit costing you most.",
         "label": "Score me",
         "bar_title": "Rate your neck game",
         "bar_copy": "Kiss Test, 60 seconds",
@@ -442,7 +442,7 @@ QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "eyebrow": "You've kissed him a thousand times.",
         "title": "Which kisser does he actually have?",
         "final_title": "Which kisser does he actually have?",
-        "copy": "Ten questions about what you do, two about what he does back. Scored, plus the one move for your type.",
+        "copy": "Ten questions about what you do, two about what he does back. Scored, plus the habit to change first.",
         "label": "Find out",
         "bar_title": "What kind of kisser does he have?",
         "bar_copy": "10 questions, 60 seconds",
@@ -453,7 +453,7 @@ QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "eyebrow": "Nothing to practice on? Practice this.",
         "title": "Score your instincts before your first real one.",
         "final_title": "Score your instincts before your first real one.",
-        "copy": "Ten questions answered on instinct. No experience needed. You get an archetype and the three habits to build first.",
+        "copy": "Ten questions answered on instinct. No experience needed. You get an archetype, a score, and the habit to build first.",
         "label": "Take it",
         "bar_title": "No kisses yet? Still scoreable.",
         "bar_copy": "Instinct test, 60 seconds",
@@ -464,7 +464,7 @@ QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "eyebrow": "Whatever that cheek kiss meant",
         "title": "The next one might not be on the cheek. Ready?",
         "final_title": "The next one might not be on the cheek. Ready?",
-        "copy": "Ten questions, scored. An archetype, a blurred number, and the habits to fix before it matters.",
+        "copy": "Ten questions, scored. An archetype, an honest number, and the habit to fix before it matters.",
         "label": "Take it",
         "bar_title": "Ready for the one after the cheek?",
         "bar_copy": "Kiss Test, 60 seconds",

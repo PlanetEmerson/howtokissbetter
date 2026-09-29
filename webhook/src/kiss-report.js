@@ -92,7 +92,11 @@ export function renderReport(result) {
     },
   ];
 
-  return { free: { ...result, strongestBlurbs: strengths }, paid: { sections } };
+  // The free tier names the single costliest habit and its points; its fix stays in the paid sections.
+  const top = costs[0] && result.costliest.find(({ key }) => key === costs[0].key);
+  const costliestHabit = top ? { title: costs[0].title, points: top.points, max: top.max } : null;
+
+  return { free: { ...result, strongestBlurbs: strengths, costliestHabit }, paid: { sections } };
 }
 
 export function buildReport(answers) {

@@ -58,7 +58,7 @@
         "Your 7-day fix"
     ];
     var UNLOCK_LIST = [
-        "Your score and where every point went, across 8 dimensions",
+        "Where every point went, across 8 dimensions",
         "The 3 habits costing you the most, and the fix for each, pulled from the book",
         "What {he}'s actually noticing (from your answers)",
         "The one move for {archetype}",
@@ -71,6 +71,8 @@
         invalid: "That checkout request didn't match this result. Retake the test and try again.",
         unavailable: "Unlocking is offline for a moment. Nothing was charged. Try again shortly."
     };
+    // Tags paywall_view and the report's begin_checkout since the free tier started showing the score.
+    var PAYWALL_VARIANT = "soft-score";
     var gaIds = { client_id: "", session_id: "" };
     var paywallViewed = false;
 
@@ -425,7 +427,8 @@
         return fields;
     }
 
-    // Everything the free page may say about the score: counts and names, never the number.
+    // Everything the free page may say about the score: the number, its band, counts and names, and
+    // the costliest answer's points. That habit's name comes from /api/kiss-free; its fix never does.
     function freeSummary(result) {
         var teasers = result.teasers || {};
         var costing = Number(teasers.costingCount) || 0;
@@ -433,11 +436,17 @@
         var costingLine = costing === 0
             ? "None of your 10 answers are costing you points."
             : costing + " of your 10 answers " + (costing === 1 ? "is" : "are") + " costing you points.";
+        var costliest = Array.isArray(result.costliest) ? result.costliest : [];
+        var top = costliest[0];
+        var dimension = top ? (result.dimensions || []).filter(function (d) { return d.key === top.dimension; })[0] : null;
         return {
             archetype: result.archetype,
+            score: Number(result.score) || 0,
             band: result.band ? result.band.id : "",
             bandLabel: result.band ? result.band.label : "",
             costingCount: costing,
+            costliestCount: costliest.length,
+            costliest: top ? { points: top.points, max: top.max, dimension: dimension ? dimension.name : "" } : null,
             strongestDimension: strongest,
             teaser: costingLine + (strongest ? " Your strongest dimension is " + strongest + "." : "")
         };
@@ -1149,15 +1158,55 @@
         return card;
     }
 
-    function blurredScore() {
-        var graphic = el("div", "quiz-score-card__blur");
-        graphic.setAttribute("aria-hidden", "true");
-        graphic.appendChild(el("span", "quiz-score-card__digit"));
-        graphic.appendChild(el("span", "quiz-score-card__digit"));
+    function plainScore(summary) {
+        var figure = el("p", "quiz-score-card__score");
+        figure.appendChild(el("strong", null, String(summary.score)));
+        figure.appendChild(el("span", "quiz-score-card__out-of", "/100"));
+        figure.appendChild(el("span", "quiz-score-card__band", summary.bandLabel));
+        return figure;
+    }
+
+    function scoreBar(score) {
         var bar = el("div", "quiz-score-card__bar");
-        bar.appendChild(el("span"));
-        graphic.appendChild(bar);
-        return graphic;
+        bar.setAttribute("aria-hidden", "true");
+        var fill = el("span");
+        fill.style.setProperty("--score", Math.max(0, Math.min(100, score)) + "%");
+        bar.appendChild(fill);
+        return bar;
+    }
+
+    // Ranked against the report's habits, not the teaser's count: the engine picks one habit per
+    // dimension and counts answers the teaser does not, so "only" or "one of two" could contradict it.
+    var COSTLIEST_RANK = {
+        1: "It's the one habit the report fixes.",
+        2: "It's the first of the two habits the report fixes.",
+        3: "It's the first of the three habits the report fixes."
+    };
+
+    function costliestMeta(summary, named) {
+        var cost = summary.costliest;
+        var where = named && cost.dimension ? " on " + cost.dimension : "";
+        var rank = summary.costingCount === 0
+            ? "It's your lowest spot, even with nothing costing you."
+            : COSTLIEST_RANK[Math.min(summary.costliestCount, 3)];
+        return "Scored " + cost.points + " of " + cost.max + " points" + where + ". " + rank;
+    }
+
+    // Stands in with the dimension until /api/kiss-free answers with the habit's own title.
+    function costliestBlock(summary) {
+        var block = el("div", "quiz-cost");
+        block.appendChild(el("p", "quiz-cost__label", summary.costingCount === 0 ? "Your weakest spot" : "Costing you the most"));
+        block.name = el("p", "quiz-cost__title", summary.costliest.dimension ? "A habit in " + summary.costliest.dimension : "One habit");
+        block.appendChild(block.name);
+        block.meta = el("p", "quiz-cost__meta", costliestMeta(summary, false));
+        block.appendChild(block.meta);
+        block.appendChild(el("p", "quiz-cost__lock", summary.costliestCount === 1 ? "The fix is in the report." : "The fix for each is in the report."));
+        return block;
+    }
+
+    function nameCostliest(block, summary, title, set) {
+        block.name.textContent = applyPronouns(title, set);
+        block.meta.textContent = costliestMeta(summary, true);
     }
 
     function fillIn(text, archetype, set) {
@@ -1225,6 +1274,7 @@
                 placement: "quiz-paywall",
                 archetype: state.summary.archetype.id,
                 score_band: state.summary.band,
+                variant: PAYWALL_VARIANT,
                 items: [{ item_id: PRODUCT.id, item_name: PRODUCT.title, price: PRODUCT.price, quantity: 1 }],
                 event_callback: submitOnce,
                 event_timeout: 400
@@ -1238,15 +1288,22 @@
         var archetype = state.summary.archetype;
         var card = el("section", "quiz-score-card");
         card.id = "kiss-test-paywall";
-        card.setAttribute("aria-label", "Your Kiss Score, locked");
+        card.setAttribute("aria-label", "Your Kiss Score");
         card.appendChild(el("p", "conversion-kicker", "Your Kiss Score"));
-        card.appendChild(blurredScore());
+        card.appendChild(plainScore(state.summary));
+        card.appendChild(scoreBar(state.summary.score));
         var claim = el("p", "quiz-score-card__claim");
         claim.appendChild(el("strong", null, "Computed from your 10 answers. Not a vibe. A number."));
-        claim.appendChild(el("span", "quiz-score-card__endowment", "It's already scored. It's sitting under the blur."));
         card.appendChild(claim);
         card.appendChild(el("p", "quiz-score-card__teaser", state.summary.teaser));
         card.appendChild(el("p", "quiz-score-card__floor", "Nobody scores under 20. The report is the fix, not the verdict."));
+        if (state.summary.costliest) {
+            card.costliest = costliestBlock(state.summary);
+            card.appendChild(card.costliest);
+        }
+        card.appendChild(el("p", "quiz-score-card__pitch", state.summary.costliest && state.summary.costingCount > 0
+            ? "Now you know what's costing you. The report shows why, and what to do instead."
+            : "Nothing's costing you points. The report shows where every one came from, and how to keep them."));
         var behind = el("p", "quiz-score-card__behind");
         behind.appendChild(el("strong", null, "Behind the unlock:"));
         card.appendChild(behind);
@@ -1280,10 +1337,15 @@
         return card;
     }
 
-    // The two strongest-habit blurbs come from the functions; the section stays empty on any failure.
-    function loadStrengths(section, state) {
+    // The two strongest-habit blurbs and the costliest habit's name come from the functions. On any
+    // failure, or from a deploy that predates the name, the section stays empty and the dimension stands in.
+    function loadFreeTier(section, costliest, state) {
         postJson("/api/kiss-free", { answers: state.answers }).then(function (result) {
             var free = result.status === 200 && result.data.ok === true ? result.data.free : null;
+            var habit = free && free.costliestHabit;
+            if (costliest && habit && typeof habit.title === "string" && habit.title) {
+                nameCostliest(costliest, state.summary, habit.title, state.set);
+            }
             var blurbs = free && Array.isArray(free.strongestBlurbs) ? free.strongestBlurbs : [];
             if (!blurbs.length) {
                 return;
@@ -1312,7 +1374,7 @@
             var body = el("div", "quiz-locked");
             body.setAttribute("aria-hidden", "true");
             for (var i = 0; i < 3; i++) {
-                body.appendChild(el("p", null, "This section is assembled from your answers and reads differently for every archetype. It opens with the report, alongside the score it is built on."));
+                body.appendChild(el("p", null, "This section is assembled from your answers and reads differently for every archetype. It opens with the report, alongside the breakdown it is built on."));
             }
             section.appendChild(body);
             var note = el("p", "quiz-locked__note");
@@ -1375,10 +1437,11 @@
         var read = el("section", "quiz-read");
         read.appendChild(el("p", null, state.summary.archetype.read || ""));
         root.appendChild(read);
-        root.appendChild(scoreCard(state));
+        var paywall = scoreCard(state);
+        root.appendChild(paywall);
         var strengths = el("section", "quiz-strengths");
         root.appendChild(strengths);
-        loadStrengths(strengths, state);
+        loadFreeTier(strengths, paywall.costliest, state);
         root.appendChild(lockedList(state));
         focusHeading(card.heading);
         sendEvent("result_view", { tier: "free", archetype: state.summary.archetype.id });
@@ -1387,6 +1450,7 @@
             sendEvent("paywall_view", {
                 archetype: state.summary.archetype.id,
                 score_band: state.summary.band,
+                variant: PAYWALL_VARIANT,
                 "return": state.checkoutReturn || "none"
             });
         }

@@ -3,6 +3,9 @@ import test from "node:test";
 
 import { OPTIONS as routeOptions, POST as routePost } from "../api/kiss-free.js";
 import { createKissFreeHandler } from "../src/kiss-free.js";
+import KissScore from "../src/kiss-score.cjs";
+import * as realReporter from "../src/kiss-report.js";
+import { BLURBS as REAL_BLURBS } from "../src/kiss-report-data/blurbs.js";
 
 const ENV = {};
 const ENGINE = { VERSION: 1, isValidAnswers: (answers) => /^[a-d]{10}$/.test(answers) };
@@ -36,6 +39,37 @@ test("valid answers return only the strongest blurbs", async () => {
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "no-store");
   assert.deepEqual(await response.json(), { ok: true, free: { strongestBlurbs: BLURBS } });
+});
+
+test("the real report names the single costliest habit, with its points and nothing else", async () => {
+  const handler = handlerWith({ loadScore: async () => KissScore, loadReport: async () => realReporter });
+
+  for (const answers of ["abcdabcdab", "aaaaaaaaaa", "cccccccccc", "dddddddddd"]) {
+    const response = await handler(post({ answers }));
+    assert.equal(response.status, 200);
+    const text = await response.text();
+    const { free } = JSON.parse(text);
+    const [top, ...rest] = KissScore.score(answers).costliest;
+    const blurb = REAL_BLURBS[top.key];
+
+    assert.deepEqual(Object.keys(free).sort(), ["costliestHabit", "strongestBlurbs"], answers);
+    assert.deepEqual(free.costliestHabit, { title: blurb.costTitle ?? blurb.title, points: top.points, max: 3 }, answers);
+    // The fix and the other costly habits stay behind the paywall.
+    assert.ok(!text.includes(blurb.cost), `${answers} leaked the costliest fix`);
+    for (const { key } of rest) {
+      const other = REAL_BLURBS[key];
+      assert.ok(!text.includes(other.costTitle ?? other.title), `${answers} leaked another costly habit`);
+      assert.ok(!text.includes(other.cost), `${answers} leaked another fix`);
+    }
+  }
+});
+
+test("a perfect score has no costliest habit and the field is left out", async () => {
+  const handler = handlerWith({ loadScore: async () => KissScore, loadReport: async () => realReporter });
+  const response = await handler(post({ answers: "bbbcbbbbab" }));
+
+  assert.equal(KissScore.score("bbbcbbbbab").score, 100);
+  assert.deepEqual(Object.keys((await response.json()).free), ["strongestBlurbs"]);
 });
 
 test("invalid or malformed answers are refused before the report is built", async () => {

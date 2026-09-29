@@ -281,14 +281,26 @@ const named = (events, name) => events.filter((e) => e.name === name);
 const plain = (value) => JSON.parse(JSON.stringify(value));
 
 const ANSWERS = "bbcdabcdab";
-const freeFetch = (blurbs = [{ key: "R", title: "You stay put", text: "When {he} pulls back, you wait." }]) => (url, options) => {
+const freeFetch = (blurbs = [{ key: "R", title: "You stay put", text: "When {he} pulls back, you wait." }], extra = {}) => (url, options) => {
   if (url.endsWith("/api/kiss-free")) {
     assert.equal(options.headers["Content-Type"], "text/plain");
     assert.deepEqual(JSON.parse(options.body), { answers: ANSWERS });
-    return Promise.resolve(jsonResponse(200, { ok: true, free: { strongestBlurbs: blurbs } }));
+    return Promise.resolve(jsonResponse(200, { ok: true, free: { strongestBlurbs: blurbs, ...extra } }));
   }
   return Promise.reject(new Error(`unexpected ${url}`));
 };
+// The stub engine with costly answers, shaped like KissScore's costliest entries.
+function costlyEngine(costliest) {
+  const engine = stubEngine();
+  const score = engine.score;
+  engine.score = (answers) => ({ ...score(answers), costliest });
+  return engine;
+}
+const THREE_COSTS = [
+  { q: "q1", o: "a", key: "q1a", points: 0, max: 3, dimension: "P" },
+  { q: "q3", o: "c", key: "q3c", points: 1, max: 3, dimension: "T" },
+  { q: "q5", o: "a", key: "q5a", points: 1, max: 3, dimension: "H" },
+];
 
 test("parseHandoff keeps valid card values, drops junk, and maps ref=share", () => {
   const { KissQuiz } = runPage({ pageKind: "quiz" });
@@ -341,7 +353,7 @@ test("buildCheckoutFields carries the report contract and only GA ids that exist
   assert.equal(full.ga_sid, "789");
 });
 
-test("free render shows archetype, teasers and the paywall form, never the score digit", async () => {
+test("free render shows archetype, the plain score, teasers and the paywall form", async () => {
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS, kt_pronoun_v1: "him" }, fetchImpl: freeFetch(), gaValues: { client_id: "111.222", session_id: "333" } });
   await settle();
 
@@ -354,12 +366,17 @@ test("free render shows archetype, teasers and the paywall form, never the score
   assert.match(text, /Unlock my full report · \$4\.99/);
   assert.match(text, /Your two strongest habits/);
   assert.match(text, /When he pulls back, you wait\./);
-  assert.doesNotMatch(text, /73/);
-  assert.doesNotMatch(text, /Dangerous/);
 
-  const blur = page.app.querySelector(".quiz-score-card__blur");
-  assert.equal(blur.getAttribute("aria-hidden"), "true");
-  assert.equal(blur.textContent, "");
+  const card = page.app.querySelector(".quiz-score-card");
+  assert.equal(card.getAttribute("aria-label"), "Your Kiss Score");
+  assert.equal(card.querySelector(".quiz-score-card__score").textContent, "73/100Dangerous, in a Good Way");
+  const bar = card.querySelector(".quiz-score-card__bar");
+  assert.equal(bar.getAttribute("aria-hidden"), "true");
+  assert.equal(bar.querySelector("span").style.props["--score"], "73%");
+  assert.equal(page.app.querySelector(".quiz-score-card__blur"), null);
+  // No costly answers in the stub, so no costliest block and the no-cost pitch.
+  assert.equal(card.querySelector(".quiz-cost"), null);
+  assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Nothing's costing you points. The report shows where every one came from, and how to keep them.");
   assert.equal(page.app.querySelectorAll(".quiz-locked[aria-hidden=\"true\"]").length, 5);
   assert.equal(page.app.querySelectorAll(".quiz-unlock-link[href=\"#kiss-test-paywall\"]").length, 5);
 
@@ -378,13 +395,14 @@ test("free render shows archetype, teasers and the paywall form, never the score
   assert.equal(checkout.product, "report");
   assert.equal(checkout.archetype, "overthinker");
   assert.equal(checkout.score_band, "dangerous");
+  assert.equal(checkout.variant, "soft-score");
   assert.deepEqual(plain(checkout.items), [{ item_id: "kiss-report", item_name: "Kiss Test full report", price: 4.99, quantity: 1 }]);
   checkout.event_callback();
   page.timeouts.forEach((t) => t.fn());
   assert.equal(form.submitCalls, 1);
 
   assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "free", archetype: "overthinker" });
-  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", return: "none" });
+  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "soft-score", return: "none" });
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes(ANSWERS)), false);
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes("him")), false);
 });
@@ -426,21 +444,78 @@ test("no answers and no unlock sends the visitor back to the test", async () => 
   assert.deepEqual(page.navigations, [["replace", "/kiss-test/"]]);
 });
 
-test("free render carries the endowment and floor lines, the sixth list item, and the Stripe-page fine print", async () => {
+test("free render carries the claim and floor lines, the sixth list item, and the Stripe-page fine print", async () => {
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
   await settle();
   const card = page.app.querySelector(".quiz-score-card");
-  assert.equal(card.querySelector(".quiz-score-card__claim .quiz-score-card__endowment").textContent, "It's already scored. It's sitting under the blur.");
+  assert.equal(card.querySelector(".quiz-score-card__claim").textContent, "Computed from your 10 answers. Not a vibe. A number.");
+  assert.doesNotMatch(page.app.textContent, /blur/);
   assert.equal(card.querySelector(".quiz-score-card__floor").textContent, "Nobody scores under 20. The report is the fix, not the verdict.");
   const kinds = card.children.map((c) => c.className);
   assert.equal(kinds.indexOf("quiz-score-card__floor"), kinds.indexOf("quiz-score-card__teaser") + 1);
   const items = card.querySelectorAll(".quiz-paywall__list li").map((li) => li.textContent);
   assert.equal(items.length, 6);
+  assert.equal(items[0], "Where every point went, across 8 dimensions");
   assert.equal(items[5], "Retakes for 30 days on this device. Fix one habit, retake, watch the number move.");
   assert.equal(card.querySelector(".quiz-paywall__once").textContent, "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen.");
   const form = card.querySelector("form[data-report-checkout]");
   assert.match(form.textContent, /30-day guarantee/);
   assert.equal(form.querySelector("button").className.split(" ").includes("conversion-sheen"), true);
+});
+
+test("the costliest habit is named by the free endpoint, and its fix stays locked", async () => {
+  const page = runPage({
+    pageKind: "quiz-result",
+    session: { kt_answers_v1: ANSWERS },
+    engine: costlyEngine(THREE_COSTS),
+    fetchImpl: freeFetch(undefined, { costliestHabit: { title: "The Lunge", points: 0, max: 3 } }),
+  });
+  const cost = page.app.querySelector(".quiz-cost");
+  // Before the endpoint answers, the dimension stands in.
+  assert.equal(cost.querySelector(".quiz-cost__title").textContent, "A habit in Pace");
+  assert.equal(cost.querySelector(".quiz-cost__meta").textContent, "Scored 0 of 3 points. It's the first of the three habits the report fixes.");
+  await settle();
+
+  assert.equal(cost.querySelector(".quiz-cost__label").textContent, "Costing you the most");
+  assert.equal(cost.querySelector(".quiz-cost__title").textContent, "The Lunge");
+  assert.equal(cost.querySelector(".quiz-cost__meta").textContent, "Scored 0 of 3 points on Pace. It's the first of the three habits the report fixes.");
+  assert.equal(cost.querySelector(".quiz-cost__lock").textContent, "The fix for each is in the report.");
+  const card = page.app.querySelector(".quiz-score-card");
+  const kinds = card.children.map((c) => c.className);
+  assert.equal(kinds.indexOf("quiz-cost"), kinds.indexOf("quiz-score-card__floor") + 1);
+  assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Now you know what's costing you. The report shows why, and what to do instead.");
+});
+
+test("a result with nothing costing points calls its lowest dimension the weakest spot, not a cost", async () => {
+  const engine = costlyEngine(THREE_COSTS.slice(1, 2));
+  const scored = engine.score;
+  engine.score = (answers) => {
+    const result = scored(answers);
+    return { ...result, teasers: { ...result.teasers, costingCount: 0 } };
+  };
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, engine, fetchImpl: freeFetch() });
+  await settle();
+  const card = page.app.querySelector(".quiz-score-card");
+  assert.equal(card.querySelector(".quiz-score-card__teaser").textContent.startsWith("None of your 10 answers are costing you points."), true);
+  assert.equal(card.querySelector(".quiz-cost__label").textContent, "Your weakest spot");
+  assert.equal(card.querySelector(".quiz-cost__meta").textContent, "Scored 1 of 3 points. It's your lowest spot, even with nothing costing you.");
+  assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Nothing's costing you points. The report shows where every one came from, and how to keep them.");
+});
+
+test("without the name (older deploy or a failed call) the dimension stays, and one cost reads as the only one", async () => {
+  const older = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, engine: costlyEngine(THREE_COSTS.slice(0, 2)), fetchImpl: freeFetch() });
+  await settle();
+  assert.equal(older.app.querySelector(".quiz-cost__title").textContent, "A habit in Pace");
+  assert.equal(older.app.querySelector(".quiz-cost__meta").textContent, "Scored 0 of 3 points. It's the first of the two habits the report fixes.");
+  assert.match(older.app.textContent, /Your two strongest habitsYou stay put/);
+
+  const offline = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, engine: costlyEngine(THREE_COSTS.slice(1, 2)), fetchImpl: () => Promise.reject(new Error("offline")) });
+  await settle();
+  assert.equal(offline.app.querySelector(".quiz-cost__title").textContent, "A habit in Pressure");
+  assert.equal(offline.app.querySelector(".quiz-cost__meta").textContent, "Scored 1 of 3 points. It's the one habit the report fixes.");
+  assert.equal(offline.app.querySelector(".quiz-cost__lock").textContent, "The fix is in the report.");
+  assert.equal(offline.app.querySelector(".quiz-strengths").children.length, 0);
+  assert.match(offline.app.textContent, /Unlock my full report · \$4\.99/);
 });
 
 const DARE_REPORT = {
