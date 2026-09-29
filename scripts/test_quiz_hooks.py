@@ -33,6 +33,10 @@ class QuizHookTests(unittest.TestCase):
     def offer(self, slug: str) -> dict:
         return self.catalog[f"/blog/{slug}/"]
 
+    def buy_offer(self, slug: str, cluster: str) -> dict:
+        """A post pinned to the buy rail through its source, the one way a post still gets it."""
+        return build_blog.conversion_offer_for_post(self.posts[slug], {"conversion_offer": {"cluster": cluster, "surface": "buy"}})
+
     def test_load_quiz_data_parses_the_engine_bank(self):
         data = build_blog.load_quiz_data()
         self.assertEqual([question["id"] for question in data["questions"]], [f"q{number}" for number in range(1, 11)])
@@ -79,24 +83,28 @@ class QuizHookTests(unittest.TestCase):
         self.assertIn("caught him doing?", markup)
         self.assertNotIn("caught them doing?", markup)
 
-    def test_surface_selection(self):
-        relationships = next(post for post in self.posts.values() if post["category_slug"] == "relationships")
-        techniques = next(
-            post for post in self.posts.values()
-            if post["category_slug"] == "techniques" and post["slug"] not in build_blog.QUIZ_SURFACE_OVERRIDES
-        )
-        self.assertEqual(self.offer(relationships["slug"])["surface"], "quiz")
-        self.assertEqual(self.offer(techniques["slug"])["surface"], "buy")
-        for slug, surface in (
-            ("how-to-practice-kissing", "buy"),
-            ("signs-youre-a-bad-kisser", "buy"),
-            ("how-to-kiss-slowly", "quiz"),
-            ("kissing-positions", "quiz"),
-            ("how-to-kiss-someones-neck", "quiz"),
-            ("how-to-french-kiss", "quiz"),
-            ("how-to-kiss-with-a-height-difference", "quiz"),
-        ):
-            self.assertEqual(self.offer(slug)["surface"], surface, slug)
+    def test_every_post_gets_the_kiss_test_with_a_known_hook(self):
+        self.assertEqual(build_blog.BUY_SURFACE_OVERRIDES, set())
+        self.assertEqual({offer["surface"] for offer in self.catalog.values()}, {"quiz"})
+        # The former buy-rail posts, the crossed-test pins among them, now carry the quiz too.
+        for slug in ("how-to-practice-kissing", "signs-youre-a-bad-kisser", "what-to-do-with-your-hands-while-kissing", "how-to-kiss"):
+            self.assertEqual(self.offer(slug)["surface"], "quiz", slug)
+        for offer in self.catalog.values():
+            self.assertIn(offer["offer_key"], build_blog.QUIZ_HOOKS)
+            expected = {**build_blog.QUIZ_HOOKS[offer["offer_key"]], **build_blog.QUIZ_HOOK_OVERRIDES.get(offer["article_slug"], {})}
+            self.assertEqual(offer["quiz"], expected, offer["article_slug"])
+        self.assertEqual(self.offer("how-to-kiss-your-boyfriend")["quiz"]["pronoun"], "him")
+
+    def test_a_pin_still_puts_a_post_on_the_buy_rail(self):
+        post = self.posts["what-to-do-with-your-hands-while-kissing"]
+        original = set(build_blog.BUY_SURFACE_OVERRIDES)
+        build_blog.BUY_SURFACE_OVERRIDES.add(post["slug"])
+        try:
+            self.assertEqual(build_blog.conversion_offer_for_post(post, {})["surface"], "buy")
+        finally:
+            build_blog.BUY_SURFACE_OVERRIDES.clear()
+            build_blog.BUY_SURFACE_OVERRIDES.update(original)
+        self.assertEqual(self.buy_offer(post["slug"], "touch")["surface"], "buy")
 
     def test_source_override_can_pin_the_surface(self):
         post = {"slug": "test-post", "title": "Test", "description": "", "category": "Techniques", "tags": []}
@@ -122,7 +130,7 @@ class QuizHookTests(unittest.TestCase):
 
     def test_apply_replaces_any_final_family_and_follows_the_arm(self):
         quiz_offer = self.offer("signs-youre-a-good-kisser")
-        buy_offer = self.offer("what-to-do-with-your-hands-while-kissing")
+        buy_offer = self.buy_offer("what-to-do-with-your-hands-while-kissing", "touch")
         for marker in ("PROOF_LED_FINAL", "BUY_RAIL_FINAL", "QUIZ_HOOK_FINAL"):
             quiz_page = build_blog.apply_conversion_to_article_page(page_with_final(marker), quiz_offer)
             self.assertNotIn("old final", quiz_page)
@@ -156,10 +164,10 @@ class QuizHookTests(unittest.TestCase):
             "                </div><!-- end max-w-3xl -->\n"
             "</body></html>"
         )
-        for slug in ("signs-youre-a-good-kisser", "what-to-do-with-your-hands-while-kissing"):
-            first = build_blog.apply_conversion_to_article_page(template_page, self.offer(slug))
+        for offer in (self.offer("signs-youre-a-good-kisser"), self.buy_offer("what-to-do-with-your-hands-while-kissing", "touch")):
+            first = build_blog.apply_conversion_to_article_page(template_page, offer)
             self.assertNotIn("old cta", first)
-            self.assertEqual(build_blog.apply_conversion_to_article_page(first, self.offer(slug)), first, slug)
+            self.assertEqual(build_blog.apply_conversion_to_article_page(first, offer), first, offer["surface"])
 
 
 if __name__ == "__main__":

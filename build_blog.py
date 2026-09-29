@@ -82,8 +82,9 @@ GA_MEASUREMENT_ID = "G-YNQ785TC90"
 ASSET_VERSION = "20260922d"
 BOOK_PRICE = "9.99"
 CHECKOUT_API = "https://api.howtokissbetter.com"
-# Every post carries one conversion surface. Phase 1 is "buy" everywhere; Phase 2 adds "quiz".
-DEFAULT_SURFACE = "buy"
+# Every post carries one conversion surface. Since 2026-09-29 that is the Kiss Test on every post:
+# in-post book offers drew 0 outside clicks in 1,102 views, Kiss Test hooks about 36 in 1,429.
+DEFAULT_SURFACE = "quiz"
 BUY_BUTTON_LABEL = f"Get the book · ${BOOK_PRICE}"
 BUY_BAR_LABEL = f"Get it · ${BOOK_PRICE}"
 BUY_FINAL_EYEBROW = "Before you go"
@@ -95,31 +96,13 @@ BUY_META = (
 )
 QUIZ_HOOK_ARCHETYPES = ("natural", "sprinter", "overthinker")
 
-# Phase 2: the Kiss Test owns the surfaces on the quiz arm.
 QUIZ_URL = "/kiss-test/"
 QUIZ_ENGINE_PATH = ROOT_DIR / "assets" / "kiss-score.js"
 QUIZ_DATA_PATTERN = re.compile(r"/\* QUIZ_DATA_START \*/(.*?)/\* QUIZ_DATA_END \*/", re.S)
-QUIZ_SURFACE_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
-# Self-assessment posts outside those categories, plus the technique posts on the quiz side of the
-# crossed test. Neck, French kiss and height joined on 2026-09-24 (their buy rail: 1 open in 216 views)
-# so both sides reach 1,500 views in weeks, not months.
-QUIZ_SURFACE_OVERRIDES = {
-    "how-to-practice-kissing",
-    "too-much-saliva-when-kissing",
-    "kiss-too-wet",
-    "signs-youre-a-good-kisser",
-    "signs-youre-a-bad-kisser",
-    "what-makes-a-good-kisser",
-    "what-does-a-good-kiss-feel-like",
-    "why-kissing-feels-awkward",
-    "how-to-kiss-slowly",
-    "kissing-positions",
-    "how-to-kiss-someones-neck",
-    "how-to-french-kiss",
-    "how-to-kiss-with-a-height-difference",
-}
-# Crossed tests: two self-assessment posts keep the buy rail so surface can be read apart from intent.
-BUY_SURFACE_OVERRIDES = {"how-to-practice-kissing", "signs-youre-a-bad-kisser"}
+# Posts pinned to the buy rail by slug, e.g. to guard a ranking; a post.json conversion_offer.surface
+# does the same for posts with a source. Empty since the crossed-test pins ended on 2026-09-29.
+BUY_SURFACE_OVERRIDES: set[str] = set()
+
 QUIZ_FINAL_EYEBROW = "Before you go"
 QUIZ_FINAL_COPY = "Ten questions, about a minute. Your kisser archetype and the two habits already working for you. Free result."
 QUIZ_FINAL_LABEL = "Take the Kiss Test"
@@ -1008,14 +991,11 @@ def quiz_hook_for_post(slug: str, cluster: str) -> dict[str, str]:
 
 
 def conversion_surface_for_post(post: dict[str, Any], override: dict[str, str]) -> str:
-    """Pick the arm: a source override wins, then the crossed tests, then category and slug lists."""
+    """Pick the arm: a source override wins, then a buy-rail pin; every other post gets the Kiss Test."""
     if override.get("surface"):
         return override["surface"]
-    slug = str(post["slug"])
-    if slug in BUY_SURFACE_OVERRIDES:
+    if str(post["slug"]) in BUY_SURFACE_OVERRIDES:
         return "buy"
-    if slug in QUIZ_SURFACE_OVERRIDES or slugify_category(str(post.get("category", ""))) in QUIZ_SURFACE_CATEGORIES:
-        return "quiz"
     return DEFAULT_SURFACE
 
 

@@ -108,19 +108,9 @@ KISS_TEST_LOCKED_LINES = (
     "<li>Never kissed anyone? Answer on instinct.</li>",
     "The scoring file runs in your browser and is public. The paid report uses the same file, byte for byte. Same answers, same number, nothing to fudge.",
 )
-# The arm split, restated independently of the builder: quiz categories, the self-assessment posts
-# outside them, and the crossed tests (two self-assessment posts on buy, five technique posts on quiz).
-QUIZ_CATEGORIES = {"relationships", "first-kiss", "mistakes"}
-QUIZ_SLUGS = {"what-makes-a-good-kisser", "what-does-a-good-kiss-feel-like"}
-CROSSED_SURFACES = {
-    "how-to-practice-kissing": "buy",
-    "signs-youre-a-bad-kisser": "buy",
-    "how-to-kiss-slowly": "quiz",
-    "kissing-positions": "quiz",
-    "how-to-kiss-someones-neck": "quiz",
-    "how-to-french-kiss": "quiz",
-    "how-to-kiss-with-a-height-difference": "quiz",
-}
+# The arm split, restated independently of the builder: the Kiss Test on every post (since 2026-09-29)
+# except the posts pinned to the buy rail here and in build_blog.BUY_SURFACE_OVERRIDES.
+BUY_PINNED: set[str] = set()
 QUIZ_HOOK_FIELDS = (
     "question_id",
     "eyebrow",
@@ -391,12 +381,7 @@ def validate_checkout_form(
 
 
 def expected_surface(post: dict[str, object]) -> str:
-    slug = str(post["slug"])
-    if slug in CROSSED_SURFACES:
-        return CROSSED_SURFACES[slug]
-    if slug in QUIZ_SLUGS or str(post.get("category_slug")) in QUIZ_CATEGORIES:
-        return "quiz"
-    return "buy"
+    return "buy" if str(post["slug"]) in BUY_PINNED else "quiz"
 
 
 def validate_quarter_ratio(validation: Validation, slug: str, page_html: str, marker: str) -> None:
@@ -695,7 +680,6 @@ def validate_articles(validation: Validation, catalog: dict[str, dict[str, objec
         else:
             validate_buy_article(validation, slug, page_html, offer)
 
-    validation.require(surfaces["quiz"] > 0 and surfaces["buy"] > 0, f"both arms must be live, got {dict(surfaces)}")
     print(f"Surface split: {surfaces['quiz']} Kiss Test, {surfaces['buy']} buy rail")
     return article_pages
 
@@ -742,11 +726,7 @@ def validate_quiz_hooks(validation: Validation, catalog: dict[str, dict[str, obj
         validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
     validation.require(f"${BOOK_PRICE}" in build_blog.QUIZ_BOOK_LINK_LABEL, "quiz final book link label is missing the book price")
     validation.equal(build_blog.QUIZ_URL, QUIZ_URL, "builder quiz URL")
-    validation.equal(build_blog.BUY_SURFACE_OVERRIDES, {slug for slug, arm in CROSSED_SURFACES.items() if arm == "buy"}, "buy-arm crossed posts")
-    validation.require(
-        {slug for slug, arm in CROSSED_SURFACES.items() if arm == "quiz"} <= build_blog.QUIZ_SURFACE_OVERRIDES,
-        "quiz-arm crossed posts are missing from the builder overrides",
-    )
+    validation.equal(build_blog.BUY_SURFACE_OVERRIDES, BUY_PINNED, "buy-rail pinned posts")
     for archetype in QUIZ_HOOK_ARCHETYPES:
         mini = ROOT / f"assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp"
         validation.require(mini.exists() and mini.stat().st_size < 20_000, f"{archetype} archetype mini is missing or over 20 KB")
@@ -792,7 +772,7 @@ def validate_build_constants(validation: Validation) -> None:
     validation.equal(build_blog.ASSET_VERSION, CONVERSION_ASSET_VERSION, "builder asset version")
     validation.equal(build_blog.BOOK_PRICE, BOOK_PRICE, "builder book price")
     validation.equal(build_blog.CHECKOUT_API, CHECKOUT_API, "builder checkout API origin")
-    validation.equal(build_blog.DEFAULT_SURFACE, "buy", "builder default surface")
+    validation.equal(build_blog.DEFAULT_SURFACE, "quiz", "builder default surface")
     validation.equal(build_blog.QUIZ_HOOK_ARCHETYPES, QUIZ_HOOK_ARCHETYPES, "builder archetype strip")
 
 
