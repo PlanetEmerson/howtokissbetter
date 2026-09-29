@@ -144,6 +144,23 @@ class QuizHookTests(unittest.TestCase):
             self.assertIn("utm_content=post-nav&amp;offer_key=touch#touch", buy_page)
             self.assertIn('<span class="hidden sm:inline">Get the book</span>', buy_page)
 
+    def test_first_build_from_the_template_is_already_stable(self):
+        # A rebuild that changed a fresh post's page failed the blog bot's release gate on 2026-09-28.
+        body = "".join(f"<h2>Section {number}</h2><p>{'words ' * 40}</p>" for number in range(1, 9))
+        template_page = (
+            '<html><body class="bg-charcoal">\n'
+            f'<div class="article-content">{body}</div>\n'
+            "            </div>\n\n"
+            "                        <!-- CTA Box -->\n"
+            '                        <div class="cta"><p>old cta</p></div>\n\n'
+            "                </div><!-- end max-w-3xl -->\n"
+            "</body></html>"
+        )
+        for slug in ("signs-youre-a-good-kisser", "what-to-do-with-your-hands-while-kissing"):
+            first = build_blog.apply_conversion_to_article_page(template_page, self.offer(slug))
+            self.assertNotIn("old cta", first)
+            self.assertEqual(build_blog.apply_conversion_to_article_page(first, self.offer(slug)), first, slug)
+
 
 if __name__ == "__main__":
     unittest.main()

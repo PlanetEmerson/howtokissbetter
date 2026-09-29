@@ -1432,7 +1432,8 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
         if final_start < 0 or final_div_start < 0:
             raise ValueError(f"{offer['article_slug']}: final offer boundary not found")
         _, final_div_end = matching_div_close(page_html, final_div_start)
-        page_html = f"{page_html[:final_start]}{final_html}{page_html[final_div_end:]}"
+        # Same whitespace as the marker branch above, so the next rebuild leaves a new post untouched.
+        page_html = f"{page_html[:final_start].rstrip()}\n{final_html}\n{page_html[final_div_end:].lstrip()}"
 
     page_html = page_html.replace(
         '            "jobTitle": "Author and Intimacy Expert",\n'
