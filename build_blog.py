@@ -121,7 +121,7 @@ QUIZ_SURFACE_OVERRIDES = {
 # Crossed tests: two self-assessment posts keep the buy rail so surface can be read apart from intent.
 BUY_SURFACE_OVERRIDES = {"how-to-practice-kissing", "signs-youre-a-bad-kisser"}
 QUIZ_FINAL_EYEBROW = "Before you go"
-QUIZ_FINAL_COPY = "Ten questions, one honest number, and the three habits to fix first. Free result."
+QUIZ_FINAL_COPY = "Ten questions, about a minute. Your kisser archetype and the two habits already working for you. Free result."
 QUIZ_FINAL_LABEL = "Take the Kiss Test"
 QUIZ_META_SUFFIX = "10 questions · free result"
 QUIZ_BOOK_LINK_LABEL = f"Or skip straight to the full playbook: Kiss Perfect Now, ${BOOK_PRICE}"
