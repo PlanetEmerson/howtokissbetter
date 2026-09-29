@@ -615,7 +615,6 @@ test("the scoring beat names all eight dials and is the only timer in a ten-answ
   page.startButtons[0].dispatch("click", { preventDefault() {} });
   const first = () => page.app.querySelectorAll(".quiz-option")[0].dispatch("click");
   first();
-  first();
   assert.match(page.app.textContent, /Question 1 of 10/);
   for (let q = 1; q <= 9; q++) {
     first();
@@ -886,43 +885,53 @@ function clickOption(page, text) {
 const pressed = (page) => page.app.querySelector(".quiz-option[aria-pressed=\"true\"]").textContent;
 const back = (page) => page.app.querySelector(".quiz-back").dispatch("click");
 
-test("inline handoff pre-answers the card question, asks the partner and self taps, then runs the rest in order", () => {
+const pressedLabel = (page) => {
+  const button = page.app.querySelector(".quiz-option[aria-pressed=\"true\"]");
+  return button.getAttribute("aria-label") || button.textContent;
+};
+
+function clickPair(page, label) {
+  const button = page.app.querySelectorAll(".quiz-pair").find((b) => b.getAttribute("aria-label") === label);
+  assert.ok(button, `pairing "${label}" is on screen`);
+  button.dispatch("click");
+}
+
+test("inline handoff pre-answers the card question, asks one pairing tap, then runs the rest in order", () => {
   const page = runPage({ pageKind: "quiz", search: "?from=slow-kiss&hook=technique&placement=quiz-article-quarter&q=q1&a=b" });
   assert.deepEqual(plain(named(page.events, "quiz_start")[0].params), { entry: "inline", article: "slow-kiss", offer_key: "technique", placement: "quiz-article-quarter" });
   assert.deepEqual(plain(named(page.events, "quiz_answer")[0].params), { question_index: 1, entry: "inline" });
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "b_________");
   assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/"]]);
-  assert.match(page.app.textContent, /Who's on the other end of these kisses\?/);
+  assert.match(page.app.textContent, /Who's kissing who\?/);
+  assert.equal(page.app.querySelector(".quiz-progress").textContent, "Answer saved · one tap first");
   assert.doesNotMatch(page.app.textContent, /static fallback/);
   assert.equal(page.app.querySelector(".quiz-back"), null);
-
-  clickOption(page, "Her");
-  assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "her");
-  const self = page.app.textContent;
-  assert.match(self, /One more, only so the picture matches/);
-  assert.match(self, /And you\?/);
-  assert.match(self, /This never leaves your phone\. It only picks the illustration\./);
-  assert.deepEqual(page.app.querySelectorAll(".quiz-option").map((b) => b.textContent), ["A woman", "A man", "Rather not say"]);
+  // You on the left, the partner on the right, each pairing named in full for screen readers.
+  assert.deepEqual(page.app.querySelectorAll(".quiz-pair").map((b) => [b.getAttribute("aria-label"), b.textContent]), [
+    ["I'm a woman kissing a man", "YouHim"],
+    ["I'm a man kissing a woman", "YouHer"],
+    ["I'm a woman kissing a woman", "YouHer"],
+    ["I'm a man kissing a man", "YouHim"],
+  ]);
+  assert.deepEqual(page.app.querySelectorAll(".quiz-pairs__more .quiz-option").map((b) => b.textContent), ["Nobody yet. I'm preparing.", "Other, or rather not say"]);
   assert.equal(page.app.querySelector(".quiz-question").focused, true);
 
-  back(page);
-  assert.match(page.app.textContent, /Who's on the other end/);
-  assert.equal(pressed(page), "Her");
-  clickOption(page, "Her");
-  clickOption(page, "A woman");
+  clickPair(page, "I'm a woman kissing a woman");
+  assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "her");
   assert.equal(page.window.sessionStorage.getItem("kt_self_v1"), "woman");
   assert.match(page.app.textContent, /Question 2 of 10/);
   assert.equal(page.app.querySelector(".quiz-progress-bar").style.props["--quiz-progress"], "10%");
   assert.equal(page.app.querySelector(".quiz-question").focused, true);
 
-  // Back walks through the card question and both taps, keeping each choice pressed.
+  // Back walks through the card question to the pairing, keeping each choice pressed.
   back(page);
   assert.match(page.app.textContent, /Question 1 of 10/);
   assert.equal(pressed(page), "Option b for q1");
   back(page);
-  assert.match(page.app.textContent, /And you\?/);
-  assert.equal(pressed(page), "A woman");
-  clickOption(page, "A man");
+  assert.match(page.app.textContent, /Who's kissing who\?/);
+  assert.equal(pressedLabel(page), "I'm a woman kissing a woman");
+  clickPair(page, "I'm a man kissing a woman");
+  assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "her");
   assert.equal(page.window.sessionStorage.getItem("kt_self_v1"), "man");
   assert.match(page.app.textContent, /Question 2 of 10/);
 
@@ -941,12 +950,12 @@ test("inline handoff pre-answers the card question, asks the partner and self ta
   assert.equal(named(page.events, "quiz_answer").length, 10);
   assert.deepEqual(page.navigations.at(-1), ["assign", "/kiss-test/result/"]);
   assert.equal(JSON.parse(page.window.sessionStorage.getItem("kt_from_v1")).from, "slow-kiss");
-  // The self tap never leaves the device: not in events, not in the URL.
+  // The self half never leaves the device: not in events, not in the URL.
   assert.equal(page.events.some((e) => /"(woman|man|skip)"/.test(JSON.stringify(e.params))), false);
   assert.equal(page.navigations.some((n) => JSON.stringify(n).includes("man")), false);
 });
 
-test("a direct start resets both taps, and a reload resumes at the next unanswered step", () => {
+test("a direct start resets the pairing, the other paths set the partner alone, and a reload resumes", () => {
   const page = runPage({ pageKind: "quiz", session: { kt_answers_v1: "abcdabcdab", kt_pronoun_v1: "him", kt_self_v1: "man" } });
   assert.match(page.app.textContent, /static fallback/);
   page.startButtons[0].dispatch("click", { preventDefault() {} });
@@ -954,15 +963,32 @@ test("a direct start resets both taps, and a reload resumes at the next unanswer
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "__________");
   assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), null);
   assert.equal(page.window.sessionStorage.getItem("kt_self_v1"), null);
-  assert.match(page.app.textContent, /Who's on the other end/);
+  assert.match(page.app.textContent, /Who's kissing who\?/);
+  assert.equal(page.app.querySelector(".quiz-progress").textContent, "Before we start");
+  assert.equal(page.app.querySelector(".quiz-option[aria-pressed=\"true\"]"), null);
   page.startButtons[1].dispatch("click", { preventDefault() {} });
   assert.equal(named(page.events, "quiz_start").length, 1);
+
+  // Other, or rather not say: the partner sets the pronouns and the picture keeps the mixed default.
+  clickOption(page, "Other, or rather not say");
+  assert.match(page.app.textContent, /Who's on the other end of these kisses\?/);
+  assert.deepEqual(page.app.querySelectorAll(".quiz-option").map((b) => b.textContent), ["Him", "Her", "Them", "Nobody yet. I'm preparing."]);
+  back(page);
+  assert.match(page.app.textContent, /Who's kissing who\?/);
+  clickOption(page, "Other, or rather not say");
   clickOption(page, "Him");
-  clickOption(page, "Rather not say");
+  assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "him");
+  assert.equal(page.window.sessionStorage.getItem("kt_self_v1"), "skip");
   assert.match(page.app.textContent, /Question 1 of 10/);
   back(page);
-  assert.match(page.app.textContent, /And you\?/);
-  assert.equal(pressed(page), "Rather not say");
+  assert.match(page.app.textContent, /Who's kissing who\?/);
+  assert.equal(pressedLabel(page), "Other, or rather not say");
+  clickOption(page, "Nobody yet. I'm preparing.");
+  assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "nobody");
+  assert.equal(page.window.sessionStorage.getItem("kt_self_v1"), "skip");
+  assert.match(page.app.textContent, /Question 1 of 10/);
+  back(page);
+  assert.equal(pressedLabel(page), "Nobody yet. I'm preparing.");
 
   const resumed = runPage({ pageKind: "quiz", session: { kt_answers_v1: "abc_______", kt_pronoun_v1: "nobody", kt_self_v1: "skip" } });
   assert.match(resumed.app.textContent, /Question 4 of 10/);
@@ -976,13 +1002,13 @@ test("a direct start resets both taps, and a reload resumes at the next unanswer
   assert.match(resumed.app.textContent, /Question 8 of 10/);
   assert.equal(pressed(resumed), "Option d for q8");
 
+  // A session saved before the pairing tap existed has a partner and no self; it resumes at the questions.
   const partnerOnly = runPage({ pageKind: "quiz", session: { kt_answers_v1: "abc_______", kt_pronoun_v1: "him" } });
-  assert.match(partnerOnly.app.textContent, /And you\?/);
-  clickOption(partnerOnly, "A man");
   assert.match(partnerOnly.app.textContent, /Question 4 of 10/);
 
   const noTaps = runPage({ pageKind: "quiz", session: { kt_answers_v1: "abc_______" } });
-  assert.match(noTaps.app.textContent, /Who's on the other end/);
+  assert.match(noTaps.app.textContent, /Who's kissing who\?/);
+  assert.equal(noTaps.app.querySelector(".quiz-progress").textContent, "Answer saved · one tap first");
 });
 
 test("homepage Q1 handoff starts the test inline from the hero card", () => {

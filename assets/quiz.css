@@ -363,6 +363,75 @@
     outline-offset: 2px;
 }
 
+/* The pairing tap: you (gold) on the left, them on the right */
+.quiz-pairs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quiz-pair {
+    align-items: flex-start;
+    gap: clamp(0.4rem, 0.2rem + 0.8vw, 0.9rem);
+    justify-content: center;
+    padding: 1.1rem 0.5rem 0.95rem;
+}
+
+.quiz-pair__side {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 2.75rem;
+}
+
+.quiz-pair__icon {
+    height: 2.25rem;
+    width: 2.25rem;
+}
+
+.quiz-pair__icon path {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.quiz-pair__icon--heart {
+    color: rgba(212, 175, 55, 0.75);
+    height: 1rem;
+    margin-top: 0.625rem;
+    width: 1rem;
+}
+
+.quiz-pair__icon--heart path {
+    fill: currentColor;
+    stroke: none;
+}
+
+.quiz-pair__who {
+    color: var(--quiz-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.quiz-pair__side--you,
+.quiz-pair__side--you .quiz-pair__who {
+    color: var(--quiz-gold);
+}
+
+.quiz-pairs__more .quiz-option {
+    background: none;
+    color: var(--quiz-muted);
+    font-size: 0.95rem;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding-bottom: 0.6rem;
+    padding-top: 0.6rem;
+}
+
 .quiz-back {
     align-self: flex-start;
     background: none;

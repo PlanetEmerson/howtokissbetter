@@ -17,17 +17,14 @@
         self: "kt_self_v1",
         api: "kt_api"
     };
+    // One tap sets the question pronouns (partner) and the illustration (self).
     // Unscored. Stored in sessionStorage only; never in the URL, GA4 events, or checkout fields.
-    var SELF_TAP = {
-        label: "One more, only so the picture matches",
-        prompt: "And you?",
-        note: "This never leaves your phone. It only picks the illustration.",
-        options: [
-            { id: "woman", label: "A woman" },
-            { id: "man", label: "A man" },
-            { id: "skip", label: "Rather not say" }
-        ]
-    };
+    var PAIRINGS = [
+        { self: "woman", partner: "him", label: "I'm a woman kissing a man" },
+        { self: "man", partner: "her", label: "I'm a man kissing a woman" },
+        { self: "woman", partner: "her", label: "I'm a woman kissing a woman" },
+        { self: "man", partner: "him", label: "I'm a man kissing a man" }
+    ];
     var QUESTION_COUNT = 10;
     var RESULT_PATH = "/kiss-test/result/";
     var QUIZ_PATH = "/kiss-test/";
@@ -494,6 +491,32 @@
         return item;
     }
 
+    var PAIR_ICONS = {
+        woman: "M18 9a6 6 0 1 1-12 0 6 6 0 0 1 12 0ZM12 15v7M8.5 18.5h7",
+        man: "M16 14a6 6 0 1 1-12 0 6 6 0 0 1 12 0ZM14.3 9.7 20 4M15 4h5v5",
+        heart: "M12 20.5s-7.5-4.6-7.5-10.3A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.5 2.6c0 5.7-7.5 10.3-7.5 10.3Z"
+    };
+
+    function pairIcon(kind) {
+        var ns = "http://www.w3.org/2000/svg";
+        var svg = document.createElementNS(ns, "svg");
+        svg.setAttribute("class", "quiz-pair__icon quiz-pair__icon--" + kind);
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("focusable", "false");
+        var path = document.createElementNS(ns, "path");
+        path.setAttribute("d", PAIR_ICONS[kind]);
+        svg.appendChild(path);
+        return svg;
+    }
+
+    function pairSide(kind, who, className) {
+        var side = el("span", className);
+        side.appendChild(pairIcon(kind));
+        side.appendChild(el("span", "quiz-pair__who", who));
+        return side;
+    }
+
     // Landing page clips: a row card loads nothing until it is hovered (fine
     // pointers) or mostly in view (touch), plays once and ends on its own
     // still; the tier demo loops only while it is on screen.
@@ -641,39 +664,62 @@
             focusHeading(screen.heading);
         }
 
+        function choose(partner, self) {
+            pronoun = partner;
+            selfChoice = self;
+            safeStorage(window.sessionStorage, "setItem", KEYS.pronoun, pronoun);
+            safeStorage(window.sessionStorage, "setItem", KEYS.self, selfChoice);
+            renderQuestion(nextIndex(answers, -1));
+        }
+
+        function renderPairing() {
+            inProgress = true;
+            var label = answeredCount(answers) > 0 ? "Answer saved · one tap first" : "Before we start";
+            var screen = progressScreen("quiz-screen--pairing", label, "Who's kissing who?");
+            var grid = el("ul", "quiz-options quiz-pairs");
+            PAIRINGS.forEach(function (pair) {
+                var item = optionButton("", pronoun === pair.partner && selfChoice === pair.self, function () {
+                    choose(pair.partner, pair.self);
+                });
+                var button = item.firstChild;
+                button.classList.add("quiz-pair");
+                button.setAttribute("aria-label", pair.label);
+                button.appendChild(pairSide(pair.self, "You", "quiz-pair__side quiz-pair__side--you"));
+                button.appendChild(pairIcon("heart"));
+                button.appendChild(pairSide(pair.partner === "him" ? "man" : "woman", pair.partner === "him" ? "Him" : "Her", "quiz-pair__side"));
+                grid.appendChild(item);
+            });
+            screen.appendChild(grid);
+            var more = el("ul", "quiz-options quiz-pairs__more");
+            data().pronoun.options.forEach(function (option) {
+                if (option.aspirational) {
+                    more.appendChild(optionButton(option.label, pronoun === option.id, function () {
+                        choose(option.id, "skip");
+                    }));
+                }
+            });
+            more.appendChild(optionButton("Other, or rather not say", selfChoice === "skip" && pronoun !== "nobody", renderPronoun));
+            screen.appendChild(more);
+            mount(app, screen);
+            focusHeading(screen.heading);
+        }
+
+        // "Other, or rather not say": the partner alone sets the pronouns, and
+        // the illustration falls back to the mixed default.
         function renderPronoun() {
             inProgress = true;
             var screen = progressScreen("quiz-screen--pronoun", "Before we start", data().pronoun.prompt);
             var list = el("ul", "quiz-options");
             data().pronoun.options.forEach(function (option) {
-                list.appendChild(optionButton(option.label, pronoun === option.id, function () {
-                    pronoun = option.id;
-                    safeStorage(window.sessionStorage, "setItem", KEYS.pronoun, pronoun);
-                    renderSelf();
+                list.appendChild(optionButton(option.label, pronoun === option.id && selfChoice === "skip", function () {
+                    choose(option.id, "skip");
                 }));
             });
             screen.appendChild(list);
             screen.appendChild(el("p", "quiz-note", data().pronoun.note));
-            mount(app, screen);
-            focusHeading(screen.heading);
-        }
-
-        function renderSelf() {
-            inProgress = true;
-            var screen = progressScreen("quiz-screen--self", SELF_TAP.label, SELF_TAP.prompt);
-            var list = el("ul", "quiz-options");
-            SELF_TAP.options.forEach(function (option) {
-                list.appendChild(optionButton(option.label, selfChoice === option.id, function () {
-                    selfChoice = option.id;
-                    safeStorage(window.sessionStorage, "setItem", KEYS.self, selfChoice);
-                    renderQuestion(nextIndex(answers, -1));
-                }));
-            });
-            screen.appendChild(list);
-            screen.appendChild(el("p", "quiz-note", SELF_TAP.note));
             var back = el("button", "quiz-back", "Back");
             back.type = "button";
-            back.addEventListener("click", renderPronoun);
+            back.addEventListener("click", renderPairing);
             screen.appendChild(back);
             mount(app, screen);
             focusHeading(screen.heading);
@@ -710,7 +756,7 @@
             back.type = "button";
             back.addEventListener("click", function () {
                 if (index === 0) {
-                    renderSelf();
+                    renderPairing();
                 } else {
                     renderQuestion(index - 1);
                 }
@@ -782,7 +828,7 @@
             context = { from: handoff.from, hook: handoff.hook, placement: handoff.placement, entry: handoff.entry };
             writeContext(context);
             sendEvent("quiz_start", startPayload(context));
-            renderPronoun();
+            renderPairing();
         }
 
         var starts = document.querySelectorAll("[data-quiz-start]");
@@ -806,15 +852,13 @@
             if (window.history && typeof window.history.replaceState === "function") {
                 window.history.replaceState(null, "", window.location.pathname);
             }
-            renderPronoun();
+            renderPairing();
             return;
         }
 
         if (answeredCount(answers) > 0 && !isComplete(answers) && engine() && engine().DATA) {
             if (!pronoun) {
-                renderPronoun();
-            } else if (!selfChoice) {
-                renderSelf();
+                renderPairing();
             } else {
                 renderQuestion(nextIndex(answers, -1));
             }
