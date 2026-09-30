@@ -951,4 +951,13 @@
       <image:loc>https://howtokissbetter.com/blog/what-counts-as-a-first-kiss/featured.jpg</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-palm-mean/</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-palm-mean/featured.jpg</image:loc>
+    </image:image>
+  </url>
 </urlset>
