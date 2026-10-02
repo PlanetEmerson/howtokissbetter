@@ -960,4 +960,13 @@
       <image:loc>https://howtokissbetter.com/blog/what-does-a-kiss-on-the-palm-mean/featured.jpg</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://howtokissbetter.com/blog/electric-kiss-challenge/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/electric-kiss-challenge/featured.jpg</image:loc>
+    </image:image>
+  </url>
 </urlset>

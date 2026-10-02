@@ -17,7 +17,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (98 posts)
+- /blog/ — Full article index (99 posts)
 
 ## Techniques (17 articles)
 
@@ -93,10 +93,11 @@ Kissing inside real relationships, kiss meanings, and keeping chemistry alive.
 - /blog/why-couples-stop-kissing/ — Why Couples Stop Kissing (And How to Bring It Back)
 - /blog/types-of-kisses-and-what-they-mean/ — Types of Kisses and What They Mean (21 Kisses, Decoded)
 
-## Science (8 articles)
+## Science (9 articles)
 
 The neuroscience, chemistry, and psychology behind kissing.
 
+- /blog/electric-kiss-challenge/ — Electric Kiss Challenge: Real or Fake? How the Zap Works
 - /blog/how-long-does-it-take-for-a-hickey-to-form/ — How Long Does It Take for a Hickey to Form? The Timeline
 - /blog/why-do-we-tilt-our-heads-when-we-kiss/ — Which Way to Tilt Your Head When Kissing (and Why We Tilt)
 - /blog/why-some-kisses-feel-electric/ — Why Some Kisses Feel Electric (And Others Feel Like Nothing)
