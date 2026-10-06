@@ -72,6 +72,7 @@ class FakeElement {
   addEventListener(name, fn) { (this.listeners[name] ||= []).push(fn); }
   dispatch(name, event = {}) { (this.listeners[name] || []).forEach((fn) => fn(event)); return event; }
   focus() { this.focused = true; FakeElement.active = this; }
+  scrollIntoView(options) { this.scrolledInto = options; }
   querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
   querySelectorAll(selector) {
     // Descendant combinators only: "A B" is every B under any A.
@@ -986,6 +987,7 @@ test("inline handoff pre-answers the card question, asks one pairing tap, then r
   ]);
   assert.deepEqual(page.app.querySelectorAll(".quiz-pairs__more .quiz-option").map((b) => b.textContent), ["Nobody yet. I'm preparing.", "Other, or rather not say"]);
   assert.equal(page.app.querySelector(".quiz-question").focused, true);
+  assert.deepEqual(plain(page.app.scrolledInto), { block: "start" });
 
   clickPair(page, "I'm a woman kissing a woman");
   assert.equal(page.window.sessionStorage.getItem("kt_pronoun_v1"), "her");

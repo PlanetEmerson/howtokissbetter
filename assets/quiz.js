@@ -859,6 +859,9 @@
                 window.history.replaceState(null, "", window.location.pathname);
             }
             renderPairing();
+            // Focus alone scrolls just far enough to show the card, which leaves the hero's
+            // Start button above it on phones; article readers have already started.
+            app.scrollIntoView({ block: "start" });
             return;
         }
 
