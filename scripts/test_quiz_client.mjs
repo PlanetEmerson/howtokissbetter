@@ -190,7 +190,10 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
   feedbackSent.setAttribute("hidden", "");
   feedbackSent.setAttribute("data-feedback-sent", "");
   feedbackSent.textContent = "Got it. Thank you.";
-  const lede = main.appendChild(new FakeElement("p"));
+  // The hosted free-chapter section, with the lede the paid render rewrites.
+  const hostedEmail = main.appendChild(new FakeElement("section"));
+  hostedEmail.className = "quiz-section quiz-email";
+  const lede = hostedEmail.appendChild(new FakeElement("p"));
   lede.setAttribute("data-email-lede", "");
   lede.textContent = "free lede";
   const startButtons = [new FakeElement("a"), new FakeElement("button")];
@@ -272,7 +275,7 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
   window.window = window;
   vm.runInNewContext(quizSource, { Array, Boolean, Error, JSON, Math, Number, Object, Promise, String, URLSearchParams, document, window });
   ready();
-  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, heroMedia, landingCards, lede, load: () => loaded && loaded(), pageshow: (event) => pageshow && pageshow(event), navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
+  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, heroMedia, hostedEmail, landingCards, lede, load: () => loaded && loaded(), pageshow: (event) => pageshow && pageshow(event), navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
 }
 
 const settle = async () => { for (let i = 0; i < 6; i++) await new Promise((resolve) => setImmediate(resolve)); };
@@ -1300,4 +1303,226 @@ test("landing row: the deck ripples while on screen on any pointer, the tier dem
 
   const still = runPage({ pageKind: "quiz", landing: true, reducedMotion: true, hover: false, observers: [] });
   assert.equal(still.body.querySelectorAll("video").length, 0);
+});
+
+// "Email me my result": /api/kiss-email answers with `reply` (a response or a function returning
+// a promise) and every post is recorded; /api/kiss-free answers as usual.
+function captureFetch(reply, posts) {
+  const free = freeFetch();
+  return (url, options) => {
+    if (url.endsWith("/api/kiss-email")) {
+      posts.push({ url, options });
+      return typeof reply === "function" ? reply() : Promise.resolve(reply);
+    }
+    return free(url, options);
+  };
+}
+
+async function freeCapture(reply) {
+  const posts = [];
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: captureFetch(reply, posts) });
+  await settle();
+  const box = page.app.querySelector(".quiz-email-capture");
+  const form = box.querySelector("form");
+  const inputs = form.querySelectorAll("input");
+  const field = (name) => inputs.find((input) => input.getAttribute("name") === name);
+  return {
+    page, posts, box, form,
+    email: field("email"), adult: field("adult"), trap: field("website"),
+    button: form.querySelector("button"), status: box.querySelector(".quiz-email-capture__status"),
+  };
+}
+
+const submitForm = (form) => form.dispatch("submit", { preventDefault() { this.prevented = true; } });
+const SENT_OK = jsonResponse(200, { ok: true });
+
+test("the free result shows one email box between the locked list and the share block, and hides the hosted form", async () => {
+  const { page, box, form, email, adult, trap, button, status } = await freeCapture(SENT_OK);
+
+  assert.equal(page.body.querySelectorAll(".quiz-email-capture").length, 1);
+  const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
+  assert.equal(at("quiz-email-capture"), at("quiz-locked-list") + 1);
+  assert.equal(at("quiz-share-section"), at("quiz-email-capture") + 1);
+  assert.equal(page.hostedEmail.getAttribute("hidden"), "");
+  assert.equal(page.app.querySelector(".quiz-notice"), null);
+
+  assert.equal(box.tagName, "SECTION");
+  assert.equal(box.querySelector(".conversion-kicker").textContent, "Not tonight?");
+  assert.equal(box.querySelector("h2").textContent, "Get your result by email.");
+  assert.equal(box.querySelector(".quiz-email-capture__lede").textContent, "Your score, the habit costing you most, and the unlock link, in your inbox. Plus two short notes from me. Unsubscribe anytime.");
+
+  assert.equal(form.querySelectorAll("input").length, 3);
+  assert.equal(email.parent.tagName, "LABEL");
+  assert.equal(email.parent.textContent, "Your email");
+  for (const [name, value] of [["type", "email"], ["required", ""], ["autocomplete", "email"], ["inputmode", "email"]]) {
+    assert.equal(email.getAttribute(name), value, name);
+  }
+  assert.equal(adult.getAttribute("type"), "checkbox");
+  assert.equal(adult.getAttribute("required"), "");
+  assert.equal(adult.parent.tagName, "LABEL");
+  assert.equal(adult.parent.textContent, "I'm 18 or older.");
+  for (const [name, value] of [["tabindex", "-1"], ["autocomplete", "off"], ["aria-hidden", "true"]]) {
+    assert.equal(trap.getAttribute(name), value, name);
+  }
+  assert.equal(trap.classList.contains("quiz-email-capture__hp"), true);
+  assert.equal(button.textContent, "Email me my result");
+  assert.equal(button.type, "submit");
+
+  const fine = box.querySelector(".quiz-email-capture__fine");
+  assert.equal(fine.textContent, "Your email and answers go to Brevo, my email service. Nothing else. Details in Privacy.");
+  assert.equal(fine.querySelector("a").getAttribute("href"), "/privacy/");
+  assert.equal(fine.querySelector("a").textContent, "Privacy");
+  assert.equal(status.getAttribute("aria-live"), "polite");
+  assert.equal(status.textContent, "");
+});
+
+test("the paid view keeps the hosted form and gets no email box, even when a retry turns a free render paid", async () => {
+  const paid = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
+  await settle();
+  assert.equal(paid.body.querySelector(".quiz-email-capture"), null);
+  assert.equal(paid.hostedEmail.getAttribute("hidden"), null);
+  assert.match(paid.lede.textContent, /stays open on this device for 30 days/);
+
+  let verifyCalls = 0;
+  const flaky = (url) => {
+    if (url.endsWith("/api/verify")) {
+      verifyCalls += 1;
+      return verifyCalls === 1 ? Promise.resolve(jsonResponse(502, { ok: false, error: "stripe_unavailable" })) : paidFetch(url);
+    }
+    return Promise.resolve(jsonResponse(500, {}));
+  };
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: flaky });
+  await settle();
+  assert.equal(page.app.querySelectorAll(".quiz-email-capture").length, 1);
+  assert.equal(page.hostedEmail.getAttribute("hidden"), "");
+  page.app.querySelector(".quiz-retry").dispatch("click");
+  await settle();
+  assert.equal(verifyCalls, 2);
+  assert.equal(page.body.querySelector(".quiz-email-capture"), null);
+  assert.equal(page.hostedEmail.getAttribute("hidden"), null);
+});
+
+test("submitting posts the email, the answers, adult and the empty honeypot, then swaps the form for the success line", async () => {
+  const { page, posts, box, form, email, adult, button, status } = await freeCapture(SENT_OK);
+  email.value = "  reader@example.com ";
+  adult.checked = true;
+
+  assert.equal(submitForm(form).prevented, true);
+  assert.equal(button.disabled, true);
+  assert.equal(posts.length, 1);
+  assert.equal(posts[0].url, "https://api.example/api/kiss-email");
+  assert.equal(posts[0].options.method, "POST");
+  assert.deepEqual(JSON.parse(posts[0].options.body), { email: "reader@example.com", answers: ANSWERS, adult: true, website: "" });
+  submitForm(form);
+  assert.equal(posts.length, 1, "a second tap while sending posts nothing");
+
+  await settle();
+  assert.equal(box.querySelector("form"), null);
+  assert.equal(status.textContent, "Check your inbox. Tap the confirm link and your result is on its way.");
+  assert.equal(page.document.activeElement, status);
+  assert.deepEqual(plain(named(page.events, "email_capture")), [
+    { name: "email_capture", params: { placement: "result-email", archetype: "overthinker", score_band: "dangerous" } },
+  ]);
+  const tracked = JSON.stringify(page.events);
+  assert.equal(tracked.includes("reader@example.com"), false);
+  assert.equal(tracked.includes(ANSWERS), false);
+});
+
+test("a refused send keeps the form, re-enables the button and only blames the address when it was the address", async () => {
+  for (const [reply, message] of [
+    [jsonResponse(400, { ok: false, error: "bad_email" }), "That address didn't work. Check it and try again."],
+    [jsonResponse(502, { ok: false, error: "email_failed" }), "That didn't send. Try again in a few minutes."],
+    [jsonResponse(503, { ok: false, error: "email_unavailable" }), "That didn't send. Try again in a few minutes."],
+    [jsonResponse(429, { ok: false, error: "rate_limited" }), "That didn't send. Try again in a few minutes."],
+    [jsonResponse(200, { ok: false }), "That didn't send. Try again in a few minutes."],
+  ]) {
+    const { page, posts, box, form, email, adult, button, status } = await freeCapture(reply);
+    email.value = "reader@example.com";
+    adult.checked = true;
+    submitForm(form);
+    await settle();
+    assert.equal(box.querySelector("form"), form);
+    assert.equal(button.disabled, false);
+    assert.equal(status.textContent, message);
+    assert.equal(named(page.events, "email_capture").length, 0);
+    submitForm(form);
+    assert.equal(posts.length, 2, "the reader can try again");
+  }
+});
+
+test("a network failure says the server was out of reach and lets the reader retry", async () => {
+  const { page, posts, form, email, adult, button, status } = await freeCapture(() => Promise.reject(new TypeError("offline")));
+  email.value = "reader@example.com";
+  adult.checked = true;
+  submitForm(form);
+  await settle();
+  assert.equal(button.disabled, false);
+  assert.equal(status.textContent, "Couldn't reach the server. Try again in a moment.");
+  assert.equal(named(page.events, "email_capture").length, 0);
+  submitForm(form);
+  assert.equal(posts.length, 2);
+});
+
+test("without native validation, a blank address or an unticked 18+ box posts nothing", async () => {
+  const { posts, form, email, adult, button, status } = await freeCapture(SENT_OK);
+  email.value = "   ";
+  adult.checked = true;
+  submitForm(form);
+  email.value = "reader@example.com";
+  adult.checked = false;
+  submitForm(form);
+  assert.equal(posts.length, 0);
+  assert.equal(Boolean(button.disabled), false);
+  assert.equal(status.textContent, "Add your email and tick the 18+ box.");
+});
+
+test("a filled honeypot is passed through for the server to drop", async () => {
+  const { posts, form, email, adult, trap } = await freeCapture(SENT_OK);
+  email.value = "reader@example.com";
+  adult.checked = true;
+  trap.value = "https://spam.example";
+  submitForm(form);
+  assert.equal(JSON.parse(posts[0].options.body).website, "https://spam.example");
+});
+
+test("a #a= link from the confirm email restores valid answers, strips the fragment and keeps the query", async () => {
+  const page = runPage({ pageKind: "quiz-result", search: "?checkout=canceled", hash: "#a=BBCDABCDAB", session: { kt_answers_v1: "aaaaaaaaaa" }, fetchImpl: freeFetch() });
+  await settle();
+  assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), ANSWERS);
+  assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/result/?checkout=canceled"]]);
+  assert.match(page.app.textContent, /You're The Overthinker\./);
+  assert.match(page.app.textContent, /Checkout was canceled/);
+});
+
+test("an invalid #a= is ignored: nothing stored, the address left alone", async () => {
+  for (const hash of ["#a=", "#a=bbcd", "#a=zzzzzzzzzz", "#a=bbcdabcdab1"]) {
+    const empty = runPage({ pageKind: "quiz-result", hash });
+    await settle();
+    assert.equal(empty.window.sessionStorage.getItem("kt_answers_v1"), null, hash);
+    assert.deepEqual(empty.navigations, [["replace", "/kiss-test/"]], hash);
+  }
+  const kept = runPage({ pageKind: "quiz-result", hash: "#a=zzzzzzzzzz", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch() });
+  await settle();
+  assert.equal(kept.window.sessionStorage.getItem("kt_answers_v1"), ANSWERS);
+  assert.deepEqual(kept.navigations, []);
+});
+
+test("?email=confirmed shows the you're-in notice first, fires email_confirmed once, and drops only that param", async () => {
+  const page = runPage({ pageKind: "quiz-result", search: "?email=confirmed", hash: `#a=${ANSWERS}`, fetchImpl: freeFetch() });
+  await settle();
+  const notice = page.app.children[0];
+  assert.equal(notice.className, "quiz-notice");
+  assert.equal(notice.getAttribute("role"), "status");
+  assert.equal(notice.textContent, "You're in. Your result is on its way to your inbox.");
+  assert.equal(page.app.children[1].classList.contains("quiz-card"), true);
+  assert.deepEqual(plain(named(page.events, "email_confirmed")), [{ name: "email_confirmed", params: { placement: "result-email" } }]);
+  assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/result/"]]);
+  // Already subscribed: no second sign-up box, and the hosted form stays hidden.
+  assert.equal(page.app.querySelector(".quiz-email-capture"), null);
+  assert.equal(page.hostedEmail.getAttribute("hidden"), "");
+
+  const kept = runPage({ pageKind: "quiz-result", search: "?email=confirmed&checkout=canceled", hash: "#top", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch() });
+  await settle();
+  assert.deepEqual(kept.navigations, [["replaceState", null, "", "/kiss-test/result/?checkout=canceled#top"]]);
+  assert.equal(named(kept.events, "email_confirmed").length, 1);
 });

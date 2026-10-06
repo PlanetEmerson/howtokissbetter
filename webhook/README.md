@@ -142,6 +142,41 @@ Outcomes, in the order they are checked:
   whether or not Brevo accepted it (a refusal is logged as `brevo_send_failed`
   with the provider status and error code only).
 
+### `POST /api/kiss-email`
+
+"Email me my result" on the free Kiss Test result. JSON body, 2 KiB cap,
+CORS for the allowlisted origins. Like `/api/kiss-feedback`, it needs an
+allowed `Origin` or a site `Referer`, since every send emails whatever
+address was typed. `OPTIONS` answers `204`.
+
+| Field | Rule |
+|---|---|
+| `email` | string, trimmed, up to 254 characters, `^[^\s@]+@[^\s@]+\.[^\s@]+$` |
+| `answers` | validated by `src/kiss-score.cjs` (trimmed, lowercased) |
+| `adult` | must be `true` (the 18+ box) |
+| `website` | honeypot; must stay empty |
+
+Outcomes, in the order they are checked:
+
+- `405`, `403 bad_origin`, `413 too_large`, `400 bad_request` (malformed JSON).
+- Honeypot filled: `200 { ok: true }`, nothing sent.
+- `400 bad_email`, `400 adult_required`, `400 bad_request` (answers).
+- `501 report_unavailable` while the engine or the report module is absent.
+- `429 rate_limited` after 5 sends from one IP in 10 minutes (per warm instance).
+- `503 email_unavailable` while any of the three `BREVO_*` variables below is missing.
+- Otherwise one Brevo double opt-in (`POST /v3/contacts/doubleOptinConfirmation`)
+  with `includeListIds: [BREVO_KISS_TEST_LIST_ID]`, `templateId:
+  BREVO_KISS_TEST_DOI_TEMPLATE_ID`, `redirectionUrl`
+  `{site}/kiss-test/result/?email=confirmed#a={answers}` and text attributes
+  computed server side from the answers (client values are ignored):
+  `KT_ARCHETYPE` (archetype name), `KT_SCORE` (`"67"`), `KT_BAND` (band
+  label), `KT_COSTLIEST` (the costliest habit's title with they/them
+  pronouns; left out when nothing costs points), `KT_ANSWERS`, `KT_SIGNUP`
+  (`YYYY-MM-DD`, UTC) and `KT_SOURCE` `result-email`. Brevo's `201` or `204`
+  answers `200 { ok: true }`; anything else, or a network failure, answers
+  `502 email_failed` and logs `brevo_doi_failed` with the provider status and
+  error code only. The address and the answers are never logged or stored here.
+
 ### `POST /api/payhip-paid` and `GET /api/health`
 
 The Payhip to GA4 bridge (unchanged; see `src/payhip-ga4.js`) and a fixed
@@ -158,8 +193,10 @@ availability check returning `{ ok: true, service: "howtokissbetter-functions" }
 | `KISS_EXTRA_ORIGINS` | checkout, verify, kiss-feedback | Comma-separated extra allowed origins for QA (for example `http://localhost:8000`); leave unset in production |
 | `KISS_BOOK_PDF_PATH` | verify | Blob pathname of the PDF; default `kiss-perfect-now/kiss-perfect-now.pdf` |
 | `KISS_BOOK_EPUB_PATH` | verify | Blob pathname of the EPUB; default `kiss-perfect-now/kiss-perfect-now.epub` |
-| `BREVO_API_KEY` | stripe-webhook, kiss-feedback | Brevo transactional key (the book delivery email and the feedback email) |
+| `BREVO_API_KEY` | stripe-webhook, kiss-feedback, kiss-email | Brevo API key (the book delivery email, the feedback email and the Kiss Test double opt-in) |
 | `BREVO_SENDER_EMAIL` | stripe-webhook, kiss-feedback | Verified sender; default `contact@howtokissbetter.com` |
+| `BREVO_KISS_TEST_LIST_ID` | kiss-email | Numeric id of the Brevo list a confirmed Kiss Test contact joins |
+| `BREVO_KISS_TEST_DOI_TEMPLATE_ID` | kiss-email | Numeric id of the Brevo double opt-in confirmation template |
 | `GA_MEASUREMENT_ID` | stripe-webhook, payhip-paid | GA4 measurement id (`G-...`) |
 | `GA_API_SECRET` | stripe-webhook, payhip-paid | GA4 Measurement Protocol secret |
 | `PAYHIP_SIGNATURE_SHA256` | payhip-paid | Payhip webhook signature |

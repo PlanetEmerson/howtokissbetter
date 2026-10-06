@@ -1487,6 +1487,103 @@
         return wrap;
     }
 
+    function attrs(node, values) {
+        Object.keys(values).forEach(function (name) {
+            node.setAttribute(name, values[name]);
+        });
+        return node;
+    }
+
+    // The free result's one email box: a Brevo double opt-in through the functions, which
+    // recompute the result from the answers. Only the archetype and band reach GA4.
+    function emailCapture(state) {
+        var section = el("section", "quiz-email-capture");
+        section.appendChild(el("p", "conversion-kicker", "Not tonight?"));
+        section.appendChild(el("h2", "quiz-section-title", "Get your result by email."));
+        section.appendChild(el("p", "quiz-email-capture__lede", "Your score, the habit costing you most, and the unlock link, in your inbox. Plus two short notes from me. Unsubscribe anytime."));
+        var form = el("form", "quiz-email-capture__form");
+        var field = el("label", "quiz-email-capture__field");
+        field.appendChild(el("span", null, "Your email"));
+        var input = attrs(el("input", "quiz-email-capture__input"), { type: "email", name: "email", required: "", autocomplete: "email", inputmode: "email" });
+        field.appendChild(input);
+        form.appendChild(field);
+        var check = el("label", "quiz-email-capture__check");
+        var adult = attrs(el("input"), { type: "checkbox", name: "adult", required: "" });
+        check.appendChild(adult);
+        check.appendChild(el("span", null, "I'm 18 or older."));
+        form.appendChild(check);
+        var trap = attrs(el("input", "quiz-email-capture__hp"), { type: "text", name: "website", tabindex: "-1", autocomplete: "off", "aria-hidden": "true" });
+        form.appendChild(trap);
+        var button = el("button", "conversion-button quiz-email-capture__button", "Email me my result");
+        button.type = "submit";
+        form.appendChild(button);
+        section.appendChild(form);
+        var fine = el("p", "quiz-email-capture__fine", "Your email and answers go to Brevo, my email service. Nothing else. Details in ");
+        fine.appendChild(attrs(el("a", null, "Privacy"), { href: "/privacy/" }));
+        fine.appendChild(document.createTextNode("."));
+        section.appendChild(fine);
+        var status = el("p", "quiz-email-capture__status");
+        status.setAttribute("aria-live", "polite");
+        section.appendChild(status);
+
+        var sending = false;
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (sending) {
+                return;
+            }
+            var email = String(input.value || "").trim();
+            // Native validation stops most bad submits first; this covers browsers without it.
+            if (!email || !adult.checked) {
+                status.textContent = "Add your email and tick the 18+ box.";
+                return;
+            }
+            sending = true;
+            button.disabled = true;
+            status.textContent = "";
+            function failWith(message) {
+                sending = false;
+                button.disabled = false;
+                status.textContent = message;
+            }
+            postJson("/api/kiss-email", { email: email, answers: state.answers, adult: true, website: String(trap.value || "") }).then(function (result) {
+                if (result.status !== 200 || result.data.ok !== true) {
+                    // Only a refused address is the reader's to fix; anything else is on our side.
+                    failWith(result.data.error === "bad_email"
+                        ? "That address didn't work. Check it and try again."
+                        : "That didn't send. Try again in a few minutes.");
+                    return;
+                }
+                section.removeChild(form);
+                status.textContent = "Check your inbox. Tap the confirm link and your result is on its way.";
+                // The focused button just left with the form; keep keyboard focus here.
+                focusHeading(status);
+                sendEvent("email_capture", {
+                    placement: "result-email",
+                    archetype: state.summary.archetype.id,
+                    score_band: state.summary.band
+                });
+            }, function () {
+                failWith("Couldn't reach the server. Try again in a moment.");
+            });
+        });
+        return section;
+    }
+
+    // The static free-chapter section (Brevo's hosted form) belongs to the paid view and the
+    // status screens; the free result carries its own box above, so the page shows one.
+    function showHostedEmail(visible) {
+        var hosted = document.querySelector(".quiz-email");
+        if (!hosted) {
+            return;
+        }
+        if (visible) {
+            hosted.removeAttribute("hidden");
+        } else {
+            hosted.setAttribute("hidden", "");
+        }
+    }
+
     function statusScreen(root, headingText, text, action) {
         var screen = el("section", "quiz-result-static");
         screen.appendChild(el("p", "conversion-kicker", "Kiss Test result"));
@@ -1534,6 +1631,11 @@
         // used to fill the first screen and push the $ button to the third.
         var card = archetypeCard(state.summary.archetype, null, { compact: true });
         clear(root);
+        if (state.emailConfirmed) {
+            var confirmed = el("p", "quiz-notice", "You're in. Your result is on its way to your inbox.");
+            confirmed.setAttribute("role", "status");
+            root.appendChild(confirmed);
+        }
         root.appendChild(card);
         var paywall = scoreCard(state);
         root.appendChild(paywall);
@@ -1544,6 +1646,11 @@
         root.appendChild(strengths);
         loadFreeTier(strengths, paywall.costliest, state);
         root.appendChild(lockedList(state, paywall.form));
+        // Just back from the confirm link: already subscribed, so no second sign-up box.
+        if (!state.emailConfirmed) {
+            root.appendChild(emailCapture(state));
+        }
+        showHostedEmail(false);
         var share = el("section", "quiz-share-section");
         share.appendChild(el("h2", "quiz-section-title", "Tell someone. Or don't."));
         share.appendChild(shareActions(state.summary.archetype, null));
@@ -1812,6 +1919,8 @@
             share.appendChild(shareActions(local.archetype, { score: local.score, bandLabel: local.band.label }));
             root.appendChild(share);
         }
+        // A retry can turn a free render into this one; the free view hid the hosted form.
+        showHostedEmail(true);
         var lede = document.querySelector("[data-email-lede]");
         if (lede) {
             lede.textContent = "Your report stays open on this device for 30 days. This sends the chapter its fixes build on.";
@@ -1840,6 +1949,29 @@
         return "The report service is unavailable right now. Nothing new was charged. Try again in a moment.";
     }
 
+    // Brevo's confirm link lands as ?email=confirmed#a=<answers>, often in a browser that never
+    // took the test, so the answers ride in the fragment, which never reaches the page request.
+    // Valid answers are stored before the render; both markers then leave the address bar.
+    function readEmailReturn(params) {
+        var ks = engine();
+        var hash = window.location.hash || "";
+        var answers = hash.indexOf("#a=") === 0 ? hash.slice(3).toLowerCase() : "";
+        var restored = Boolean(ks && answers && ks.isValidAnswers(answers));
+        if (restored) {
+            writeAnswers(answers.split(""));
+        }
+        var confirmed = params.get("email") === "confirmed";
+        if (confirmed) {
+            params.delete("email");
+            sendEvent("email_confirmed", { placement: "result-email" });
+        }
+        if ((restored || confirmed) && window.history && typeof window.history.replaceState === "function") {
+            var query = params.toString();
+            window.history.replaceState(null, "", window.location.pathname + (query ? "?" + query : "") + (restored ? "" : hash));
+        }
+        return confirmed;
+    }
+
     function setupResultPage() {
         if (document.body.dataset.pageKind !== "quiz-result") {
             return;
@@ -1849,6 +1981,7 @@
             return;
         }
         var params = new URLSearchParams(window.location.search);
+        var emailConfirmed = readEmailReturn(params);
         var sessionId = params.get("session_id") || "";
         var stored = readAnswers();
         var ks = engine();
@@ -1858,6 +1991,7 @@
             context: readContext() || { from: "", hook: "", placement: "", entry: "direct" },
             set: pronounSetFor(safeStorage(window.sessionStorage, "getItem", KEYS.pronoun) || ""),
             checkoutReturn: params.get("checkout") || "",
+            emailConfirmed: emailConfirmed,
             notice: "",
             retry: null,
             summary: null
