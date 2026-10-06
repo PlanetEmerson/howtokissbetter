@@ -19,7 +19,7 @@ export const PRODUCTS = {
     item_id: "kiss-report",
     name: "Kiss Test: your full report",
     description: "Where every point went, the three habits costing you most with the fixes, and your 7-day plan.",
-    unit_amount: 499,
+    unit_amount: 299,
     image: null,
     success_path: "/kiss-test/result/",
     statement_suffix: "KISSTEST",

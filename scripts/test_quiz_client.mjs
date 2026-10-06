@@ -138,7 +138,7 @@ function stubEngine() {
       pronoun: { prompt: "Who's on the other end of these kisses?", note: "Never kissed anyone? Answer on instinct.", options: PRONOUNS },
       questions,
       archetypes: ARCHETYPES,
-      bands: [{ id: "dangerous", min: 65, max: 84, label: "Dangerous, in a Good Way" }],
+      bands: [{ id: "dangerous", min: 65, max: 84, label: "Dangerous, in a Good Way" }, { id: "podium", min: 85, max: 100, label: "Podium" }],
       levels: [{ id: "strong", min: 0.83, label: "Strong", line: "Keep doing exactly this." }],
     },
     canonical: (s) => String(s).trim().toLowerCase(),
@@ -225,6 +225,7 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
   const navigations = [];
   let ready;
   let loaded;
+  let pageshow;
   const document = {
     body,
     title: "Test",
@@ -250,7 +251,7 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
     },
     history: { replaceState: (...args) => navigations.push(["replaceState", ...args]) },
     matchMedia: (query) => ({ matches: /reduce/.test(query) ? reducedMotion : /hover/.test(query) ? hover : /max-width/.test(query) ? phone : true }),
-    addEventListener(name, fn) { if (name === "load") loaded = fn; },
+    addEventListener(name, fn) { if (name === "load") loaded = fn; if (name === "pageshow") pageshow = fn; },
     navigator: { share, canShare, clipboard, connection },
     File: fileImpl,
     setTimeout(fn, delay) { timeouts.push({ fn, delay }); return timeouts.length; },
@@ -271,7 +272,7 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
   window.window = window;
   vm.runInNewContext(quizSource, { Array, Boolean, Error, JSON, Math, Number, Object, Promise, String, URLSearchParams, document, window });
   ready();
-  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, heroMedia, landingCards, lede, load: () => loaded && loaded(), navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
+  return { app, body, demoFigure, document, engine, events, feedbackForm, feedbackSent, heroMedia, landingCards, lede, load: () => loaded && loaded(), pageshow: (event) => pageshow && pageshow(event), navigations, startButtons, timeouts, window, KissQuiz: window.KissQuiz };
 }
 
 const settle = async () => { for (let i = 0; i < 6; i++) await new Promise((resolve) => setImmediate(resolve)); };
@@ -363,7 +364,7 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.match(text, /4 of your 10 answers are costing you points\. Your strongest dimension is Reading them\./);
   assert.match(text, /What he's actually noticing \(from your answers\)/);
   assert.match(text, /The one move for The Overthinker/);
-  assert.match(text, /Unlock my full report · \$4\.99/);
+  assert.match(text, /Unlock my full report · \$2\.99/);
   assert.match(text, /Your two strongest habits/);
   assert.match(text, /When he pulls back, you wait\./);
 
@@ -378,7 +379,8 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.equal(card.querySelector(".quiz-cost"), null);
   assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Nothing's costing you points. The report shows where every one came from, and how to keep them.");
   assert.equal(page.app.querySelectorAll(".quiz-locked[aria-hidden=\"true\"]").length, 5);
-  assert.equal(page.app.querySelectorAll(".quiz-unlock-link[href=\"#kiss-test-paywall\"]").length, 5);
+  assert.equal(page.app.querySelectorAll("button.quiz-unlock-link").length, 5);
+  assert.equal(page.app.querySelectorAll("a.quiz-unlock-link").length, 0);
 
   const form = page.app.querySelector("form[data-report-checkout]");
   assert.equal(form.getAttribute("action"), "https://api.example/api/checkout");
@@ -391,18 +393,18 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   const submit = form.dispatch("submit", { preventDefault() { this.prevented = true; } });
   assert.equal(submit.prevented, true);
   const checkout = named(page.events, "begin_checkout")[0].params;
-  assert.equal(checkout.value, 4.99);
+  assert.equal(checkout.value, 2.99);
   assert.equal(checkout.product, "report");
   assert.equal(checkout.archetype, "overthinker");
   assert.equal(checkout.score_band, "dangerous");
-  assert.equal(checkout.variant, "soft-score");
-  assert.deepEqual(plain(checkout.items), [{ item_id: "kiss-report", item_name: "Kiss Test full report", price: 4.99, quantity: 1 }]);
+  assert.equal(checkout.variant, "score-first");
+  assert.deepEqual(plain(checkout.items), [{ item_id: "kiss-report", item_name: "Kiss Test full report", price: 2.99, quantity: 1 }]);
   checkout.event_callback();
   page.timeouts.forEach((t) => t.fn());
   assert.equal(form.submitCalls, 1);
 
   assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "free", archetype: "overthinker" });
-  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "soft-score", return: "none" });
+  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "score-first", return: "none" });
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes(ANSWERS)), false);
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes("him")), false);
 });
@@ -444,15 +446,17 @@ test("no answers and no unlock sends the visitor back to the test", async () => 
   assert.deepEqual(page.navigations, [["replace", "/kiss-test/"]]);
 });
 
-test("free render carries the claim and floor lines, the sixth list item, and the Stripe-page fine print", async () => {
+test("free render puts the unlock right after the pitch, then the list, the claim and the Stripe-page fine print", async () => {
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
   await settle();
   const card = page.app.querySelector(".quiz-score-card");
   assert.equal(card.querySelector(".quiz-score-card__claim").textContent, "Computed from your 10 answers. Not a vibe. A number.");
   assert.doesNotMatch(page.app.textContent, /blur/);
-  assert.equal(card.querySelector(".quiz-score-card__floor").textContent, "Nobody scores under 20. The report is the fix, not the verdict.");
+  assert.equal(card.querySelector(".quiz-score-card__floor"), null);
   const kinds = card.children.map((c) => c.className);
-  assert.equal(kinds.indexOf("quiz-score-card__floor"), kinds.indexOf("quiz-score-card__teaser") + 1);
+  assert.equal(kinds.indexOf("quiz-paywall__form"), kinds.indexOf("quiz-score-card__pitch") + 1);
+  assert.equal(kinds.indexOf("quiz-score-card__behind"), kinds.indexOf("quiz-paywall__form") + 1);
+  assert.equal(kinds.indexOf("quiz-score-card__claim") > kinds.indexOf("quiz-paywall__list"), true);
   const items = card.querySelectorAll(".quiz-paywall__list li").map((li) => li.textContent);
   assert.equal(items.length, 6);
   assert.equal(items[0], "Where every point went, across 8 dimensions");
@@ -479,11 +483,76 @@ test("the costliest habit is named by the free endpoint, and its fix stays locke
   assert.equal(cost.querySelector(".quiz-cost__label").textContent, "Costing you the most");
   assert.equal(cost.querySelector(".quiz-cost__title").textContent, "The Lunge");
   assert.equal(cost.querySelector(".quiz-cost__meta").textContent, "Scored 0 of 3 points on Pace. It's the first of the three habits the report fixes.");
-  assert.equal(cost.querySelector(".quiz-cost__lock").textContent, "The fix for each is in the report.");
   const card = page.app.querySelector(".quiz-score-card");
   const kinds = card.children.map((c) => c.className);
-  assert.equal(kinds.indexOf("quiz-cost"), kinds.indexOf("quiz-score-card__floor") + 1);
-  assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Now you know what's costing you. The report shows why, and what to do instead.");
+  assert.equal(kinds.indexOf("quiz-cost"), kinds.indexOf("quiz-score-card__teaser") + 1);
+  // 73 is Dangerous: the pitch sells the gap to the top band instead of a fix.
+  assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "12 points off Podium. The report shows where those points went, and what they're actually noticing.");
+});
+
+test("the pitch reads the band: the top band hears what is still costing, a low band hears the fix", async () => {
+  const pitchFor = async (score, band) => {
+    const engine = costlyEngine(THREE_COSTS);
+    const scored = engine.score;
+    engine.score = (answers) => ({ ...scored(answers), score, band });
+    const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, engine, fetchImpl: freeFetch() });
+    await settle();
+    return page.app.querySelector(".quiz-score-card__pitch").textContent;
+  };
+  assert.equal(await pitchFor(91, { id: "podium", label: "Podium" }), "Podium. The report shows the habit still costing you points, and what they're actually noticing.");
+  assert.equal(await pitchFor(84, { id: "dangerous", label: "Dangerous, in a Good Way" }), "1 point off Podium. The report shows where those points went, and what they're actually noticing.");
+  assert.equal(await pitchFor(52, { id: "better", label: "Better Than You Think" }), "Now you know what's costing you. The report shows why, and what to do instead.");
+});
+
+test("fewer costly answers than report habits names the rest as weakest spots, not costs", async () => {
+  const metaFor = async (costliest) => {
+    const engine = costlyEngine(costliest);
+    const scored = engine.score;
+    engine.score = (answers) => {
+      const result = scored(answers);
+      return { ...result, teasers: { ...result.teasers, costingCount: 1 } };
+    };
+    const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, engine, fetchImpl: freeFetch() });
+    await settle();
+    return page.app.querySelector(".quiz-cost__meta").textContent;
+  };
+  assert.equal(await metaFor(THREE_COSTS), "Scored 0 of 3 points. The report fixes it first, then your next two weakest spots.");
+  assert.equal(await metaFor(THREE_COSTS.slice(0, 2)), "Scored 0 of 3 points. The report fixes it first, then your next weakest spot.");
+  assert.equal(await metaFor(THREE_COSTS.slice(0, 1)), "Scored 0 of 3 points. It's the one habit the report fixes.");
+});
+
+test("a locked section's unlock starts the report checkout once, under its own placement", async () => {
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
+  await settle();
+  const form = page.app.querySelector("form[data-report-checkout]");
+  const buttons = page.app.querySelectorAll("button.quiz-unlock-link");
+  assert.equal(buttons[2].textContent, "Unlock · $2.99");
+  buttons[2].dispatch("click");
+  buttons[4].dispatch("click");
+  const checkouts = named(page.events, "begin_checkout");
+  assert.equal(checkouts.length, 1);
+  assert.equal(checkouts[0].params.placement, "quiz-locked");
+  assert.equal(Object.fromEntries(form.querySelectorAll("input").map((i) => [i.name, i.value])).placement, "quiz-locked");
+  checkouts[0].params.event_callback();
+  assert.equal(form.submitCalls, 1);
+});
+
+test("back from Stripe out of the page cache re-arms the unlock buttons", async () => {
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
+  await settle();
+  const form = page.app.querySelector("form[data-report-checkout]");
+  const unlock = page.app.querySelectorAll("button.quiz-unlock-link")[0];
+  unlock.dispatch("click");
+  page.pageshow({ persisted: false });
+  unlock.dispatch("click");
+  assert.equal(named(page.events, "begin_checkout").length, 1);
+  page.pageshow({ persisted: true });
+  const submit = form.dispatch("submit", { preventDefault() { this.prevented = true; } });
+  assert.equal(submit.prevented, true);
+  const checkouts = named(page.events, "begin_checkout");
+  assert.equal(checkouts.length, 2);
+  assert.equal(checkouts[1].params.placement, "quiz-paywall");
+  assert.equal(Object.fromEntries(form.querySelectorAll("input").map((i) => [i.name, i.value])).placement, "quiz-paywall");
 });
 
 test("a result with nothing costing points calls its lowest dimension the weakest spot, not a cost", async () => {
@@ -513,9 +582,8 @@ test("without the name (older deploy or a failed call) the dimension stays, and 
   await settle();
   assert.equal(offline.app.querySelector(".quiz-cost__title").textContent, "A habit in Pressure");
   assert.equal(offline.app.querySelector(".quiz-cost__meta").textContent, "Scored 1 of 3 points. It's the one habit the report fixes.");
-  assert.equal(offline.app.querySelector(".quiz-cost__lock").textContent, "The fix is in the report.");
   assert.equal(offline.app.querySelector(".quiz-strengths").children.length, 0);
-  assert.match(offline.app.textContent, /Unlock my full report · \$4\.99/);
+  assert.match(offline.app.textContent, /Unlock my full report · \$2\.99/);
 });
 
 const DARE_REPORT = {
@@ -548,7 +616,7 @@ test("paid render adds the sighted count-up beside the real score, then the sign
   const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
   assert.equal(at("quiz-paid-signoff"), at("quiz-paid-section--tonight") + 1);
   assert.equal(at("kiss-feedback"), at("quiz-paid-signoff") + 1);
-  assert.equal(at("quiz-paid-share"), at("kiss-feedback") + 1);
+  assert.equal(at("quiz-share-section"), at("kiss-feedback") + 1);
 
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), ANSWERS);
   link.dispatch("click");
@@ -564,7 +632,7 @@ test("paid render moves the static feedback form into place between the sign-off
   assert.equal(form.parent, page.app);
   const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
   assert.equal(at("kiss-feedback"), at("quiz-paid-signoff") + 1);
-  assert.equal(at("quiz-paid-share"), at("kiss-feedback") + 1);
+  assert.equal(at("quiz-share-section"), at("kiss-feedback") + 1);
   assert.equal(page.app.querySelector("[data-feedback-sent]"), null);
   assert.equal(page.feedbackSent.getAttribute("hidden"), "");
   assert.equal(page.feedbackSent.parent.tagName, "MAIN");
@@ -582,7 +650,7 @@ test("a paid render with feedback=sent in the URL shows the thank-you line and l
   assert.equal(sent.textContent, "Got it. Thank you.");
   const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
   assert.equal(page.app.children.indexOf(sent), at("quiz-paid-signoff") + 1);
-  assert.equal(at("quiz-paid-share"), page.app.children.indexOf(sent) + 1);
+  assert.equal(at("quiz-share-section"), page.app.children.indexOf(sent) + 1);
   assert.match(page.app.textContent, /Kiss Score 73/);
 });
 
@@ -604,7 +672,7 @@ test("share text ends with the dare: the free line hides the score, the paid lin
 
   const paid = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: paidFetch });
   await settle();
-  paid.app.querySelector(".quiz-paid-share .quiz-share-cta__button").dispatch("click");
+  paid.app.querySelector(".quiz-share-section .quiz-share-cta__button").dispatch("click");
   const paidQuote = paid.body.querySelector("blockquote.quiz-share__text").textContent;
   assert.equal(paidQuote.startsWith("I took the Kiss Test and got The Overthinker. \"Your instincts are fine. Your narrator won't shut up.\" "), true, paidQuote);
   assert.equal(paidQuote.endsWith(`Kiss Score 73, Dangerous, in a Good Way. Your turn. Lower score buys dinner: ${SHARE_URL}`), true, paidQuote);
@@ -708,8 +776,8 @@ test("paid render writes server strings as text, applies the stored pronoun, and
   assert.equal(page.window.localStorage.getItem("kt_token_v1"), "tok-1");
   assert.equal(page.window.localStorage.getItem("kt_paid_answers_v1"), ANSWERS);
   assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/result/"]]);
-  assert.match(page.lede.textContent, /full report link, so it reopens on any device/);
-  assert.equal(page.app.querySelector(".quiz-paid-share .quiz-share-cta__button").textContent, "Share my score");
+  assert.match(page.lede.textContent, /stays open on this device for 30 days/);
+  assert.equal(page.app.querySelector(".quiz-share-section .quiz-share-cta__button").textContent, "Share my score");
   assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "paid", archetype: "overthinker" });
   assert.deepEqual(plain(named(page.events, "unlock_view")[0].params), { product: "report" });
   assert.equal(named(page.events, "paywall_view").length, 0);

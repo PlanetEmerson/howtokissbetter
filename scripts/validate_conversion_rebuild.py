@@ -25,8 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20260929b">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20260929b" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261006a">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261006a" defer></script>'
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
@@ -101,7 +101,7 @@ KISS_TEST_HERO_FILES = {
     "hero-kitchen-4x5-900.webp": 110_000,
 }
 KISS_TEST_LOCKED_LINES = (
-    "$4.99, one time, 30-day guarantee",
+    "$2.99, one time, 30-day guarantee",
     "Retakes free for 30 days.",
     "<li>Honest, not magic. Same answers, same result.</li>",
     "<li>Private. Scored on your phone. Nothing is stored unless you buy the report.</li>",

@@ -44,7 +44,7 @@ The session is created with `mode=payment`, `submit_type=pay`, `locale=auto`,
 `customer_creation=if_required`, `excluded_payment_method_types` `klarna`,
 `amazon_pay`, `crypto` (card with Apple Pay and Google Pay, Link and Cash App
 stay available from the Dashboard settings), one `price_data` line item ($9.99 book with
-the cover image, $4.99 report), `success_url={site}{successPath}?session_id={CHECKOUT_SESSION_ID}`
+the cover image, $2.99 report), `success_url={site}{successPath}?session_id={CHECKOUT_SESSION_ID}`
 (`/book/thanks/` or `/kiss-test/result/`), `cancel_url={site}{cancel}?checkout=canceled`,
 `client_reference_id=hkb_{product}_{src}_{8 hex}`, `metadata` (`kind`
 `kiss_ebook`|`kiss_report`, `site=howtokissbetter`, `product`, `src`,

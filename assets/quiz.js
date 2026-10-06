@@ -5,7 +5,7 @@
     var PRODUCT = {
         id: "kiss-report",
         title: "Kiss Test full report",
-        price: 4.99,
+        price: 2.99,
         currency: "USD"
     };
     var KEYS = {
@@ -69,7 +69,8 @@
         unavailable: "Unlocking is offline for a moment. Nothing was charged. Try again shortly."
     };
     // Tags paywall_view and the report's begin_checkout since the free tier started showing the score.
-    var PAYWALL_VARIANT = "soft-score";
+    var PAYWALL_VARIANT = "score-first";
+    var PRICE_LABEL = "$" + PRODUCT.price.toFixed(2);
     var gaIds = { client_id: "", session_id: "" };
     var paywallViewed = false;
 
@@ -436,10 +437,15 @@
         var costliest = Array.isArray(result.costliest) ? result.costliest : [];
         var top = costliest[0];
         var dimension = top ? (result.dimensions || []).filter(function (d) { return d.key === top.dimension; })[0] : null;
+        var ks = engine();
+        var bands = ks && ks.DATA && Array.isArray(ks.DATA.bands) ? ks.DATA.bands : [];
+        var topBand = bands.reduce(function (best, band) { return !best || band.min > best.min ? band : best; }, null);
+        var score = Number(result.score) || 0;
         return {
             archetype: result.archetype,
-            score: Number(result.score) || 0,
+            score: score,
             band: result.band ? result.band.id : "",
+            topBand: topBand ? { id: topBand.id, label: topBand.label, gap: Math.max(0, topBand.min - score) } : null,
             bandLabel: result.band ? result.band.label : "",
             costingCount: costing,
             costliestCount: costliest.length,
@@ -1187,7 +1193,7 @@
 
     function archetypeCard(archetype, paid, options) {
         options = options || {};
-        var card = el("section", "quiz-card");
+        var card = el("section", options.compact ? "quiz-card quiz-card--compact" : "quiz-card");
         card.setAttribute("aria-label", "Your archetype");
         card.appendChild(archetypeImage(archetype, "", true));
         var body = el("div", "quiz-card__body");
@@ -1197,7 +1203,9 @@
         body.appendChild(el("p", "quiz-card__tagline", archetype.tagline));
         body.appendChild(el("p", "quiz-card__url", "howtokissbetter.com/kiss-test"));
         card.appendChild(body);
-        card.appendChild(shareActions(archetype, paid));
+        if (!options.compact) {
+            card.appendChild(shareActions(archetype, paid));
+        }
         card.heading = title;
         return card;
     }
@@ -1226,14 +1234,39 @@
         2: "It's the first of the two habits the report fixes.",
         3: "It's the first of the three habits the report fixes."
     };
+    // When fewer answers cost points than the report covers, "first of the three" read as a
+    // contradiction of the teaser's "1 of your 10 answers", so name the rest as weakest spots.
+    var NEXT_SPOTS = { 1: "your next weakest spot", 2: "your next two weakest spots" };
 
     function costliestMeta(summary, named) {
         var cost = summary.costliest;
         var where = named && cost.dimension ? " on " + cost.dimension : "";
-        var rank = summary.costingCount === 0
-            ? "It's your lowest spot, even with nothing costing you."
-            : COSTLIEST_RANK[Math.min(summary.costliestCount, 3)];
+        var habits = Math.min(summary.costliestCount, 3);
+        var rank;
+        if (summary.costingCount === 0) {
+            rank = "It's your lowest spot, even with nothing costing you.";
+        } else if (habits > 1 && summary.costingCount < habits) {
+            rank = "The report fixes it first, then " + NEXT_SPOTS[habits - 1] + ".";
+        } else {
+            rank = COSTLIEST_RANK[habits];
+        }
         return "Scored " + cost.points + " of " + cost.max + " points" + where + ". " + rank;
+    }
+
+    // High scorers were told "Dangerous, in a Good Way" and had no reason to pay for a fix, so
+    // their pitch sells the gap to the top band and what the partner notices instead.
+    function pitchLine(summary) {
+        if (!summary.costliest || summary.costingCount === 0) {
+            return "Nothing's costing you points. The report shows where every one came from, and how to keep them.";
+        }
+        var top = summary.topBand;
+        if (top && summary.band === top.id) {
+            return top.label + ". The report shows the habit still costing you points, and what {he}'s actually noticing.";
+        }
+        if (top && summary.band === "dangerous" && top.gap > 0) {
+            return top.gap + (top.gap === 1 ? " point" : " points") + " off " + top.label + ". The report shows where those points went, and what {he}'s actually noticing.";
+        }
+        return "Now you know what's costing you. The report shows why, and what to do instead.";
     }
 
     // Stands in with the dimension until /api/kiss-free answers with the habit's own title.
@@ -1244,7 +1277,6 @@
         block.appendChild(block.name);
         block.meta = el("p", "quiz-cost__meta", costliestMeta(summary, false));
         block.appendChild(block.meta);
-        block.appendChild(el("p", "quiz-cost__lock", summary.costliestCount === 1 ? "The fix is in the report." : "The fix for each is in the report."));
         return block;
     }
 
@@ -1272,7 +1304,7 @@
         Object.keys(fields).forEach(function (name) {
             setHiddenField(form, name, fields[name]);
         });
-        var button = el("button", "conversion-button conversion-sheen quiz-paywall__button", "Unlock my full report · $4.99");
+        var button = el("button", "conversion-button conversion-sheen quiz-paywall__button", "Unlock my full report · " + PRICE_LABEL);
         button.type = "submit";
         form.appendChild(button);
         var guarantee = el("p", "kiss-guarantee");
@@ -1287,12 +1319,13 @@
         guarantee.appendChild(terms);
         form.appendChild(guarantee);
 
-        form.addEventListener("submit", function (event) {
+        function begin(event, placement) {
             if (form.dataset.checkoutSubmitted === "true") {
                 event.preventDefault();
                 return;
             }
             form.dataset.checkoutSubmitted = "true";
+            setHiddenField(form, "placement", placement);
             if (gaIds.client_id) {
                 setHiddenField(form, "ga_cid", gaIds.client_id);
             }
@@ -1315,7 +1348,7 @@
                 currency: PRODUCT.currency,
                 value: PRODUCT.price,
                 product: "report",
-                placement: "quiz-paywall",
+                placement: placement,
                 archetype: state.summary.archetype.id,
                 score_band: state.summary.band,
                 variant: PAYWALL_VARIANT,
@@ -1324,6 +1357,25 @@
                 event_timeout: 400
             });
             window.setTimeout(submitOnce, 500);
+        }
+        form.addEventListener("submit", function (event) {
+            begin(event, "quiz-paywall");
+        });
+        // For the locked sections' unlock buttons: the same checkout, without a native submit event,
+        // under its own placement so the pulse can tell which button sold.
+        form.start = function () {
+            var event = { prevented: false, preventDefault: function () { this.prevented = true; } };
+            begin(event, "quiz-locked");
+            if (!event.prevented) {
+                form.submit();
+            }
+        };
+        // Back from Stripe can restore this page from the back/forward cache with the guard
+        // still set, which would leave every unlock button dead.
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                delete form.dataset.checkoutSubmitted;
+            }
         });
         return form;
     }
@@ -1336,26 +1388,12 @@
         card.appendChild(el("p", "conversion-kicker", "Your Kiss Score"));
         card.appendChild(plainScore(state.summary));
         card.appendChild(scoreBar(state.summary.score));
-        var claim = el("p", "quiz-score-card__claim");
-        claim.appendChild(el("strong", null, "Computed from your 10 answers. Not a vibe. A number."));
-        card.appendChild(claim);
         card.appendChild(el("p", "quiz-score-card__teaser", state.summary.teaser));
-        card.appendChild(el("p", "quiz-score-card__floor", "Nobody scores under 20. The report is the fix, not the verdict."));
         if (state.summary.costliest) {
             card.costliest = costliestBlock(state.summary);
             card.appendChild(card.costliest);
         }
-        card.appendChild(el("p", "quiz-score-card__pitch", state.summary.costliest && state.summary.costingCount > 0
-            ? "Now you know what's costing you. The report shows why, and what to do instead."
-            : "Nothing's costing you points. The report shows where every one came from, and how to keep them."));
-        var behind = el("p", "quiz-score-card__behind");
-        behind.appendChild(el("strong", null, "Behind the unlock:"));
-        card.appendChild(behind);
-        var list = el("ul", "quiz-paywall__list");
-        UNLOCK_LIST.forEach(function (line) {
-            list.appendChild(el("li", null, fillIn(line, archetype, state.set)));
-        });
-        card.appendChild(list);
+        card.appendChild(el("p", "quiz-score-card__pitch", fillIn(pitchLine(state.summary), archetype, state.set)));
         var checkoutNotice = Object.prototype.hasOwnProperty.call(CHECKOUT_NOTICES, state.checkoutReturn)
             ? CHECKOUT_NOTICES[state.checkoutReturn]
             : "";
@@ -1367,7 +1405,21 @@
             notice.setAttribute("role", "status");
             card.appendChild(notice);
         });
-        card.appendChild(paywallForm(state));
+        // The button sits right under the costliest habit so it lands on the first screen on a phone;
+        // the list of what's inside follows it instead of pushing it down.
+        card.form = paywallForm(state);
+        card.appendChild(card.form);
+        var behind = el("p", "quiz-score-card__behind");
+        behind.appendChild(el("strong", null, "Behind the unlock:"));
+        card.appendChild(behind);
+        var list = el("ul", "quiz-paywall__list");
+        UNLOCK_LIST.forEach(function (line) {
+            list.appendChild(el("li", null, fillIn(line, archetype, state.set)));
+        });
+        card.appendChild(list);
+        var claim = el("p", "quiz-score-card__claim");
+        claim.appendChild(el("strong", null, "Computed from your 10 answers. Not a vibe. A number."));
+        card.appendChild(claim);
         card.appendChild(el("p", "quiz-paywall__once", "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen."));
         var fine = el("p", "quiz-paywall__fine");
         fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older to purchase. Refunds: email " + SUPPORT_EMAIL + " within 30 days."));
@@ -1410,7 +1462,9 @@
         });
     }
 
-    function lockedList(state) {
+    // Each locked section's unlock starts checkout through the paywall form, so its GA event and
+    // double-submit guard apply; it used to only scroll back up to the paywall.
+    function lockedList(state, form) {
         var wrap = el("div", "quiz-locked-list");
         LOCKED_TITLES.forEach(function (title) {
             var section = el("section", "quiz-locked-section");
@@ -1423,9 +1477,10 @@
             section.appendChild(body);
             var note = el("p", "quiz-locked__note");
             note.appendChild(el("em", null, "Unlocks with the report."));
-            var link = el("a", "quiz-unlock-link", "Unlock · $4.99");
-            link.setAttribute("href", "#kiss-test-paywall");
-            note.appendChild(link);
+            var unlock = el("button", "quiz-unlock-link", "Unlock · " + PRICE_LABEL);
+            unlock.type = "button";
+            unlock.addEventListener("click", form.start);
+            note.appendChild(unlock);
             section.appendChild(note);
             wrap.appendChild(section);
         });
@@ -1475,18 +1530,24 @@
             return;
         }
         state.summary = freeSummary(result);
-        var card = archetypeCard(state.summary.archetype, null);
+        // Compact card, then the score and the unlock: the full-height art and the share button
+        // used to fill the first screen and push the $ button to the third.
+        var card = archetypeCard(state.summary.archetype, null, { compact: true });
         clear(root);
         root.appendChild(card);
+        var paywall = scoreCard(state);
+        root.appendChild(paywall);
         var read = el("section", "quiz-read");
         read.appendChild(el("p", null, state.summary.archetype.read || ""));
         root.appendChild(read);
-        var paywall = scoreCard(state);
-        root.appendChild(paywall);
         var strengths = el("section", "quiz-strengths");
         root.appendChild(strengths);
         loadFreeTier(strengths, paywall.costliest, state);
-        root.appendChild(lockedList(state));
+        root.appendChild(lockedList(state, paywall.form));
+        var share = el("section", "quiz-share-section");
+        share.appendChild(el("h2", "quiz-section-title", "Tell someone. Or don't."));
+        share.appendChild(shareActions(state.summary.archetype, null));
+        root.appendChild(share);
         focusHeading(card.heading);
         sendEvent("result_view", { tier: "free", archetype: state.summary.archetype.id });
         if (!paywallViewed) {
@@ -1746,14 +1807,14 @@
             root.appendChild(feedback);
         }
         if (local && local.archetype) {
-            var share = el("section", "quiz-paid-share");
+            var share = el("section", "quiz-share-section");
             share.appendChild(el("h2", "quiz-section-title", "Tell someone. Or don't."));
             share.appendChild(shareActions(local.archetype, { score: local.score, bandLabel: local.band.label }));
             root.appendChild(share);
         }
         var lede = document.querySelector("[data-email-lede]");
         if (lede) {
-            lede.textContent = "I'll send your full report link, so it reopens on any device. You also get the free chapter, The 10 Kiss Commandments, because you'll want it for the fixes.";
+            lede.textContent = "Your report stays open on this device for 30 days. This sends the chapter its fixes build on.";
         }
         focusHeading(heading);
         sendEvent("result_view", { tier: "paid", archetype: local ? local.archetype.id : "unknown" });
