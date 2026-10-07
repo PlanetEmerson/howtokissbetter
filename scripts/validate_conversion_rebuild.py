@@ -385,7 +385,8 @@ def expected_surface(post: dict[str, object]) -> str:
 
 
 def validate_quarter_ratio(validation: Validation, slug: str, page_html: str, marker: str) -> None:
-    """The quarter surface sits at 20 to 30.5 percent of the article body, whichever arm renders it."""
+    """The quarter surface sits at 20 to 30.5 percent of the article body, whichever arm renders it,
+    or right after the first section for build_blog.EARLY_HOOK_SLUGS."""
     start_marker = f"<!-- {marker}_START -->"
     end_marker = f"<!-- {marker}_END -->"
     content_open = page_html.find('<div class="article-content">')
@@ -401,7 +402,13 @@ def validate_quarter_ratio(validation: Validation, slug: str, page_html: str, ma
         after = page_html[quarter_end + len(end_marker):content_close]
         base_length = len(before) + len(after)
         ratio = len(before) / base_length if base_length else 0
-        validation.require(0.20 <= ratio <= 0.305, f"{slug} quarter card ratio is {ratio:.1%}")
+        if slug in load_build_blog().EARLY_HOOK_SLUGS:
+            validation.require(
+                len(re.findall(r"<h2\b", before)) == 1 and after.lstrip().startswith("<h2"),
+                f"{slug} early hook does not sit right after the first section",
+            )
+        else:
+            validation.require(0.20 <= ratio <= 0.305, f"{slug} quarter card ratio is {ratio:.1%}")
 
 
 def validate_no_retired_refund_copy(validation: Validation, label: str, text: str) -> None:

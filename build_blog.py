@@ -102,6 +102,11 @@ QUIZ_DATA_PATTERN = re.compile(r"/\* QUIZ_DATA_START \*/(.*?)/\* QUIZ_DATA_END \
 # Posts pinned to the buy rail by slug, e.g. to guard a ranking; a post.json conversion_offer.surface
 # does the same for posts with a source. Empty since the crossed-test pins ended on 2026-09-29.
 BUY_SURFACE_OVERRIDES: set[str] = set()
+# Posts whose in-article hook sits after the first section instead of near the quarter mark,
+# because readers rarely scroll that far: on the neck post, 45 of 202 sessions (22%) reached
+# the quarter card from 09-29 to 10-06, against about 45% on other posts. The placement keeps
+# its quiz-article-quarter name so GA4 reads stay continuous.
+EARLY_HOOK_SLUGS: set[str] = {"how-to-kiss-someones-neck"}
 
 QUIZ_FINAL_EYEBROW = "Before you go"
 QUIZ_FINAL_COPY = "Ten questions, one honest number, and the habit costing you most. Free result."
@@ -1323,13 +1328,16 @@ def strip_legacy_book_asides(content_html: str) -> str:
     )
 
 
-def insert_offer_after_complete_section(content_html: str, offer_html: str) -> str:
-    """Place the offer near the first quarter, at a section boundary whenever possible."""
+def insert_offer_after_complete_section(content_html: str, offer_html: str, early: bool = False) -> str:
+    """Place the offer near the first quarter (or after the first section when early), at a section boundary whenever possible."""
     if not content_html.strip():
         return offer_html
 
     target = len(content_html) * 0.25
     heading_positions = [match.start() for match in re.finditer(r"<h2\b", content_html)]
+    if early and len(heading_positions) > 1:
+        boundary = heading_positions[1]
+        return f"{content_html[:boundary].rstrip()}\n\n{offer_html}\n\n{content_html[boundary:].lstrip()}"
     section_boundaries = [
         position
         for position in heading_positions[1:]
@@ -1394,7 +1402,9 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     content_start = content_open_start + len(content_open)
     content_end, _ = matching_div_close(page_html, content_open_start)
     content_html = strip_legacy_book_asides(page_html[content_start:content_end])
-    content_html = insert_offer_after_complete_section(content_html, quarter_html)
+    content_html = insert_offer_after_complete_section(
+        content_html, quarter_html, early=str(offer["article_slug"]) in EARLY_HOOK_SLUGS
+    )
     page_html = f"{page_html[:content_start]}{content_html}{page_html[content_end:]}"
 
     final_markers = r"(?:PROOF_LED|BUY_RAIL|QUIZ_HOOK)_FINAL"
