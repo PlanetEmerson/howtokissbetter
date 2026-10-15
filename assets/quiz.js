@@ -15,6 +15,7 @@
         token: "kt_token_v1",
         paidAnswers: "kt_paid_answers_v1",
         self: "kt_self_v1",
+        counted: "kt_counted_v1",
         api: "kt_api"
     };
     // One tap sets the question pronouns (partner) and the illustration (self).
@@ -73,6 +74,11 @@
     var PRICE_LABEL = "$" + PRODUCT.price.toFixed(2);
     var gaIds = { client_id: "", session_id: "" };
     var paywallViewed = false;
+    // Result-page engagement events fire once each per page load; freeShown stops the dwell
+    // clock once the free result gives way to the paid report or a status screen.
+    var resultFired = {};
+    var freeShown = false;
+    var dwell = { seconds: 0, running: false };
 
     function safeStorage(storage, method, key, value) {
         try {
@@ -1438,8 +1444,13 @@
 
     // The two strongest-habit blurbs and the costliest habit's name come from the functions. On any
     // failure, or from a deploy that predates the name, the section stays empty and the dimension stands in.
+    // The call doubles as the server's count of results served (GA4 misses blocked browsers). A
+    // reload or a return in the same tab says repeat, so the count stays near one per real result.
     function loadFreeTier(section, costliest, state) {
-        postJson("/api/kiss-free", { answers: state.answers }).then(function (result) {
+        var repeat = safeStorage(window.sessionStorage, "getItem", KEYS.counted) === state.answers;
+        safeStorage(window.sessionStorage, "setItem", KEYS.counted, state.answers);
+        var body = { answers: state.answers, variant: PAYWALL_VARIANT, entry: state.context.entry || "direct", repeat: repeat };
+        postJson("/api/kiss-free", body).then(function (result) {
             var free = result.status === 200 && result.data.ok === true ? result.data.free : null;
             var habit = free && free.costliestHabit;
             if (costliest && habit && typeof habit.title === "string" && habit.title) {
@@ -1588,6 +1599,7 @@
     }
 
     function statusScreen(root, headingText, text, action) {
+        freeShown = false;
         var screen = el("section", "quiz-result-static");
         screen.appendChild(el("p", "conversion-kicker", "Kiss Test result"));
         var heading = el("h1", null, headingText);
@@ -1648,7 +1660,8 @@
         var strengths = el("section", "quiz-strengths");
         root.appendChild(strengths);
         loadFreeTier(strengths, paywall.costliest, state);
-        root.appendChild(lockedList(state, paywall.form));
+        var locked = lockedList(state, paywall.form);
+        root.appendChild(locked);
         // Just back from the confirm link: already subscribed, so no second sign-up box.
         if (!state.emailConfirmed) {
             root.appendChild(emailCapture(state));
@@ -1659,6 +1672,8 @@
         share.appendChild(shareActions(state.summary.archetype, null));
         root.appendChild(share);
         focusHeading(card.heading);
+        freeShown = true;
+        watchFreeResult(state, locked, share);
         sendEvent("result_view", { tier: "free", archetype: state.summary.archetype.id });
         if (!paywallViewed) {
             paywallViewed = true;
@@ -1669,6 +1684,66 @@
                 "return": state.checkoutReturn || "none"
             });
         }
+    }
+
+    function resultOnce(name, state) {
+        if (resultFired[name]) {
+            return;
+        }
+        resultFired[name] = true;
+        sendEvent(name, { variant: PAYWALL_VARIANT, archetype: state.summary.archetype.id });
+    }
+
+    // What free readers do short of paying: reach the first locked section, reach the share
+    // block at the bottom, stay 15 and 60 visible seconds, tap a locked section outside its
+    // unlock note (the blurred text has pointer-events: none, so its section takes the tap).
+    function watchFreeResult(state, locked, end) {
+        var firstLocked = locked.firstChild;
+        if (firstLocked && end && typeof window.IntersectionObserver === "function") {
+            var watch = new window.IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        resultOnce(entry.target === end ? "result_end_seen" : "result_locked_seen", state);
+                    }
+                });
+            }, { threshold: 0.5 });
+            watch.observe(firstLocked);
+            watch.observe(end);
+        }
+        Array.prototype.forEach.call(locked.querySelectorAll(".quiz-locked-section"), function (section) {
+            section.addEventListener("click", function (event) {
+                var target = event && event.target;
+                if (target && typeof target.closest === "function" && target.closest(".quiz-locked__note")) {
+                    return;
+                }
+                resultOnce("result_locked_tap", state);
+            });
+        });
+        // The clock survives a retry's status screen: seconds carry over, and a clock that
+        // stopped while the free result was off screen starts again when it returns.
+        if (dwell.running || resultFired.result_read_60s) {
+            return;
+        }
+        dwell.running = true;
+        function tick() {
+            if (!freeShown) {
+                dwell.running = false;
+                return;
+            }
+            if (document.visibilityState !== "hidden") {
+                dwell.seconds += 5;
+            }
+            if (dwell.seconds >= 15) {
+                resultOnce("result_read_15s", state);
+            }
+            if (dwell.seconds >= 60) {
+                resultOnce("result_read_60s", state);
+                dwell.running = false;
+                return;
+            }
+            window.setTimeout(tick, 5000);
+        }
+        window.setTimeout(tick, 5000);
     }
 
     function levelAttr(value) {
@@ -1864,6 +1939,7 @@
         // The report describes the answers that were paid for, which can differ
         // from this browser's latest run (a Stripe return link, or a retake in
         // progress). Its own free summary drives the header, not local state.
+        freeShown = false;
         var paid = report && report.paid ? report.paid : report;
         var sections = paid && Array.isArray(paid.sections) ? paid.sections : [];
         if (!sections.length) {

@@ -142,6 +142,21 @@ Outcomes, in the order they are checked:
   whether or not Brevo accepted it (a refusal is logged as `brevo_send_failed`
   with the provider status and error code only).
 
+### `POST /api/kiss-free`
+
+The free Kiss Test result's server-side tier: the two strongest-habit blurbs
+and the costliest habit's name, never its fix. Text/plain JSON body, 2 KiB cap,
+CORS for the allowlisted origins. `answers` is validated by
+`src/kiss-score.cjs`; `variant`, `entry` and `repeat` are optional.
+
+Each valid result also posts one GA4 Measurement Protocol event, so the
+paywall has a count that browser blockers cannot hide: `result_served`, or
+`result_served_repeat` when the page reports a reload or return in the same
+tab. Params are `variant` (`^[a-z0-9-]{1,24}$`, else `unknown`) and `entry`
+(`inline`, `article`, `direct`, `share`, else `other`). Every count uses one
+synthetic client id and never carries the answers. A failed or slow count
+(2 s timeout) never changes the response.
+
 ### `POST /api/kiss-email`
 
 "Email me my result" on the free Kiss Test result. JSON body, 2 KiB cap,
@@ -197,8 +212,8 @@ availability check returning `{ ok: true, service: "howtokissbetter-functions" }
 | `BREVO_SENDER_EMAIL` | stripe-webhook, kiss-feedback | Verified sender; default `contact@howtokissbetter.com` |
 | `BREVO_KISS_TEST_LIST_ID` | kiss-email | Numeric id of the Brevo list a confirmed Kiss Test contact joins |
 | `BREVO_KISS_TEST_DOI_TEMPLATE_ID` | kiss-email | Numeric id of the Brevo double opt-in confirmation template |
-| `GA_MEASUREMENT_ID` | stripe-webhook, payhip-paid | GA4 measurement id (`G-...`) |
-| `GA_API_SECRET` | stripe-webhook, payhip-paid | GA4 Measurement Protocol secret |
+| `GA_MEASUREMENT_ID` | stripe-webhook, payhip-paid, kiss-free | GA4 measurement id (`G-...`) |
+| `GA_API_SECRET` | stripe-webhook, payhip-paid, kiss-free | GA4 Measurement Protocol secret |
 | `PAYHIP_SIGNATURE_SHA256` | payhip-paid | Payhip webhook signature |
 | `BLOB_READ_WRITE_TOKEN` | verify (via `@vercel/blob`) | Injected by Vercel when the Blob store is connected to the project |
 | `VERCEL_OIDC_TOKEN`, `BLOB_STORE_ID` | verify (via `@vercel/blob`) | Alternative credentials the SDK reads when OIDC is used instead of a token |

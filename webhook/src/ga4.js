@@ -16,7 +16,7 @@ export function validGaEnvironment(env) {
   );
 }
 
-export async function postGaEvents(env, fetchImpl, body) {
+export async function postGaEvents(env, fetchImpl, body, timeoutMs = 8_000) {
   const query = new URLSearchParams({
     measurement_id: env.GA_MEASUREMENT_ID,
     api_secret: env.GA_API_SECRET,
@@ -27,7 +27,7 @@ export async function postGaEvents(env, fetchImpl, body) {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(8_000),
+      signal: AbortSignal.timeout(timeoutMs),
     });
     return response.ok;
   } catch {

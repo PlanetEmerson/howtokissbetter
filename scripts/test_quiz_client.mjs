@@ -289,7 +289,9 @@ const ANSWERS = "bbcdabcdab";
 const freeFetch = (blurbs = [{ key: "R", title: "You stay put", text: "When {he} pulls back, you wait." }], extra = {}) => (url, options) => {
   if (url.endsWith("/api/kiss-free")) {
     assert.equal(options.headers["Content-Type"], "text/plain");
-    assert.deepEqual(JSON.parse(options.body), { answers: ANSWERS });
+    const sent = JSON.parse(options.body);
+    assert.equal(sent.answers, ANSWERS);
+    assert.equal(sent.variant, "score-first");
     return Promise.resolve(jsonResponse(200, { ok: true, free: { strongestBlurbs: blurbs, ...extra } }));
   }
   return Promise.reject(new Error(`unexpected ${url}`));
@@ -411,6 +413,99 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "score-first", return: "none" });
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes(ANSWERS)), false);
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes("him")), false);
+});
+
+test("the free endpoint hears the variant and entry, and a reload in the same tab says repeat", async () => {
+  const bodies = [];
+  const fetchImpl = (url, options) => {
+    bodies.push(JSON.parse(options.body));
+    return Promise.resolve(jsonResponse(200, { ok: true, free: { strongestBlurbs: [] } }));
+  };
+  const session = { kt_answers_v1: ANSWERS, kt_from_v1: JSON.stringify({ from: "how-to-french-kiss", hook: "", placement: "quiz-article-quarter", entry: "article" }) };
+  const first = runPage({ pageKind: "quiz-result", session, fetchImpl });
+  await settle();
+  assert.deepEqual(bodies[0], { answers: ANSWERS, variant: "score-first", entry: "article", repeat: false });
+  assert.equal(first.window.sessionStorage.getItem("kt_counted_v1"), ANSWERS);
+
+  runPage({ pageKind: "quiz-result", session: { ...session, kt_counted_v1: ANSWERS }, fetchImpl });
+  await settle();
+  assert.equal(bodies[1].repeat, true);
+
+  runPage({ pageKind: "quiz-result", session: { ...session, kt_counted_v1: "aaaaaaaaaa" }, fetchImpl });
+  await settle();
+  assert.equal(bodies[2].repeat, false);
+});
+
+test("free readers' depth, dwell and blurred taps each fire once per page load, without the answers", async () => {
+  const observers = [];
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]), observers });
+  await settle();
+  const watch = observers.find((o) => o.options && o.options.threshold === 0.5);
+  assert.ok(watch, "result observer");
+  const [firstLocked, end] = watch.targets;
+  assert.equal(firstLocked.className, "quiz-locked-section");
+  assert.equal(end.className, "quiz-share-section");
+
+  watch.callback([{ target: firstLocked, isIntersecting: false }]);
+  assert.equal(named(page.events, "result_locked_seen").length, 0);
+  watch.callback([{ target: firstLocked, isIntersecting: true }]);
+  watch.callback([{ target: firstLocked, isIntersecting: true }, { target: end, isIntersecting: true }]);
+  assert.equal(named(page.events, "result_locked_seen").length, 1);
+  assert.equal(named(page.events, "result_end_seen").length, 1);
+  assert.deepEqual(plain(named(page.events, "result_end_seen")[0].params), { variant: "score-first", archetype: "overthinker" });
+
+  // The blurred text ignores pointers, so the section hears the tap; its unlock note does not count.
+  const sections = page.app.querySelectorAll(".quiz-locked-section");
+  const inNote = { closest: (selector) => (selector === ".quiz-locked__note" ? {} : null) };
+  sections[0].dispatch("click", { target: inNote });
+  assert.equal(named(page.events, "result_locked_tap").length, 0);
+  sections[0].dispatch("click", { target: { closest: () => null } });
+  sections[3].dispatch("click", { target: sections[3] });
+  assert.equal(named(page.events, "result_locked_tap").length, 1);
+
+  // The dwell clock ticks every 5 visible seconds: 15s on the third tick, 60s on the twelfth, then stops.
+  const ticks = () => page.timeouts.filter((t) => t.delay === 5000 && !t.ran);
+  for (let i = 1; i <= 12; i++) {
+    const [next] = ticks();
+    assert.ok(next, `tick ${i}`);
+    next.ran = true;
+    next.fn();
+    assert.equal(named(page.events, "result_read_15s").length, i >= 3 ? 1 : 0, `15s after tick ${i}`);
+    assert.equal(named(page.events, "result_read_60s").length, i >= 12 ? 1 : 0, `60s after tick ${i}`);
+  }
+  assert.equal(ticks().length, 0);
+  assert.equal(page.events.some((e) => JSON.stringify(e.params).includes(ANSWERS)), false);
+});
+
+test("the dwell clock survives a retry: a tick on the status screen stops it, the result restarts it, seconds carry over", async () => {
+  let verifyCalls = 0;
+  let release;
+  const fetchImpl = (url) => {
+    if (!url.endsWith("/api/verify")) { return Promise.resolve(jsonResponse(500, {})); }
+    verifyCalls += 1;
+    const failed = jsonResponse(502, { ok: false, error: "stripe_unavailable" });
+    return verifyCalls === 1 ? Promise.resolve(failed) : new Promise((resolve) => { release = () => resolve(failed); });
+  };
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl });
+  await settle();
+  const ticks = () => page.timeouts.filter((t) => t.delay === 5000 && !t.ran);
+  const tick = () => { const [next] = ticks(); assert.ok(next, "a pending tick"); next.ran = true; next.fn(); };
+  tick();
+  tick();
+
+  page.app.querySelector(".quiz-retry").dispatch("click");
+  await settle();
+  assert.match(page.app.textContent, /Checking your unlock/);
+  tick();
+  assert.equal(ticks().length, 0, "no clock while the result is off screen");
+  assert.equal(named(page.events, "result_read_15s").length, 0);
+
+  release();
+  await settle();
+  assert.match(page.app.textContent, /You're The Overthinker\./);
+  assert.equal(ticks().length, 1, "one clock, restarted");
+  tick();
+  assert.equal(named(page.events, "result_read_15s").length, 1);
 });
 
 test("paywall_view fires once even when the free state re-renders after a retry", async () => {

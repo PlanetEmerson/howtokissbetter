@@ -122,6 +122,58 @@ test("CORS: allowlisted origins get headers, others are refused, preflight is em
   assert.equal(local.headers.get("access-control-allow-origin"), "http://localhost:8000");
 });
 
+const GA_ENV = { GA_MEASUREMENT_ID: "G-TEST123", GA_API_SECRET: "test-secret" };
+
+function countingHandler(fetchImpl) {
+  return createKissFreeHandler({ env: GA_ENV, fetchImpl, loadScore: async () => ENGINE, loadReport: async () => REPORTER });
+}
+
+test("each valid result posts one aggregate GA4 count, never the answers", async () => {
+  const calls = [];
+  const handler = countingHandler(async (url, init) => { calls.push({ url, body: JSON.parse(init.body) }); return { ok: true }; });
+
+  const first = await handler(post({ answers: "abcdabcdab", variant: "score-first", entry: "inline" }));
+  assert.equal(first.status, 200);
+  await handler(post({ answers: "abcdabcdab", variant: "score-first", entry: "article", repeat: true }));
+  await handler(post({ answers: "abcdabcdab", variant: "Score First!", entry: "evil", repeat: "yes" }));
+  await handler(post({ answers: "abcdabcdab" }));
+
+  assert.equal(calls.length, 4);
+  const url = new URL(calls[0].url);
+  assert.equal(url.origin + url.pathname, "https://www.google-analytics.com/mp/collect");
+  assert.equal(url.searchParams.get("measurement_id"), "G-TEST123");
+  assert.deepEqual(calls.map(({ body }) => body.events), [
+    [{ name: "result_served", params: { variant: "score-first", entry: "inline" } }],
+    [{ name: "result_served_repeat", params: { variant: "score-first", entry: "article" } }],
+    [{ name: "result_served", params: { variant: "unknown", entry: "other" } }],
+    [{ name: "result_served", params: { variant: "unknown", entry: "other" } }],
+  ]);
+  // One shared synthetic client: the counts never join a reader's GA session.
+  assert.equal(new Set(calls.map(({ body }) => body.client_id)).size, 1);
+  assert.match(calls[0].body.client_id, /^\d+\.\d+$/);
+  assert.ok(calls.every(({ body }) => !JSON.stringify(body).includes("abcdabcdab")));
+});
+
+test("invalid answers are not counted, and a failed count still returns the result", async () => {
+  let calls = 0;
+  const failing = countingHandler(async () => { calls += 1; throw new Error("network down"); });
+
+  await expectError(await failing(post({ answers: "abcdabcda", variant: "score-first" })), 400, "bad_request");
+  assert.equal(calls, 0);
+
+  const response = await failing(post({ answers: "abcdabcdab", variant: "score-first", entry: "direct" }));
+  assert.equal(calls, 1);
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, free: { strongestBlurbs: BLURBS } });
+});
+
+test("without GA settings nothing is posted", async () => {
+  let calls = 0;
+  const handler = createKissFreeHandler({ env: ENV, fetchImpl: async () => { calls += 1; return { ok: true }; }, loadScore: async () => ENGINE, loadReport: async () => REPORTER });
+  assert.equal((await handler(post({ answers: "abcdabcdab", variant: "score-first" }))).status, 200);
+  assert.equal(calls, 0);
+});
+
 test("route adapter reads text/plain bodies, caps them, and answers preflight", async () => {
   const preflight = await routeOptions(new Request("https://functions.example/api/kiss-free", {
     method: "OPTIONS",
