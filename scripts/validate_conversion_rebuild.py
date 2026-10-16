@@ -27,6 +27,10 @@ CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VER
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
 QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261016a">'
 QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261016a" defer></script>'
+ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2523241663582064" crossorigin="anonymous"></script>'
+ADSENSE_META = '<meta name="google-adsense-account" content="ca-pub-2523241663582064">'
+ADS_TXT = "google.com, pub-2523241663582064, DIRECT, f08c47fec0942fa0"
+NON_PUBLIC_DIRS = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
@@ -1312,12 +1316,11 @@ def validate_site_safety(validation: Validation) -> None:
             r"whsec_[A-Za-z0-9]{20,}",
         )
     )
-    non_public_dirs = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
     public_files = [
         path
         for path in ROOT.rglob("*")
         if path.is_file()
-        and not non_public_dirs.intersection(path.parts)
+        and not NON_PUBLIC_DIRS.intersection(path.parts)
         and path.suffix.lower() in {".html", ".js", ".css", ".json", ".py", ".xml", ".txt", ".md"}
     ]
     for path in public_files:
@@ -1326,6 +1329,22 @@ def validate_site_safety(validation: Validation) -> None:
             validation.require(token not in text, f"{path.relative_to(ROOT)} contains forbidden private or credential material")
         for shape in forbidden_shapes:
             validation.require(not shape.search(text), f"{path.relative_to(ROOT)} contains a credential-shaped string")
+
+
+def validate_ads(validation: Validation) -> None:
+    """Ads earn on article pages only, so the quiz, results, book, checkout and homepage stay ad-free."""
+    articles = set(BLOG.glob("*/index.html")) | {BLOG / "_template.html"}
+    for path in sorted(ROOT.rglob("*.html")):
+        if NON_PUBLIC_DIRS.intersection(path.parts):
+            continue
+        text = path.read_text()
+        label = str(path.relative_to(ROOT))
+        if path in articles:
+            validation.equal(text.count(ADSENSE_TAG), 1, f"{label} AdSense tag count")
+        else:
+            validation.require("adsbygoogle" not in text, f"{label} loads ads outside the article pages")
+    validation.require(ADSENSE_META in (ROOT / "index.html").read_text(), "homepage lost the AdSense site verification meta")
+    validation.equal((ROOT / "ads.txt").read_text().strip(), ADS_TXT, "ads.txt seller line")
 
 
 def validate_override_failures(validation: Validation) -> None:
@@ -1367,6 +1386,7 @@ def main() -> None:
     listing_pages = validate_listing_pages(validation)
     validate_tracking_contract(validation)
     validate_site_safety(validation)
+    validate_ads(validation)
     validate_override_failures(validation)
     quiz_pages = [(ROOT / relative).resolve() for relative in QUIZ_PAGES]
     pending = frozenset(page for page in quiz_pages if not page.exists())
