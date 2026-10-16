@@ -1802,9 +1802,11 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
         "url": f"{SITE_URL}/blog/",
         "author": {
             "@type": "Person",
+            "@id": f"{SITE_URL}/about/#cj-mckenna",
             "name": "C.J. McKenna",
-            "url": SITE_URL,
-            "jobTitle": "Author and Intimacy Expert",
+            "url": f"{SITE_URL}/about/",
+            "image": f"{SITE_URL}/assets/images/cj-mckenna-800.jpg",
+            "jobTitle": "Kiss choreographer and author",
             "knowsAbout": [
                 "Kissing Techniques",
                 "Intimacy",
@@ -1812,7 +1814,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
                 "Body Language",
                 "Physical Chemistry",
             ],
-            "description": "Author of Kiss Perfect Now and intimacy expert specializing in the art of kissing.",
+            "description": "Former Hollywood kiss choreographer. Author of Kiss Perfect Now: A Master Class in Kissology and How to Kiss Better.",
         },
         "publisher": PUBLISHER,
     }
@@ -1883,7 +1885,7 @@ def render_blog_index(posts: list[dict[str, Any]]) -> str:
                     <p class="text-gold font-medium text-xs uppercase tracking-widest mb-2">About the Author</p>
                     <h2 class="font-serif text-2xl sm:text-3xl text-cream mb-3">C.J. McKenna</h2>
                     <p class="text-gray-300 leading-relaxed mb-3">
-                        Author of <em class="text-cream">Kiss Perfect Now: A Master Class in Kissology</em>, an intimacy expert whose work focuses on the mechanics, neuroscience, and emotional practice of kissing well. Every article here reflects first-hand coaching experience and peer-reviewed research — the goal is advice that holds up under a microscope and still works at dinner.
+                        Spent more than a decade choreographing kisses on Hollywood film and TV sets, then took the craft to real people. Author of <em class="text-cream">Kiss Perfect Now: A Master Class in Kissology</em>. Every guide here pairs what the camera taught him with the research on why a kiss works: advice that holds up under a microscope and still works at dinner. <a href="/about/" class="text-gold hover:underline">More about C.J.</a>
                     </p>
                     <p class="text-gray-400 text-sm">
                         Topics of focus: kissing techniques, intimacy, relationship science, body language, physical chemistry.

@@ -30,6 +30,7 @@ QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261016a" defer></script>'
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2523241663582064" crossorigin="anonymous"></script>'
 ADSENSE_META = '<meta name="google-adsense-account" content="ca-pub-2523241663582064">'
 ADS_TXT = "google.com, pub-2523241663582064, DIRECT, f08c47fec0942fa0"
+AUTHOR_ID = "https://howtokissbetter.com/about/#cj-mckenna"
 NON_PUBLIC_DIRS = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
@@ -1217,6 +1218,13 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
     validation.require("<!-- CTA Box -->" in template_html, "article template lost the first-build final offer anchor")
     validation.require(CONVERSION_CSS_TAG in template_html and CONVERSION_JS_TAG in template_html, "article template assets are stale")
     validation.require('<span class="hidden sm:inline">Get the book</span>' in template_html, "article template post-nav label is stale")
+
+    about_html = (ROOT / "about/index.html").read_text()
+    validate_head_icons(validation, "about page", about_html)
+    validate_share_image(validation, "about page", about_html)
+    validation.require(CONVERSION_JS_TAG in about_html, "about page script is stale")
+    validation.require(f'"@id": "{AUTHOR_ID}"' in about_html, "about page lost the author Person @id")
+    validation.require('<a href="/about/"' in template_html and f'"@id": "{AUTHOR_ID}"' in template_html, "article template lost the author link or @id")
 
     privacy = ROOT / "privacy/index.html"
     privacy_html = privacy.read_text()
