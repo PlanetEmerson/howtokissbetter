@@ -1284,6 +1284,61 @@
     padding: 0;
 }
 
+/* The dare on the free result, and the pair read a dared visitor gets instead */
+.quiz-dare {
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 1rem;
+    padding: 1.25rem 1.2rem;
+}
+
+.quiz-dare .quiz-section-title {
+    font-size: clamp(1.5rem, 4.5vw, 1.9rem);
+    margin-bottom: 0.5rem;
+}
+
+.quiz-dare__lede {
+    color: var(--quiz-text);
+    margin: 0 0 1rem;
+}
+
+.quiz-dare__types {
+    color: var(--quiz-cream);
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+}
+
+.quiz-dare__actions {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.quiz-dare__button {
+    width: 100%;
+}
+
+.quiz-dare__sub {
+    color: rgba(253, 248, 243, 0.72);
+    font-size: 0.84rem;
+    margin: 0;
+    text-align: center;
+}
+
+.quiz-dare-banner {
+    background: rgba(25, 22, 25, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-radius: 0.75rem;
+    color: var(--quiz-cream);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    margin: 0 0 1rem;
+    max-width: 34rem;
+    padding: 0.7rem 0.9rem;
+}
+
+.quiz-dare-banner strong {
+    color: var(--quiz-gold);
+}
+
 /* Email capture and the book */
 .quiz-email__lede {
     color: var(--quiz-text);

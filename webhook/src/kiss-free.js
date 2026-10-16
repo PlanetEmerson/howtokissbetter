@@ -2,7 +2,7 @@ import { clientIdFor, postGaEvents, validGaEnvironment } from "./ga4.js";
 import { corsHeaders, emptyResponse, jsonResponse, originAllowed } from "./http.js";
 import { loadKissReport, loadKissScore } from "./kiss-engine.js";
 
-const ENTRIES = new Set(["inline", "article", "direct", "share"]);
+const ENTRIES = new Set(["inline", "article", "direct", "share", "dare"]);
 const VARIANT = /^[a-z0-9-]{1,24}$/;
 const COUNT_TIMEOUT_MS = 2_000;
 // Every count shares one synthetic GA client: the counts are aggregates, so they never

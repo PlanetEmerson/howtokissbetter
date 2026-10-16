@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import test from "node:test";
 import vm from "node:vm";
 
@@ -174,7 +175,7 @@ function stubEngine() {
 // default (the stub matched every query before), so the scoring beat keeps its zero delay.
 // `landing` adds the archetype row and the tier demo figure; `observers` collects every
 // IntersectionObserver quiz.js creates so a test can drive visibility by hand.
-function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, phone = true, connection, landing = false, hero = false, observers }) {
+function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, fetchImpl, gtagMissing = false, gaValues = {}, engine = stubEngine(), share, canShare, clipboard, fileImpl, reducedMotion = true, hover = false, phone = true, connection, landing = false, hero = false, heroTitle = false, observers }) {
   FakeElement.active = null;
   const body = new FakeElement("body");
   body.dataset.pageKind = pageKind;
@@ -206,6 +207,12 @@ function runPage({ pageKind, search = "", hash = "", session = {}, local = {}, f
     heroMedia = main.appendChild(new FakeElement("div"));
     heroMedia.className = "quiz-hero__media";
     heroMedia.appendChild(new FakeElement("picture")).appendChild(new FakeElement("img"));
+  }
+  if (heroTitle) {
+    const copy = main.appendChild(new FakeElement("div"));
+    copy.className = "quiz-hero__copy";
+    copy.appendChild(new FakeElement("p")).className = "conversion-kicker";
+    copy.appendChild(new FakeElement("h1")).id = "kiss-test-title";
   }
   if (landing) {
     const row = main.appendChild(new FakeElement("ul"));
@@ -312,10 +319,10 @@ const THREE_COSTS = [
 test("parseHandoff keeps valid card values, drops junk, and maps ref=share", () => {
   const { KissQuiz } = runPage({ pageKind: "quiz" });
   const valid = KissQuiz.parseHandoff("?from=how-to-french-kiss&hook=technique&placement=quiz-article-quarter&q=q6&a=d");
-  assert.deepEqual(plain(valid), { from: "how-to-french-kiss", hook: "technique", placement: "quiz-article-quarter", q: "q6", a: "d", index: 5, entry: "inline" });
+  assert.deepEqual(plain(valid), { from: "how-to-french-kiss", hook: "technique", placement: "quiz-article-quarter", q: "q6", a: "d", index: 5, dare: "", entry: "inline" });
 
   const junk = KissQuiz.parseHandoff("?from=Bad%20Slug&hook=%3Cx%3E&placement=" + "p".repeat(41) + "&q=q99&a=z");
-  assert.deepEqual(plain(junk), { from: "", hook: "", placement: "", q: "", a: "", index: -1, entry: "direct" });
+  assert.deepEqual(plain(junk), { from: "", hook: "", placement: "", q: "", a: "", index: -1, dare: "", entry: "direct" });
 
   assert.equal(KissQuiz.parseHandoff("?q=q1&a=zz").entry, "direct");
   assert.equal(KissQuiz.parseHandoff("?ref=share").entry, "share");
@@ -333,6 +340,120 @@ test("a fragment handoff starts the quiz like the old query string, and wins ove
   assert.deepEqual(plain(named(page.events, "quiz_start")[0].params), { entry: "inline", article: "slow-kiss", offer_key: "technique", placement: "quiz-article-quarter" });
   assert.equal(page.window.sessionStorage.getItem("kt_answers_v1"), "b_________");
   assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/"]]);
+});
+
+const DARE_URL = "https://howtokissbetter.com/kiss-test/#dare=overthinker";
+const DARE_TEXT = "I got The Overthinker on the Kiss Test. I dare you to take it. Then we see how our kisses fit together:";
+const DARED = JSON.stringify({ from: "", hook: "", placement: "", entry: "dare", dare: "natural" });
+
+test("a dare link names the sender's type above the H1 and starts as entry dare, carrying the dare to the result", () => {
+  const { KissQuiz } = runPage({ pageKind: "quiz" });
+  assert.deepEqual([KissQuiz.parseHandoff("dare=slow-burn").dare, KissQuiz.parseHandoff("dare=slow-burn").entry], ["slow-burn", "dare"]);
+  for (const junk of ["dare=Slow%20Burn", "dare=constructor", "dare=natural%2Bnatural", "dare="]) {
+    assert.deepEqual([KissQuiz.parseHandoff(junk).dare, KissQuiz.parseHandoff(junk).entry], ["", "direct"], junk);
+  }
+  assert.equal(KissQuiz.parseHandoff("dare=natural&q=q1&a=b").entry, "inline");
+
+  const page = runPage({ pageKind: "quiz", hash: "#dare=natural", heroTitle: true });
+  const banner = page.body.querySelector(".quiz-dare-banner");
+  assert.equal(banner.textContent, "You've been dared. Someone who kisses like The Natural sent you this test. Take it to see how you two kiss together.");
+  const row = banner.parentNode.children;
+  assert.equal(row[row.indexOf(banner) + 1], page.body.querySelector("#kiss-test-title"));
+  assert.deepEqual(plain(named(page.events, "dare_open").map((e) => e.params)), [{ archetype: "natural" }]);
+  page.startButtons[1].dispatch("click", { preventDefault() {} });
+  assert.equal(named(page.events, "quiz_start")[0].params.entry, "dare");
+  assert.equal(JSON.parse(page.window.sessionStorage.getItem("kt_from_v1")).dare, "natural");
+
+  const direct = runPage({ pageKind: "quiz", heroTitle: true });
+  assert.equal(direct.body.querySelector(".quiz-dare-banner"), null);
+  assert.equal(named(direct.events, "dare_open").length, 0);
+
+  // A reload or Back after this dare started a test keeps the banner but counts no second open.
+  const reload = runPage({ pageKind: "quiz", hash: "#dare=natural", heroTitle: true, session: { kt_from_v1: DARED } });
+  assert.ok(reload.body.querySelector(".quiz-dare-banner"));
+  assert.equal(named(reload.events, "dare_open").length, 0);
+
+  // A half-finished run in the same tab waits for Start, which begins the dared test.
+  const partial = runPage({ pageKind: "quiz", hash: "#dare=natural", heroTitle: true, session: { kt_answers_v1: "bb________", kt_pronoun_v1: "him", kt_self_v1: "man", kt_from_v1: JSON.stringify({ from: "", hook: "", placement: "", entry: "direct" }) } });
+  assert.equal(partial.app.querySelector(".quiz-option"), null);
+  partial.startButtons[1].dispatch("click", { preventDefault() {} });
+  assert.equal(named(partial.events, "quiz_start")[0].params.entry, "dare");
+  assert.equal(JSON.parse(partial.window.sessionStorage.getItem("kt_from_v1")).dare, "natural");
+  assert.equal(partial.window.sessionStorage.getItem("kt_answers_v1"), "__________");
+});
+
+test("every pair of the engine's seven archetypes has its own read, either order, in voice", () => {
+  const { KissQuiz } = runPage({ pageKind: "quiz" });
+  const ids = createRequire(import.meta.url)("../webhook/src/kiss-score.cjs").DATA.archetypes.map((a) => a.id);
+  assert.equal(ids.length, 7);
+  const headlines = new Set();
+  ids.forEach((a, i) => ids.slice(i).forEach((b) => {
+    const read = plain(KissQuiz.pairRead(a, b));
+    assert.equal(read.length, 2, `${a}+${b}`);
+    assert.deepEqual(plain(KissQuiz.pairRead(b, a)), read);
+    read.forEach((line) => assert.doesNotMatch(line, /—|–|chemistry|passionate|sensual|amazing/i, line));
+    headlines.add(read[0]);
+  }));
+  assert.equal(headlines.size, 28);
+});
+
+test("a dared visitor's result reads both types right under the unlock and dares them back; pair_view fires once", async () => {
+  const shares = [];
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS, kt_from_v1: DARED }, fetchImpl: freeFetch([]), share: (data) => { shares.push(data); return Promise.resolve(); } });
+  await settle();
+  const pair = page.app.querySelector(".quiz-dare--pair");
+  const kids = page.app.children;
+  assert.equal(kids[kids.indexOf(page.app.querySelector(".quiz-score-card")) + 1], pair);
+  assert.equal(pair.querySelector(".quiz-dare__types").textContent, "You: The Overthinker. Them: The Natural.");
+  assert.equal(pair.querySelector("h2").textContent, "The cure for a loud narrator.");
+  assert.equal(page.app.querySelectorAll(".quiz-dare").length, 1);
+  assert.equal(pair.querySelector(".quiz-dare__button").classList.contains("conversion-button-secondary"), true);
+
+  pair.querySelector(".quiz-dare__button").dispatch("click");
+  await settle();
+  assert.deepEqual(plain(shares), [{ title: "The Kiss Test", text: "I took your dare and got The Overthinker. Take it once more from this link to see how we kiss together:", url: DARE_URL }]);
+  assert.deepEqual(plain(named(page.events, "dare_back_click").map((e) => e.params)), [{ method: "web_share", archetype: "overthinker" }]);
+  assert.equal(named(page.events, "dare_click").length, 0);
+  assert.deepEqual(plain(named(page.events, "pair_view").map((e) => e.params)), [{ variant: "score-first", archetype: "overthinker" }]);
+
+
+  const twin = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS, kt_from_v1: DARED.replace("natural", "overthinker") }, fetchImpl: freeFetch([]) });
+  await settle();
+  assert.equal(twin.app.querySelector(".quiz-dare__types").textContent, "You're both The Overthinker.");
+  assert.equal(twin.app.querySelector(".quiz-dare--pair h2").textContent, "Two narrators, one kiss.");
+});
+
+test("everyone else gets the dare after the read: Web Share sends the link without the image, the sheet copies the dare url", async () => {
+  const shares = [];
+  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]), share: (data) => { shares.push(data); return Promise.resolve(); }, canShare: () => true });
+  await settle();
+  const dare = page.app.querySelector(".quiz-dare");
+  const kids = page.app.children;
+  assert.equal(kids[kids.indexOf(page.app.querySelector(".quiz-read")) + 1], dare);
+  assert.equal(dare.querySelector("h2").textContent, "Dare someone.");
+  assert.equal(dare.querySelector(".quiz-dare__button").classList.contains("conversion-button-secondary"), false);
+  assert.equal(page.app.querySelector(".quiz-dare--pair"), null);
+  dare.querySelector(".quiz-dare__button").dispatch("click");
+  await settle();
+  assert.deepEqual(plain(shares), [{ title: "The Kiss Test", text: DARE_TEXT, url: DARE_URL }]);
+  assert.deepEqual(plain(named(page.events, "dare_click").map((e) => e.params)), [{ method: "web_share", archetype: "overthinker" }]);
+  assert.equal(named(page.events, "pair_view").length, 0);
+
+  const written = [];
+  const noShare = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]), clipboard: { writeText: (t) => { written.push(t); return Promise.resolve(); } } });
+  await settle();
+  noShare.app.querySelector(".quiz-dare__button").dispatch("click");
+  const dialog = noShare.body.querySelector("dialog.quiz-share");
+  assert.equal(dialog.querySelector(".quiz-share__title").textContent, "Send the dare");
+  assert.equal(dialog.querySelector("blockquote.quiz-share__text").textContent, `${DARE_TEXT} ${DARE_URL}`);
+  const actions = dialog.querySelectorAll(".quiz-share__action");
+  assert.deepEqual(actions.map((a) => a.textContent), ["Copy link", "Copy text", "WhatsApp", "Messages", "X", "Email"]);
+  assert.equal(actions.find((a) => a.textContent === "Email").getAttribute("href"), plain(noShare.KissQuiz.shareLinks(DARE_TEXT, DARE_URL, "A Kiss Test dare")).email);
+  assert.match(actions.find((a) => a.textContent === "Email").getAttribute("href"), /^mailto:\?subject=A%20Kiss%20Test%20dare&/);
+  actions[0].dispatch("click");
+  await settle();
+  assert.deepEqual(written, [DARE_URL]);
+  assert.deepEqual(plain(named(noShare.events, "dare_click").map((e) => e.params)), [{ method: "copy_link", archetype: "overthinker" }]);
 });
 
 test("nextIndex walks forward and skips the question answered on the card", () => {
@@ -1182,7 +1303,7 @@ test("a direct start resets the pairing, the other paths set the partner alone, 
 test("homepage Q1 handoff starts the test inline from the hero card", () => {
   const { KissQuiz } = runPage({ pageKind: "quiz" });
   const handoff = KissQuiz.parseHandoff("?from=homepage&hook=complete-guide&placement=home-hero&q=q1&a=b");
-  assert.deepEqual(plain(handoff), { from: "homepage", hook: "complete-guide", placement: "home-hero", q: "q1", a: "b", index: 0, entry: "inline" });
+  assert.deepEqual(plain(handoff), { from: "homepage", hook: "complete-guide", placement: "home-hero", q: "q1", a: "b", index: 0, dare: "", entry: "inline" });
   for (const placement of ["home-final", "home-mobile-sticky"]) {
     const link = KissQuiz.parseHandoff(`?from=homepage&hook=complete-guide&placement=${placement}`);
     assert.deepEqual([link.from, link.hook, link.placement, link.entry], ["homepage", "complete-guide", placement, "article"]);

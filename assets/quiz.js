@@ -32,6 +32,40 @@
     var SHARE_URL = "https://howtokissbetter.com/kiss-test/#ref=share";
     var SHARE_TITLE = "The Kiss Test";
     var SHARE_SUBJECT = "My Kiss Test result";
+    // The dare link carries the sender's archetype id and nothing else: no score, no answers.
+    var DARE_ROOT = "https://howtokissbetter.com/kiss-test/#dare=";
+    // Every pair of archetypes, keyed by the two ids sorted and joined with "+".
+    // Each type also pairs with itself, so a same-type key validates a dare id.
+    var PAIR_READS = {
+        "explorer+explorer": ["Nobody's getting bored.", "You both bring every move, so the risk is a highlight reel with no plot. Pick one thing and stay on it long enough for it to land."],
+        "explorer+natural": ["The Natural follows anywhere.", "The Explorer brings the moves and the Natural goes along with all of them. Explorer, slow down long enough to see which one made them lean in. Then do that one again."],
+        "explorer+overthinker": ["One has every move. One is grading them.", "The Explorer keeps switching and the Overthinker keeps trying to keep up. Explorer, pick one. Overthinker, stop scoring and follow."],
+        "explorer+slow-burn": ["Variety, meet patience.", "The Slow Burn wants to stretch every second and the Explorer wants to try everything in them. Let the Slow Burn set the pace and the Explorer fill it."],
+        "explorer+sprinter": ["A lot happens, very fast.", "Two people with energy to spare, so the kiss plays like a montage. Slow one scene down and let it run."],
+        "explorer+statue": ["The Explorer is doing all the work.", "Every move comes from one side. Statue, you don't need new tricks. Answer with your hands and the Explorer will notice right away."],
+        "explorer+sweetheart": ["Adventure with a soft landing.", "The Explorer brings the surprise and the Sweetheart makes it safe to try. Sweetheart, steal one move back. They'll love getting caught off guard."],
+        "natural+natural": ["This is the easy one.", "Neither of you is thinking, and it shows in the best way. The only trap is coasting. Surprise each other now and then."],
+        "natural+overthinker": ["The cure for a loud narrator.", "The Natural doesn't think, and that's contagious. Overthinker, match their rhythm instead of your plan. You'll forget to keep score."],
+        "natural+slow-burn": ["Easy, then unbearable.", "The Natural makes it easy and the Slow Burn makes it last. Let the Slow Burn set the pace once and watch the Natural forget everything else."],
+        "natural+sprinter": ["The Natural can keep up.", "The Sprinter goes hard and the Natural rolls with it. Natural, you're the one who can slow this down without killing it. Ease off and they'll follow."],
+        "natural+statue": ["One moves. One waits for a cue.", "The Natural gives cues without trying. Statue, take them. Copy what their hands do and you'll stop waiting."],
+        "natural+sweetheart": ["Warm from the first second.", "This feels good right away. The risk is that it always feels the same. Natural, add a little heat. The Sweetheart will meet you there."],
+        "overthinker+overthinker": ["Two narrators, one kiss.", "You're both reviewing the kiss while it happens. Say one honest thing out loud first. Narrators go quiet when someone laughs."],
+        "overthinker+slow-burn": ["Plenty of time to think. Too much.", "The Slow Burn's pauses give the Overthinker room to narrate. Slow Burn, close the gap a little sooner. Overthinker, use the pause to look at them, not at yourself."],
+        "overthinker+sprinter": ["One rushes. One replays it.", "The Sprinter is done before the Overthinker stops worrying about the start. Sprinter, half speed. Overthinker, say what you want. They'll happily do it."],
+        "overthinker+statue": ["Both waiting for the other to move.", "Two careful people can kiss politely forever. Someone has to make the first real move. Overthinker, it's you. You've already thought it through."],
+        "overthinker+sweetheart": ["The safest room in the house.", "The Sweetheart makes the Overthinker relax, which is the whole fix. Stay there a while. Then one of you turns up the heat."],
+        "slow-burn+slow-burn": ["The longest almost in history.", "Two people who love the wait can wait forever. Somebody has to close the gap. Decide now who it is."],
+        "slow-burn+sprinter": ["Brakes, meet gas.", "The Sprinter wants it now and the Slow Burn wants it later. That pull is the fun part. Sprinter, lose this one on purpose."],
+        "slow-burn+statue": ["All that tension, nowhere to go.", "The Slow Burn builds it and the Statue holds still. Statue, the wait is an invitation. Reach for them before they reach for you."],
+        "slow-burn+sweetheart": ["Slow, sweet, and it lingers.", "Nobody's rushing and everybody feels safe. Sweetheart, you can tip it over. Close the last inch yourself."],
+        "sprinter+sprinter": ["Fast, fun, and over too soon.", "You'll never complain about each other's speed. You will miss the part where it builds. Try one whole minute where neither of you speeds up."],
+        "sprinter+statue": ["Full speed into a standstill.", "The Sprinter brings the energy and the Statue absorbs it. Sprinter, slow down so they can catch up. Statue, use your hands to set the pace you want."],
+        "sprinter+sweetheart": ["All heart, a little hurried.", "The Sweetheart makes it warm and the Sprinter makes it quick. Sweetheart, put a hand on their face and hold the moment. The speed drops right away."],
+        "statue+statue": ["Great faces. Where are the hands?", "Two Statues kiss beautifully from the neck up and nowhere else. One hand on a jaw changes everything. Go first."],
+        "statue+sweetheart": ["Lovely, still, and very polite.", "Nobody's pushing, so nothing moves. The Sweetheart can reach first. A hand at the back of their neck will do it."],
+        "sweetheart+sweetheart": ["Sweet, safe, and a little too polite.", "You both make each other feel good and neither of you wants to push. Push a little. They're waiting for permission too."]
+    };
     var IMAGE_ROOT = "/assets/images/kiss-test/archetypes/";
     var VIDEO_ROOT = "/assets/video/archetypes/";
     var SCORE_PLATE = "/assets/video/score-plate.mp4";
@@ -370,9 +404,24 @@
     }
 
     // Handoff from an article hook card (fragment or query string); unknown values are dropped, never echoed.
+    function dareType(value) {
+        return PAIR_READS[value + "+" + value] ? value : "";
+    }
+
+    function pairRead(a, b) {
+        return PAIR_READS[[a, b].sort().join("+")];
+    }
+
+    function typeName(id) {
+        var ks = engine();
+        var list = ks && ks.DATA && Array.isArray(ks.DATA.archetypes) ? ks.DATA.archetypes : [];
+        var match = list.filter(function (archetype) { return archetype.id === id; })[0];
+        return match ? match.name : "";
+    }
+
     function parseHandoff(search) {
         var params = new URLSearchParams(search || "");
-        var handoff = { from: "", hook: "", placement: "", q: "", a: "", index: -1, entry: "direct" };
+        var handoff = { from: "", hook: "", placement: "", q: "", a: "", index: -1, dare: dareType(params.get("dare") || ""), entry: "direct" };
         var from = params.get("from") || "";
         var hook = params.get("hook") || "";
         var placement = params.get("placement") || "";
@@ -393,6 +442,8 @@
             handoff.a = a;
             handoff.index = index;
             handoff.entry = "inline";
+        } else if (handoff.dare) {
+            handoff.entry = "dare";
         } else if (params.get("ref") === "share") {
             handoff.entry = "share";
         } else if (handoff.from) {
@@ -639,6 +690,19 @@
         }
     }
 
+    // The dared visitor lands on the normal test; one line above the H1 says who sent it.
+    function showDareBanner(dare) {
+        var title = document.getElementById("kiss-test-title");
+        if (!title) {
+            return;
+        }
+        var name = typeName(dare);
+        var banner = el("p", "quiz-dare-banner");
+        banner.appendChild(el("strong", null, "You've been dared. "));
+        banner.appendChild(document.createTextNode((name ? "Someone who kisses like " + name + " sent you this test." : "Someone sent you this test.") + " Take it to see how you two kiss together."));
+        title.parentNode.insertBefore(banner, title);
+    }
+
     function setupQuizPage() {
         if (document.body.dataset.pageKind !== "quiz") {
             return;
@@ -837,10 +901,19 @@
             selfChoice = "";
             safeStorage(window.sessionStorage, "removeItem", KEYS.pronoun);
             safeStorage(window.sessionStorage, "removeItem", KEYS.self);
-            context = { from: handoff.from, hook: handoff.hook, placement: handoff.placement, entry: handoff.entry };
+            context = { from: handoff.from, hook: handoff.hook, placement: handoff.placement, entry: handoff.entry, dare: handoff.dare };
             writeContext(context);
             sendEvent("quiz_start", startPayload(context));
             renderPairing();
+        }
+
+        if (handoff.dare) {
+            showDareBanner(handoff.dare);
+            // The fragment stays through reloads and Back from the result: count an open
+            // only until this dare has started a test.
+            if (!context || context.dare !== handoff.dare) {
+                sendEvent("dare_open", { archetype: handoff.dare });
+            }
         }
 
         var starts = document.querySelectorAll("[data-quiz-start]");
@@ -871,7 +944,8 @@
             return;
         }
 
-        if (answeredCount(answers) > 0 && !isComplete(answers) && engine() && engine().DATA) {
+        // A dare link starts its own test, so a half-finished run waits for Start.
+        if (!handoff.dare && answeredCount(answers) > 0 && !isComplete(answers) && engine() && engine().DATA) {
             if (!pronoun) {
                 renderPairing();
             } else {
@@ -944,14 +1018,14 @@
         return "I took the Kiss Test and got " + archetype.name + ". \"" + archetype.tagline + "\" " + ending;
     }
 
-    function shareLinks(text, url) {
+    function shareLinks(text, url, subject) {
         var both = encodeURIComponent(text + " " + url);
         return {
             whatsapp: "https://wa.me/?text=" + both,
             sms: "sms:?&body=" + both,
             x: "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url),
             facebook: "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(url),
-            email: "mailto:?subject=" + encodeURIComponent(SHARE_SUBJECT) + "&body=" + both
+            email: "mailto:?subject=" + encodeURIComponent(subject || SHARE_SUBJECT) + "&body=" + both
         };
     }
 
@@ -984,13 +1058,14 @@
     // In-page fallback for browsers without Web Share: one dialog per opening,
     // removed again on close so labels and focus never go stale.
     function shareSheet(options) {
+        var url = options.url || SHARE_URL;
         var dialog = el("dialog", "quiz-share");
         dialog.setAttribute("aria-labelledby", "quiz-share-title");
         var shell = el("div", "quiz-share__shell");
         var header = el("div", "quiz-share__header");
         var titles = el("div");
-        titles.appendChild(el("p", "quiz-share__eyebrow", "Share"));
-        var title = el("h2", "quiz-share__title", "Your archetype card");
+        titles.appendChild(el("p", "quiz-share__eyebrow", options.eyebrow || "Share"));
+        var title = el("h2", "quiz-share__title", options.title || "Your archetype card");
         title.id = "quiz-share-title";
         titles.appendChild(title);
         header.appendChild(titles);
@@ -1004,7 +1079,7 @@
         var media = archetypeImage(options.archetype);
         media.className = "quiz-share__media";
         body.appendChild(media);
-        body.appendChild(el("blockquote", "quiz-share__text", options.text + " " + SHARE_URL));
+        body.appendChild(el("blockquote", "quiz-share__text", options.text + " " + url));
         var grid = el("div", "quiz-share__grid");
         var toast = el("p", "quiz-share__toast");
         toast.setAttribute("role", "status");
@@ -1045,14 +1120,17 @@
             focusables.push(link);
         }
 
-        var links = shareLinks(options.text, SHARE_URL);
+        var links = shareLinks(options.text, url, options.subject);
         var external = { target: "_blank", rel: "noopener" };
-        copyAction("Copy link", SHARE_URL, "copy_link");
-        copyAction("Copy text", options.text + " " + SHARE_URL, "copy_text");
+        copyAction("Copy link", url, "copy_link");
+        copyAction("Copy text", options.text + " " + url, "copy_text");
         linkAction("WhatsApp", links.whatsapp, "whatsapp", external);
         linkAction("Messages", links.sms, "sms");
         linkAction("X", links.x, "x", external);
-        linkAction("Facebook", links.facebook, "facebook", external);
+        // Facebook links to the page's og:url, which would drop a dare fragment.
+        if (options.facebook !== false) {
+            linkAction("Facebook", links.facebook, "facebook", external);
+        }
         linkAction("Email", links.email, "email");
         if (options.jpg) {
             linkAction("Save image", options.jpg, "image", { download: "kiss-test-" + options.archetype.id + ".jpg" });
@@ -1198,6 +1276,72 @@
         actions.appendChild(button);
         actions.appendChild(el("p", "quiz-share-cta__sub", "Post your archetype. Your score stays private unless you choose."));
         return actions;
+    }
+
+    // The dare is a link, so Web Share gets text and url only: a file would
+    // make some apps drop the link. Without Web Share, the in-page sheet.
+    function dareActions(archetype, back) {
+        var actions = el("div", "quiz-dare__actions");
+        var url = DARE_ROOT + archetype.id;
+        var text = back
+            ? "I took your dare and got " + archetype.name + ". Take it once more from this link to see how we kiss together:"
+            : "I got " + archetype.name + " on the Kiss Test. I dare you to take it. Then we see how our kisses fit together:";
+        var sharing = false;
+
+        function report(method) {
+            sendEvent(back ? "dare_back_click" : "dare_click", { method: method, archetype: archetype.id });
+        }
+
+        function openSheet() {
+            shareSheet({ archetype: archetype, text: text, url: url, report: report, eyebrow: "Dare", title: back ? "Dare them back" : "Send the dare", subject: "A Kiss Test dare", facebook: false }).open();
+        }
+
+        // Dare-back sits right under the unlock, so it stays the quieter button there.
+        var button = el("button", back ? "conversion-button conversion-button-secondary quiz-dare__button" : "conversion-button quiz-dare__button", back ? "Dare them back" : "Send the dare");
+        button.type = "button";
+        button.addEventListener("click", function () {
+            var nav = window.navigator;
+            if (!nav || typeof nav.share !== "function") {
+                openSheet();
+                return;
+            }
+            if (sharing) {
+                return;
+            }
+            sharing = true;
+            nav.share({ title: SHARE_TITLE, text: text, url: url }).then(function () {
+                sharing = false;
+                report("web_share");
+            }, function (error) {
+                sharing = false;
+                if (!error || error.name !== "AbortError") {
+                    openSheet();
+                }
+            });
+        });
+        actions.appendChild(button);
+        actions.appendChild(el("p", "quiz-dare__sub", "The link carries your type. Never your score."));
+        return actions;
+    }
+
+    function dareSection(archetype) {
+        var section = el("section", "quiz-dare");
+        section.appendChild(el("h2", "quiz-section-title", "Dare someone."));
+        section.appendChild(el("p", "quiz-dare__lede", "Your partner, your date, your crush. Send them the test. When they finish, they see how your two kisses fit together."));
+        section.appendChild(dareActions(archetype, false));
+        return section;
+    }
+
+    // What a dared visitor came for: both types and how they kiss together.
+    function pairCard(archetype, dare) {
+        var read = pairRead(archetype.id, dare);
+        var section = el("section", "quiz-dare quiz-dare--pair");
+        section.appendChild(el("p", "quiz-card__eyebrow", "You two"));
+        section.appendChild(el("p", "quiz-dare__types", archetype.id === dare ? "You're both " + archetype.name + "." : "You: " + archetype.name + ". Them: " + typeName(dare) + "."));
+        section.appendChild(el("h2", "quiz-section-title", read[0]));
+        section.appendChild(el("p", "quiz-dare__lede", read[1]));
+        section.appendChild(dareActions(archetype, true));
+        return section;
     }
 
     function archetypeCard(archetype, paid, options) {
@@ -1654,9 +1798,18 @@
         root.appendChild(card);
         var paywall = scoreCard(state);
         root.appendChild(paywall);
+        // A dared visitor gets the pair read under the unlock; everyone else gets the dare.
+        var dare = dareType(state.context.dare || "");
+        if (dare) {
+            root.appendChild(pairCard(state.summary.archetype, dare));
+            resultOnce("pair_view", state);
+        }
         var read = el("section", "quiz-read");
         read.appendChild(el("p", null, state.summary.archetype.read || ""));
         root.appendChild(read);
+        if (!dare) {
+            root.appendChild(dareSection(state.summary.archetype));
+        }
         var strengths = el("section", "quiz-strengths");
         root.appendChild(strengths);
         loadFreeTier(strengths, paywall.costliest, state);
@@ -2139,6 +2292,7 @@
         buildCheckoutFields: buildCheckoutFields,
         freeSummary: freeSummary,
         pairingFor: pairingFor,
+        pairRead: pairRead,
         shareLinks: shareLinks
     };
 

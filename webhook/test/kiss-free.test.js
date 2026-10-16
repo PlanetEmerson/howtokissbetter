@@ -135,16 +135,18 @@ test("each valid result posts one aggregate GA4 count, never the answers", async
   const first = await handler(post({ answers: "abcdabcdab", variant: "score-first", entry: "inline" }));
   assert.equal(first.status, 200);
   await handler(post({ answers: "abcdabcdab", variant: "score-first", entry: "article", repeat: true }));
+  await handler(post({ answers: "abcdabcdab", variant: "score-first", entry: "dare" }));
   await handler(post({ answers: "abcdabcdab", variant: "Score First!", entry: "evil", repeat: "yes" }));
   await handler(post({ answers: "abcdabcdab" }));
 
-  assert.equal(calls.length, 4);
+  assert.equal(calls.length, 5);
   const url = new URL(calls[0].url);
   assert.equal(url.origin + url.pathname, "https://www.google-analytics.com/mp/collect");
   assert.equal(url.searchParams.get("measurement_id"), "G-TEST123");
   assert.deepEqual(calls.map(({ body }) => body.events), [
     [{ name: "result_served", params: { variant: "score-first", entry: "inline" } }],
     [{ name: "result_served_repeat", params: { variant: "score-first", entry: "article" } }],
+    [{ name: "result_served", params: { variant: "score-first", entry: "dare" } }],
     [{ name: "result_served", params: { variant: "unknown", entry: "other" } }],
     [{ name: "result_served", params: { variant: "unknown", entry: "other" } }],
   ]);
