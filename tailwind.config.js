@@ -10,6 +10,7 @@ module.exports = {
     './privacy/**/*.html',
     './terms/**/*.html',
     './blog/**/*.html',
+    './es/**/*.html',
     './book/**/*.html',
     './free-chapter-confirmed/**/*.html',
     // Class names are also emitted from Python f-strings at build time:

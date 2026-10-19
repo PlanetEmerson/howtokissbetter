@@ -1340,8 +1340,9 @@ def validate_site_safety(validation: Validation) -> None:
 
 
 def validate_ads(validation: Validation) -> None:
-    """Ads earn on article pages only, so the quiz, results, book, checkout and homepage stay ad-free."""
-    articles = set(BLOG.glob("*/index.html")) | {BLOG / "_template.html"}
+    """Ads earn on article pages only (English and Spanish), so the quiz, results, book, checkout, hubs and homepage stay ad-free."""
+    es = ROOT / "es"
+    articles = set(BLOG.glob("*/index.html")) | set(es.glob("*/index.html")) | {BLOG / "_template.html", es / "_template.html"}
     for path in sorted(ROOT.rglob("*.html")):
         if NON_PUBLIC_DIRS.intersection(path.parts):
             continue

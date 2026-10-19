@@ -21,7 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SITE_URL = "https://howtokissbetter.com"
 SKIP_DIRS = {".git", "_private", "webhook", "node_modules", "docs", "scripts", "public", "screenshots"}
-SKIP_FILES = {"blog/_template.html"}
+SKIP_FILES = {"blog/_template.html", "es/_template.html"}
 TITLE_LIMIT = 60
 DESCRIPTION_LIMIT = 160
 MIN_HOME_POST_LINKS = 8
