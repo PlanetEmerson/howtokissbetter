@@ -389,6 +389,9 @@
     <image:image>
       <image:loc>https://howtokissbetter.com/blog/how-to-kiss-slowly/featured.jpg</image:loc>
     </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-lento/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-slowly/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-slowly/"/>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/what-to-do-after-a-kiss/</loc>
@@ -479,6 +482,9 @@
     <image:image>
       <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-braces/featured.jpg</image:loc>
     </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-con-brackets/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-with-braces/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-with-braces/"/>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/how-to-match-your-partners-kissing-style/</loc>
@@ -554,6 +560,9 @@
     <image:image>
       <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someones-neck/featured.jpg</image:loc>
     </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-el-cuello/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-someones-neck/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-someones-neck/"/>
   </url>
   <url>
     <loc>https://howtokissbetter.com/blog/wedding-first-kiss/</loc>
@@ -1040,7 +1049,7 @@
   </url>
   <url>
     <loc>https://howtokissbetter.com/es/</loc>
-    <lastmod>2026-10-19</lastmod>
+    <lastmod>2026-10-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/"/>
@@ -1070,5 +1079,41 @@
     <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-practicar-besos/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-practice-kissing/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-practice-kissing/"/>
+  </url>
+  <url>
+    <loc>https://howtokissbetter.com/es/como-besar-el-cuello/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-someones-neck/featured.jpg</image:loc>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-el-cuello/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-someones-neck/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-someones-neck/"/>
+  </url>
+  <url>
+    <loc>https://howtokissbetter.com/es/como-besar-lento/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-slowly/featured.jpg</image:loc>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-lento/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-slowly/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-slowly/"/>
+  </url>
+  <url>
+    <loc>https://howtokissbetter.com/es/como-besar-con-brackets/</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://howtokissbetter.com/blog/how-to-kiss-with-braces/featured.jpg</image:loc>
+    </image:image>
+    <xhtml:link rel="alternate" hreflang="es" href="https://howtokissbetter.com/es/como-besar-con-brackets/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://howtokissbetter.com/blog/how-to-kiss-with-braces/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://howtokissbetter.com/blog/how-to-kiss-with-braces/"/>
   </url>
 </urlset>
