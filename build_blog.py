@@ -105,8 +105,17 @@ BUY_SURFACE_OVERRIDES: set[str] = set()
 # Posts whose in-article hook sits after the first section instead of near the quarter mark,
 # because readers rarely scroll that far: on the neck post, 45 of 202 sessions (22%) reached
 # the quarter card from 09-29 to 10-06, against about 45% on other posts. The placement keeps
-# its quiz-article-quarter name so GA4 reads stay continuous.
-EARLY_HOOK_SLUGS: set[str] = {"how-to-kiss-someones-neck"}
+# its quiz-article-quarter name so GA4 reads stay continuous. Moving it doubled the neck post's
+# reach (to 49%) and tripled its card starts per session (to 4.4%, 10-07 to 10-20), so on
+# 2026-10-21 it went to the five posts with 40+ sessions and card reach of 18 to 39% (14 days).
+EARLY_HOOK_SLUGS: set[str] = {
+    "how-to-kiss-someones-neck",
+    "how-to-give-a-hickey",
+    "how-to-make-someone-want-to-kiss-you",
+    "how-to-tell-someone-theyre-a-bad-kisser",
+    "why-do-we-tilt-our-heads-when-we-kiss",
+    "why-kissing-feels-awkward",
+}
 
 QUIZ_FINAL_EYEBROW = "Before you go"
 QUIZ_FINAL_COPY = "Ten questions, one honest number, and the habit costing you most. Free result."
