@@ -103,8 +103,23 @@
         invalid: "That checkout request didn't match this result. Retake the test and try again.",
         unavailable: "Unlocking is offline for a moment. Nothing was charged. Try again shortly."
     };
-    // Tags paywall_view and the report's begin_checkout since the free tier started showing the score.
-    var PAYWALL_VARIANT = "score-first";
+    // The free result's two email boxes: on the score card's first screen, and after the locked list.
+    var TOP_CAPTURE = {
+        placement: "result-email-top",
+        lede: "Your full report is free. Where should I send it?",
+        button: "Email me my full report"
+    };
+    var END_CAPTURE = {
+        placement: "result-email-end",
+        kicker: "Free",
+        title: "Get the full report by email.",
+        lede: "Every section above, unlocked, plus two short notes from me. Unsubscribe anytime.",
+        button: "Email me my full report"
+    };
+    var EMAIL_SENT = "Check your inbox. Tap the confirm link and your full report opens.";
+    // Tags paywall_view, the email boxes and the report's begin_checkout. Paywall v3: the full report
+    // is free for a confirmed email, and the $2.99 unlock stays as the skip-the-inbox link.
+    var PAYWALL_VARIANT = "email-report";
     var PRICE_LABEL = "$" + PRODUCT.price.toFixed(2);
     var gaIds = { client_id: "", session_id: "" };
     var paywallViewed = false;
@@ -1457,7 +1472,7 @@
         Object.keys(fields).forEach(function (name) {
             setHiddenField(form, name, fields[name]);
         });
-        var button = el("button", "conversion-button conversion-sheen quiz-paywall__button", "Unlock my full report · " + PRICE_LABEL);
+        var button = el("button", "quiz-unlock-link quiz-paywall__button", "Or skip the inbox: unlock it now · " + PRICE_LABEL);
         button.type = "submit";
         form.appendChild(button);
         var guarantee = el("p", "kiss-guarantee");
@@ -1514,15 +1529,6 @@
         form.addEventListener("submit", function (event) {
             begin(event, "quiz-paywall");
         });
-        // For the locked sections' unlock buttons: the same checkout, without a native submit event,
-        // under its own placement so the pulse can tell which button sold.
-        form.start = function () {
-            var event = { prevented: false, preventDefault: function () { this.prevented = true; } };
-            begin(event, "quiz-locked");
-            if (!event.prevented) {
-                form.submit();
-            }
-        };
         // Back from Stripe can restore this page from the back/forward cache with the guard
         // still set, which would leave every unlock button dead.
         window.addEventListener("pageshow", function (event) {
@@ -1533,7 +1539,7 @@
         return form;
     }
 
-    function scoreCard(state) {
+    function scoreCard(state, captures) {
         var archetype = state.summary.archetype;
         var card = el("section", "quiz-score-card");
         card.id = "kiss-test-paywall";
@@ -1558,12 +1564,15 @@
             notice.setAttribute("role", "status");
             card.appendChild(notice);
         });
-        // The button sits right under the costliest habit so it lands on the first screen on a phone;
-        // the list of what's inside follows it instead of pushing it down.
+        // The email box sits right under the costliest habit so it lands on the first screen on a
+        // phone (10-22 depth read: 43% never scroll to the locked list); the paid link follows it.
+        if (!state.emailConfirmed) {
+            card.appendChild(emailCapture(state, TOP_CAPTURE, captures));
+        }
         card.form = paywallForm(state);
         card.appendChild(card.form);
         var behind = el("p", "quiz-score-card__behind");
-        behind.appendChild(el("strong", null, "Behind the unlock:"));
+        behind.appendChild(el("strong", null, "In the full report:"));
         card.appendChild(behind);
         var list = el("ul", "quiz-paywall__list");
         UNLOCK_LIST.forEach(function (line) {
@@ -1573,9 +1582,9 @@
         var claim = el("p", "quiz-score-card__claim");
         claim.appendChild(el("strong", null, "Computed from your 10 answers. Not a vibe. A number."));
         card.appendChild(claim);
-        card.appendChild(el("p", "quiz-paywall__once", "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen."));
+        card.appendChild(el("p", "quiz-paywall__once", "Free: tap the confirm link in your inbox and the report opens on this screen. In a hurry? " + PRICE_LABEL + " once on Stripe's page (Apple Pay, Google Pay, Link or card) opens it now. No subscription, no account."));
         var fine = el("p", "quiz-paywall__fine");
-        fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older to purchase. Refunds: email " + SUPPORT_EMAIL + " within 30 days."));
+        fine.appendChild(el("em", null, "A five-minute read, assembled from your answers, not a template with your name on it. For fun and self-awareness, not a scientific instrument. You must be 18 or older. Refunds on the " + PRICE_LABEL + " unlock: email " + SUPPORT_EMAIL + " within 30 days."));
         card.appendChild(fine);
         if (state.retry) {
             var retry = el("button", "conversion-button conversion-button-secondary quiz-retry", "Retry unlock check");
@@ -1620,9 +1629,9 @@
         });
     }
 
-    // Each locked section's unlock starts checkout through the paywall form, so its GA event and
-    // double-submit guard apply; it used to only scroll back up to the paywall.
-    function lockedList(state, form) {
+    // Each locked section's button takes the reader to the email box right under the list; the
+    // $2.99 unlock there drew 2 taps from 31 readers who reached it (10-22 depth read).
+    function lockedList(state, capture) {
         var wrap = el("div", "quiz-locked-list");
         LOCKED_TITLES.forEach(function (title) {
             var section = el("section", "quiz-locked-section");
@@ -1634,11 +1643,13 @@
             }
             section.appendChild(body);
             var note = el("p", "quiz-locked__note");
-            note.appendChild(el("em", null, "Unlocks with the report."));
-            var unlock = el("button", "quiz-unlock-link", "Unlock · " + PRICE_LABEL);
-            unlock.type = "button";
-            unlock.addEventListener("click", form.start);
-            note.appendChild(unlock);
+            note.appendChild(el("em", null, "Opens with the full report."));
+            if (capture) {
+                var unlock = el("button", "quiz-unlock-link", "Send it to me free");
+                unlock.type = "button";
+                unlock.addEventListener("click", capture.reveal);
+                note.appendChild(unlock);
+            }
             section.appendChild(note);
             wrap.appendChild(section);
         });
@@ -1652,13 +1663,18 @@
         return node;
     }
 
-    // The free result's one email box: a Brevo double opt-in through the functions, which
-    // recompute the result from the answers. Only the archetype and band reach GA4.
-    function emailCapture(state) {
-        var section = el("section", "quiz-email-capture");
-        section.appendChild(el("p", "conversion-kicker", "Not tonight?"));
-        section.appendChild(el("h2", "quiz-section-title", "Get your result by email."));
-        section.appendChild(el("p", "quiz-email-capture__lede", "Your score, the habit costing you most, and the unlock link, in your inbox. Plus two short notes from me. Unsubscribe anytime."));
+    // The free result's email boxes: one Brevo double opt-in through the functions, which recompute
+    // the result from the answers and sign the report's unlock into the confirm link. Only the
+    // archetype and band reach GA4. A send from either box settles every box in the group.
+    function emailCapture(state, copy, group) {
+        var section = el("section", "quiz-email-capture" + (copy.title ? "" : " quiz-email-capture--top"));
+        if (copy.kicker) {
+            section.appendChild(el("p", "conversion-kicker", copy.kicker));
+        }
+        if (copy.title) {
+            section.appendChild(el("h2", "quiz-section-title", copy.title));
+        }
+        section.appendChild(el("p", "quiz-email-capture__lede", copy.lede));
         var form = el("form", "quiz-email-capture__form");
         var field = el("label", "quiz-email-capture__field");
         field.appendChild(el("span", null, "Your email"));
@@ -1672,7 +1688,7 @@
         form.appendChild(check);
         var trap = attrs(el("input", "quiz-email-capture__hp"), { type: "text", name: "website", tabindex: "-1", autocomplete: "off", "aria-hidden": "true" });
         form.appendChild(trap);
-        var button = el("button", "conversion-button quiz-email-capture__button", "Email me my result");
+        var button = el("button", "conversion-button conversion-sheen quiz-email-capture__button", copy.button);
         button.type = "submit";
         form.appendChild(button);
         section.appendChild(form);
@@ -1683,6 +1699,25 @@
         var status = el("p", "quiz-email-capture__status");
         status.setAttribute("aria-live", "polite");
         section.appendChild(status);
+
+        section.sent = function (focus) {
+            if (form.parentNode) {
+                section.removeChild(form);
+            }
+            status.textContent = EMAIL_SENT;
+            if (focus) {
+                // The focused button just left with the form; keep keyboard focus here.
+                focusHeading(status);
+            }
+        };
+        section.reveal = function () {
+            if (form.parentNode) {
+                input.focus();
+            } else {
+                focusHeading(status);
+            }
+        };
+        group.push(section);
 
         var sending = false;
         form.addEventListener("submit", function (event) {
@@ -1704,7 +1739,7 @@
                 button.disabled = false;
                 status.textContent = message;
             }
-            postJson("/api/kiss-email", { email: email, answers: state.answers, adult: true, website: String(trap.value || "") }).then(function (result) {
+            postJson("/api/kiss-email", { email: email, answers: state.answers, adult: true, variant: PAYWALL_VARIANT, website: String(trap.value || "") }).then(function (result) {
                 if (result.status !== 200 || result.data.ok !== true) {
                     // Only a refused address is the reader's to fix; anything else is on our side.
                     failWith(result.data.error === "bad_email"
@@ -1712,12 +1747,12 @@
                         : "That didn't send. Try again in a few minutes.");
                     return;
                 }
-                section.removeChild(form);
-                status.textContent = "Check your inbox. Tap the confirm link and your result is on its way.";
-                // The focused button just left with the form; keep keyboard focus here.
-                focusHeading(status);
+                group.forEach(function (capture) {
+                    capture.sent(capture === section);
+                });
                 sendEvent("email_capture", {
-                    placement: "result-email",
+                    placement: copy.placement,
+                    variant: PAYWALL_VARIANT,
                     archetype: state.summary.archetype.id,
                     score_band: state.summary.band
                 });
@@ -1796,7 +1831,8 @@
             root.appendChild(confirmed);
         }
         root.appendChild(card);
-        var paywall = scoreCard(state);
+        var captures = [];
+        var paywall = scoreCard(state, captures);
         root.appendChild(paywall);
         // A dared visitor gets the pair read under the unlock; everyone else gets the dare.
         var dare = dareType(state.context.dare || "");
@@ -1813,11 +1849,12 @@
         var strengths = el("section", "quiz-strengths");
         root.appendChild(strengths);
         loadFreeTier(strengths, paywall.costliest, state);
-        var locked = lockedList(state, paywall.form);
+        // Just back from the confirm link: already subscribed, so no sign-up box.
+        var end = state.emailConfirmed ? null : emailCapture(state, END_CAPTURE, captures);
+        var locked = lockedList(state, end);
         root.appendChild(locked);
-        // Just back from the confirm link: already subscribed, so no second sign-up box.
-        if (!state.emailConfirmed) {
-            root.appendChild(emailCapture(state));
+        if (end) {
+            root.appendChild(end);
         }
         showHostedEmail(false);
         var share = el("section", "quiz-share-section");
@@ -2088,7 +2125,7 @@
         return card;
     }
 
-    function renderPaid(root, state, report) {
+    function renderPaid(root, state, report, access) {
         // The report describes the answers that were paid for, which can differ
         // from this browser's latest run (a Stripe return link, or a retake in
         // progress). Its own free summary drives the header, not local state.
@@ -2158,8 +2195,9 @@
             lede.textContent = "Your report stays open on this device for 30 days. This sends the chapter its fixes build on.";
         }
         focusHeading(heading);
-        sendEvent("result_view", { tier: "paid", archetype: local ? local.archetype.id : "unknown" });
-        sendEvent("unlock_view", { product: "report" });
+        // A report opened by the confirm link reads as tier lead, so free and paid counts stay clean.
+        sendEvent("result_view", { tier: access === "lead" ? "lead" : "paid", archetype: local ? local.archetype.id : "unknown" });
+        sendEvent("unlock_view", { product: "report", access: access === "lead" ? "lead" : "paid" });
     }
 
     function verifyNotice(status, mode) {
@@ -2181,16 +2219,22 @@
         return "The report service is unavailable right now. Nothing new was charged. Try again in a moment.";
     }
 
-    // Brevo's confirm link lands as ?email=confirmed#a=<answers>, often in a browser that never
-    // took the test, so the answers ride in the fragment, which never reaches the page request.
-    // Valid answers are stored before the render; both markers then leave the address bar.
+    // Brevo's confirm link lands as ?email=confirmed#a=<answers>&t=<unlock token>, often in a
+    // browser that never took the test, so both ride in the fragment, which never reaches the page
+    // request. Valid answers and the token are stored before the render, so the report opens;
+    // both markers then leave the address bar. Links from before paywall v3 carry no t=.
     function readEmailReturn(params) {
         var ks = engine();
         var hash = window.location.hash || "";
-        var answers = hash.indexOf("#a=") === 0 ? hash.slice(3).toLowerCase() : "";
+        var fragment = new URLSearchParams(hash.indexOf("#a=") === 0 ? hash.slice(1) : "");
+        var answers = (fragment.get("a") || "").toLowerCase();
         var restored = Boolean(ks && answers && ks.isValidAnswers(answers));
         if (restored) {
             writeAnswers(answers.split(""));
+            var unlock = fragment.get("t") || "";
+            if (/^kt1\.[\w-]+\.[\w-]+$/.test(unlock)) {
+                safeStorage(window.localStorage, "setItem", KEYS.token, unlock);
+            }
         }
         var confirmed = params.get("email") === "confirmed";
         if (confirmed) {
@@ -2261,7 +2305,7 @@
                     if (sessionId && window.history && typeof window.history.replaceState === "function") {
                         window.history.replaceState(null, "", window.location.pathname);
                     }
-                    renderPaid(root, state, data.payload && data.payload.report ? data.payload.report : null);
+                    renderPaid(root, state, data.payload && data.payload.report ? data.payload.report : null, data.access);
                     return;
                 }
                 if (result.status === 401 && mode === "token") {

@@ -25,8 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261016a">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261016a" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261023a">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261023a" defer></script>'
 ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2523241663582064" crossorigin="anonymous"></script>'
 ADSENSE_META = '<meta name="google-adsense-account" content="ca-pub-2523241663582064">'
 ADS_TXT = "google.com, pub-2523241663582064, DIRECT, f08c47fec0942fa0"
@@ -1041,7 +1041,7 @@ def validate_faq_twins(validation: Validation, label: str, page_html: str, min_q
 def validate_quiz_pages(validation: Validation) -> None:
     quiz_js = (ROOT / "assets/quiz.js").read_text()
     validation.require('el("span", "kiss-guarantee__keep", "Keep it anyway. I can\'t take it back.")' in quiz_js, "paywall badge keep line is missing from quiz.js")
-    validation.require('"conversion-button conversion-sheen quiz-paywall__button"' in quiz_js, "paywall button is missing the sheen class")
+    validation.require('"conversion-button conversion-sheen quiz-email-capture__button"' in quiz_js, "paywall email button is missing the sheen class")
     validate_no_retired_refund_copy(validation, "quiz.js", quiz_js)
     validation.require('params.get("feedback") === "sent" ? "[data-feedback-sent]" : "form.kiss-feedback"' in quiz_js, "paid report feedback move is missing from quiz.js")
     for relative in QUIZ_PAGES:

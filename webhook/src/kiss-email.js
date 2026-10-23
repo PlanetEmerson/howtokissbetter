@@ -1,5 +1,6 @@
 import { corsHeaders, emptyResponse, jsonResponse, originAllowed, refererAllowed, siteOrigin } from "./http.js";
 import { loadKissReport, loadKissScore } from "./kiss-engine.js";
+import { signToken } from "./unlock-token.js";
 
 const BREVO_DOI_ENDPOINT = "https://api.brevo.com/v3/contacts/doubleOptinConfirmation";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -103,7 +104,8 @@ export function createKissEmailHandler({
 
     const listId = positiveInt(env.BREVO_KISS_TEST_LIST_ID);
     const templateId = positiveInt(env.BREVO_KISS_TEST_DOI_TEMPLATE_ID);
-    if (!env.BREVO_API_KEY || !listId || !templateId) {
+    const lead = body.variant === "email-report";
+    if (!env.BREVO_API_KEY || !listId || !templateId || (lead && !env.KISS_UNLOCK_SECRET)) {
       return fail(503, "email_unavailable");
     }
 
@@ -117,8 +119,13 @@ export function createKissEmailHandler({
       ...(free.costliestHabit ? { KT_COSTLIEST: engine.applyPronouns(free.costliestHabit.title) } : {}),
       KT_ANSWERS: answers,
       KT_SIGNUP: new Date().toISOString().slice(0, 10),
-      KT_SOURCE: "result-email",
+      KT_SOURCE: lead ? "result-email-report" : "result-email",
     };
+    // Paywall v3 gives the full report for a confirmed address. Its unlock token rides in the
+    // confirm redirect's fragment: only the confirm link leads there, and no server log sees it.
+    const fragment = lead
+      ? `a=${answers}&t=${signToken(env.KISS_UNLOCK_SECRET, { k: "lead", p: "report", t: Math.floor(now() / 1000), a: answers, v: String(engine.VERSION) })}`
+      : `a=${answers}`;
 
     try {
       const response = await fetchImpl(BREVO_DOI_ENDPOINT, {
@@ -132,7 +139,7 @@ export function createKissEmailHandler({
           email,
           includeListIds: [listId],
           templateId,
-          redirectionUrl: `${siteOrigin(env)}/kiss-test/result/?email=confirmed#a=${answers}`,
+          redirectionUrl: `${siteOrigin(env)}/kiss-test/result/?email=confirmed#${fragment}`,
           attributes,
         }),
         signal: AbortSignal.timeout(8_000),

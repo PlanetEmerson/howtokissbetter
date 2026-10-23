@@ -212,6 +212,7 @@ test("a paid report session returns the report and a retake token", async () => 
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.product, "report");
+  assert.equal(body.access, "paid");
   assert.deepEqual(body.payload, { report: { answers: "abcdabcdab", sections: [{ title: "Report for abcdabcdab" }] } });
   assert.deepEqual(verifyToken(SECRET, body.token, NOW), { s: SESSION_ID, p: "report", t: NOW, a: "abcdabcdab", v: "1" });
 });
@@ -269,4 +270,26 @@ test("missing secrets answer 500 without calling Stripe", async () => {
   const { handler: noStripe, calls: stripeCalls } = handlerWith({ env: { KISS_UNLOCK_SECRET: SECRET } });
   await expectError(await noStripe(post({ session_id: SESSION_ID })), 500, "server_config");
   assert.equal(stripeCalls.length, 0);
+});
+
+test("a lead token from the confirm link opens the report without Stripe and stays a lead token on a retake", async () => {
+  const issued = NOW - DAY;
+  const token = signToken(SECRET, { k: "lead", p: "report", a: "abcdabcdab", v: "1", t: issued });
+  const { handler, calls } = handlerWith({ env: { KISS_UNLOCK_SECRET: SECRET } });
+
+  const opened = await handler(post({ token }));
+  assert.equal(opened.status, 200);
+  const openedBody = await opened.json();
+  assert.equal(openedBody.product, "report");
+  assert.equal(openedBody.access, "lead");
+  assert.equal(openedBody.token, token);
+  assert.equal(openedBody.payload.report.answers, "abcdabcdab");
+
+  const retake = await handler(post({ token, answers: "dcbadcbadc" }));
+  const retakeBody = await retake.json();
+  assert.equal(retakeBody.payload.report.answers, "dcbadcbadc");
+  assert.deepEqual(verifyToken(SECRET, retakeBody.token, NOW), { k: "lead", p: "report", t: issued, a: "dcbadcbadc", v: "1" });
+
+  await expectError(await handler(post({ token: signToken(SECRET, { k: "lead", p: "book", t: NOW }) })), 401, "bad_token");
+  assert.equal(calls.length, 0);
 });

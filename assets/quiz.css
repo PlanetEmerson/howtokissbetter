@@ -998,6 +998,7 @@
 }
 
 .quiz-paywall__button {
+    justify-content: center;
     width: 100%;
 }
 
@@ -1348,12 +1349,19 @@
     margin-top: 1rem;
 }
 
-/* The free result's "Email me my result" box */
+/* The free result's "Email me my full report" boxes */
 .quiz-email-capture {
     border: 1px solid rgba(212, 175, 55, 0.4);
     border-radius: 1rem;
     padding: 1.25rem 1.2rem;
     position: relative;
+}
+
+/* Inside the score card the card is the frame. */
+.quiz-email-capture--top {
+    border: 0;
+    margin: 0 0 0.75rem;
+    padding: 0;
 }
 
 .quiz-email-capture .quiz-section-title {

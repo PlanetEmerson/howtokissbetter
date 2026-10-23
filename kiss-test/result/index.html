@@ -11,7 +11,12 @@
             analyticsScript.src = "https://www.googletagmanager.com/gtag/js?id=G-YNQ785TC90";
             document.head.appendChild(analyticsScript);
             gtag("js", new Date());
+            // The fragment carries the answers and the email unlock token, and a Stripe return its session id: keep both out of GA4.
+            var analyticsQuery = new URLSearchParams(window.location.search);
+            analyticsQuery.delete("session_id");
+            analyticsQuery = analyticsQuery.toString();
             gtag("config", "G-YNQ785TC90", {
+                page_location: window.location.origin + window.location.pathname + (analyticsQuery ? "?" + analyticsQuery : ""),
                 linker: {
                     domains: ["howtokissbetter.com"],
                     accept_incoming: true
@@ -48,7 +53,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/conversion.css?v=20260922d">
     <link rel="stylesheet" href="/assets/feedback.css?v=20260922">
-    <link rel="stylesheet" href="/assets/quiz.css?v=20261016a">
+    <link rel="stylesheet" href="/assets/quiz.css?v=20261023a">
 </head>
 
 <body class="conversion-shell quiz-page" data-page-kind="quiz-result" data-kiss-api="https://api.howtokissbetter.com">
@@ -165,7 +170,7 @@
     </footer>
 
     <script src="/assets/kiss-score.js?v=20260918-e1" defer></script>
-    <script src="/assets/quiz.js?v=20261016a" defer></script>
+    <script src="/assets/quiz.js?v=20261023a" defer></script>
     <script src="/assets/conversion.js?v=20260922d" defer></script>
 </body>
 </html>

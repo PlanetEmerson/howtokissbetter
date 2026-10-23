@@ -134,6 +134,8 @@ export function createVerifyHandler({
     const token = typeof body.token === "string" && tokenPayload.a === grant.a
       ? body.token
       : signToken(env.KISS_UNLOCK_SECRET, tokenPayload);
-    return jsonResponse(200, { ok: true, product: product.key, token, payload }, cors);
+    // The result page tags a report opened by a confirmed email (paywall v3) apart from a paid one.
+    const access = grant.k === "lead" ? "lead" : "paid";
+    return jsonResponse(200, { ok: true, product: product.key, access, token, payload }, cors);
   };
 }

@@ -68,3 +68,23 @@ test("tampered, forged, and malformed tokens are rejected", () => {
   assert.equal(verifyToken(SECRET, 42, NOW), null);
   assert.equal(verifyToken(SECRET, `${token}${"a".repeat(3000)}`, NOW), null);
 });
+
+test("lead tokens unlock the report only, need no Stripe session, and last 30 days", () => {
+  const lead = { k: "lead", p: "report", a: "abcdabcdab", v: "1", t: NOW };
+  const token = signToken(SECRET, { ...lead, s: "not-a-session" });
+
+  assert.deepEqual(verifyToken(SECRET, token, NOW), { k: "lead", p: "report", t: NOW, a: "abcdabcdab", v: "1" });
+  assert.ok(verifyToken(SECRET, token, NOW + REPORT_TOKEN_TTL_SECONDS));
+  assert.equal(verifyToken(SECRET, token, NOW + REPORT_TOKEN_TTL_SECONDS + 1), null);
+
+  const cases = [
+    { k: "lead", p: "book", t: NOW },
+    { k: "lead", p: "report", t: NOW },
+    { k: "lead", p: "report", a: "abcdabcdab", t: NOW },
+    { k: "lead", p: "report", a: "abcdabcdab", v: "1", t: "1" },
+    { k: "paid", p: "report", a: "abcdabcdab", v: "1", t: NOW },
+  ];
+  for (const payload of cases) {
+    assert.equal(verifyToken(SECRET, signToken(SECRET, payload), NOW), null, JSON.stringify(payload));
+  }
+});

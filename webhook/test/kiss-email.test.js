@@ -6,6 +6,7 @@ import { createKissEmailHandler } from "../src/kiss-email.js";
 import KissScore from "../src/kiss-score.cjs";
 import * as realReporter from "../src/kiss-report.js";
 import { BLURBS } from "../src/kiss-report-data/blurbs.js";
+import { verifyToken } from "../src/unlock-token.js";
 
 const ENV = {
   BREVO_API_KEY: "test-brevo-key",
@@ -297,4 +298,35 @@ test("route adapter caps the body, refuses malformed JSON, and answers preflight
     body: "x".repeat(2_049),
   }));
   await expectError(oversized, 413, "too_large");
+});
+
+test("the email-report variant signs a 30-day report token for the answers into the confirm fragment only", async () => {
+  const { calls, fetchImpl } = brevo(201);
+  const env = { ...ENV, KISS_UNLOCK_SECRET: "unlock-secret-for-tests" };
+  const now = () => 1_792_000_000_123;
+  const handler = createKissEmailHandler({ env, fetchImpl, now, loadScore: async () => KissScore, loadReport: async () => realReporter });
+
+  const response = await handler(post(valid({ variant: "email-report" })));
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+
+  const sent = JSON.parse(calls[0].options.body);
+  const match = sent.redirectionUrl.match(/^https:\/\/howtokissbetter\.com\/kiss-test\/result\/\?email=confirmed#a=([a-z]+)&t=(kt1\.[\w-]+\.[\w-]+)$/);
+  assert.ok(match, sent.redirectionUrl);
+  assert.equal(match[1], ANSWERS);
+  assert.deepEqual(verifyToken(env.KISS_UNLOCK_SECRET, match[2], 1_792_000_000), {
+    k: "lead", p: "report", t: 1_792_000_000, a: ANSWERS, v: String(KissScore.VERSION),
+  });
+  assert.equal(sent.attributes.KT_SOURCE, "result-email-report");
+});
+
+test("the email-report variant answers 503 without the unlock secret; other variants never mint a token", async () => {
+  const { calls, fetchImpl } = brevo(201);
+
+  await expectError(await handlerWith({ fetchImpl })(post(valid({ variant: "email-report" }))), 503, "email_unavailable");
+  assert.equal(calls.length, 0);
+
+  const env = { ...ENV, KISS_UNLOCK_SECRET: "unlock-secret-for-tests" };
+  await handlerWith({ env, fetchImpl })(post(valid({ variant: "score-first" })));
+  assert.equal(JSON.parse(calls[0].options.body).redirectionUrl, `https://howtokissbetter.com/kiss-test/result/?email=confirmed#a=${ANSWERS}`);
 });

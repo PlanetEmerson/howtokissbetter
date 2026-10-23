@@ -26,11 +26,14 @@ function cleanPayload(payload, nowSeconds) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return null;
   }
-  const { s, p, t, a, v } = payload;
-  if (typeof s !== "string" || !SESSION_ID_PATTERN.test(s)) {
+  const { s, k, p, t, a, v } = payload;
+  // A lead token has no Stripe session: /api/kiss-email signs it into the
+  // double opt-in redirect, so only the confirm link carries it. Report only.
+  const lead = k === "lead";
+  if (!lead && (typeof s !== "string" || !SESSION_ID_PATTERN.test(s))) {
     return null;
   }
-  if (p !== "book" && p !== "report") {
+  if (p !== "report" && (lead || p !== "book")) {
     return null;
   }
   if (!Number.isInteger(t) || t <= 0) {
@@ -45,7 +48,7 @@ function cleanPayload(payload, nowSeconds) {
   if (nowSeconds - t > REPORT_TOKEN_TTL_SECONDS) {
     return null;
   }
-  return { s, p, t, a, v };
+  return lead ? { k, p, t, a, v } : { s, p, t, a, v };
 }
 
 export function verifyToken(secret, token, nowSeconds = Math.floor(Date.now() / 1000)) {

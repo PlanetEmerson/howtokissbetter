@@ -66,7 +66,7 @@ class FakeElement {
   set innerHTML(value) { throw new Error("innerHTML is off limits"); }
   appendChild(child) { if (child.parent) child.parent.removeChild(child); child.parent = this; this.children.push(child); return child; }
   insertBefore(child, ref) { child.parent = this; const i = this.children.indexOf(ref); this.children.splice(i < 0 ? this.children.length : i, 0, child); return child; }
-  removeChild(child) { this.children = this.children.filter((c) => c !== child); }
+  removeChild(child) { this.children = this.children.filter((c) => c !== child); if (child.parent === this) child.parent = null; }
   setAttribute(name, value) { this.attributes[name] = String(value); if (name.startsWith("data-")) this.dataset[name.slice(5).replace(/-([a-z])/g, (m, c) => c.toUpperCase())] = String(value); }
   getAttribute(name) { return Object.hasOwn(this.attributes, name) ? this.attributes[name] : null; }
   removeAttribute(name) { delete this.attributes[name]; }
@@ -298,7 +298,7 @@ const freeFetch = (blurbs = [{ key: "R", title: "You stay put", text: "When {he}
     assert.equal(options.headers["Content-Type"], "text/plain");
     const sent = JSON.parse(options.body);
     assert.equal(sent.answers, ANSWERS);
-    assert.equal(sent.variant, "score-first");
+    assert.equal(sent.variant, "email-report");
     return Promise.resolve(jsonResponse(200, { ok: true, free: { strongestBlurbs: blurbs, ...extra } }));
   }
   return Promise.reject(new Error(`unexpected ${url}`));
@@ -414,7 +414,7 @@ test("a dared visitor's result reads both types right under the unlock and dares
   assert.deepEqual(plain(shares), [{ title: "The Kiss Test", text: "I took your dare and got The Overthinker. Take it once more from this link to see how we kiss together:", url: DARE_URL }]);
   assert.deepEqual(plain(named(page.events, "dare_back_click").map((e) => e.params)), [{ method: "web_share", archetype: "overthinker" }]);
   assert.equal(named(page.events, "dare_click").length, 0);
-  assert.deepEqual(plain(named(page.events, "pair_view").map((e) => e.params)), [{ variant: "score-first", archetype: "overthinker" }]);
+  assert.deepEqual(plain(named(page.events, "pair_view").map((e) => e.params)), [{ variant: "email-report", archetype: "overthinker" }]);
 
 
   const twin = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS, kt_from_v1: DARED.replace("natural", "overthinker") }, fetchImpl: freeFetch([]) });
@@ -491,7 +491,8 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.match(text, /4 of your 10 answers are costing you points\. Your strongest dimension is Reading them\./);
   assert.match(text, /What he's actually noticing \(from your answers\)/);
   assert.match(text, /The one move for The Overthinker/);
-  assert.match(text, /Unlock my full report · \$2\.99/);
+  assert.match(text, /Your full report is free\. Where should I send it\?/);
+  assert.match(text, /Or skip the inbox: unlock it now · \$2\.99/);
   assert.match(text, /Your two strongest habits/);
   assert.match(text, /When he pulls back, you wait\./);
 
@@ -506,12 +507,13 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.equal(card.querySelector(".quiz-cost"), null);
   assert.equal(card.querySelector(".quiz-score-card__pitch").textContent, "Nothing's costing you points. The report shows where every one came from, and how to keep them.");
   assert.equal(page.app.querySelectorAll(".quiz-locked[aria-hidden=\"true\"]").length, 5);
-  assert.equal(page.app.querySelectorAll("button.quiz-unlock-link").length, 5);
+  // Five locked sections' email buttons, plus the paid link under the email box.
+  assert.equal(page.app.querySelectorAll("button.quiz-unlock-link").length, 6);
   assert.equal(page.app.querySelectorAll("a.quiz-unlock-link").length, 0);
 
   const form = page.app.querySelector("form[data-report-checkout]");
   assert.equal(form.getAttribute("action"), "https://api.example/api/checkout");
-  assert.equal(form.querySelector("button").className, "conversion-button conversion-sheen quiz-paywall__button");
+  assert.equal(form.querySelector("button").className, "quiz-unlock-link quiz-paywall__button");
   assert.equal(form.querySelectorAll(".kiss-guarantee[data-guarantee]").length, 1);
   assert.equal(form.querySelector(".kiss-guarantee").textContent, "3030-day guarantee. Not worth it? One email, full refund. Keep it anyway. I can't take it back.");
   const hidden = Object.fromEntries(form.querySelectorAll("input").map((i) => [i.name, i.value]));
@@ -524,14 +526,14 @@ test("free render shows archetype, the plain score, teasers and the paywall form
   assert.equal(checkout.product, "report");
   assert.equal(checkout.archetype, "overthinker");
   assert.equal(checkout.score_band, "dangerous");
-  assert.equal(checkout.variant, "score-first");
+  assert.equal(checkout.variant, "email-report");
   assert.deepEqual(plain(checkout.items), [{ item_id: "kiss-report", item_name: "Kiss Test full report", price: 2.99, quantity: 1 }]);
   checkout.event_callback();
   page.timeouts.forEach((t) => t.fn());
   assert.equal(form.submitCalls, 1);
 
   assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "free", archetype: "overthinker" });
-  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "score-first", return: "none" });
+  assert.deepEqual(plain(named(page.events, "paywall_view")[0].params), { archetype: "overthinker", score_band: "dangerous", variant: "email-report", return: "none" });
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes(ANSWERS)), false);
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes("him")), false);
 });
@@ -545,7 +547,7 @@ test("the free endpoint hears the variant and entry, and a reload in the same ta
   const session = { kt_answers_v1: ANSWERS, kt_from_v1: JSON.stringify({ from: "how-to-french-kiss", hook: "", placement: "quiz-article-quarter", entry: "article" }) };
   const first = runPage({ pageKind: "quiz-result", session, fetchImpl });
   await settle();
-  assert.deepEqual(bodies[0], { answers: ANSWERS, variant: "score-first", entry: "article", repeat: false });
+  assert.deepEqual(bodies[0], { answers: ANSWERS, variant: "email-report", entry: "article", repeat: false });
   assert.equal(first.window.sessionStorage.getItem("kt_counted_v1"), ANSWERS);
 
   runPage({ pageKind: "quiz-result", session: { ...session, kt_counted_v1: ANSWERS }, fetchImpl });
@@ -573,7 +575,7 @@ test("free readers' depth, dwell and blurred taps each fire once per page load, 
   watch.callback([{ target: firstLocked, isIntersecting: true }, { target: end, isIntersecting: true }]);
   assert.equal(named(page.events, "result_locked_seen").length, 1);
   assert.equal(named(page.events, "result_end_seen").length, 1);
-  assert.deepEqual(plain(named(page.events, "result_end_seen")[0].params), { variant: "score-first", archetype: "overthinker" });
+  assert.deepEqual(plain(named(page.events, "result_end_seen")[0].params), { variant: "email-report", archetype: "overthinker" });
 
   // The blurred text ignores pointers, so the section hears the tap; its unlock note does not count.
   const sections = page.app.querySelectorAll(".quiz-locked-section");
@@ -666,7 +668,7 @@ test("no answers and no unlock sends the visitor back to the test", async () => 
   assert.deepEqual(page.navigations, [["replace", "/kiss-test/"]]);
 });
 
-test("free render puts the unlock right after the pitch, then the list, the claim and the Stripe-page fine print", async () => {
+test("free render puts the email box right after the pitch, then the paid link, the list, the claim and the fine print", async () => {
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
   await settle();
   const card = page.app.querySelector(".quiz-score-card");
@@ -674,17 +676,20 @@ test("free render puts the unlock right after the pitch, then the list, the clai
   assert.doesNotMatch(page.app.textContent, /blur/);
   assert.equal(card.querySelector(".quiz-score-card__floor"), null);
   const kinds = card.children.map((c) => c.className);
-  assert.equal(kinds.indexOf("quiz-paywall__form"), kinds.indexOf("quiz-score-card__pitch") + 1);
+  assert.equal(kinds.indexOf("quiz-email-capture quiz-email-capture--top"), kinds.indexOf("quiz-score-card__pitch") + 1);
+  assert.equal(kinds.indexOf("quiz-paywall__form"), kinds.indexOf("quiz-email-capture quiz-email-capture--top") + 1);
   assert.equal(kinds.indexOf("quiz-score-card__behind"), kinds.indexOf("quiz-paywall__form") + 1);
   assert.equal(kinds.indexOf("quiz-score-card__claim") > kinds.indexOf("quiz-paywall__list"), true);
   const items = card.querySelectorAll(".quiz-paywall__list li").map((li) => li.textContent);
   assert.equal(items.length, 6);
   assert.equal(items[0], "Where every point went, across 8 dimensions");
   assert.equal(items[5], "Retakes for 30 days on this device. Fix one habit, retake, watch the number move.");
-  assert.equal(card.querySelector(".quiz-paywall__once").textContent, "One-time payment. No subscription, no account. Tap, pay on Stripe's page with Apple Pay, Google Pay, Link, or card, and you land back here with the report on this screen.");
+  assert.equal(card.querySelector(".quiz-paywall__once").textContent, "Free: tap the confirm link in your inbox and the report opens on this screen. In a hurry? $2.99 once on Stripe's page (Apple Pay, Google Pay, Link or card) opens it now. No subscription, no account.");
+  assert.match(card.querySelector(".quiz-paywall__fine").textContent, /You must be 18 or older\. Refunds on the \$2\.99 unlock: email/);
   const form = card.querySelector("form[data-report-checkout]");
   assert.match(form.textContent, /30-day guarantee/);
-  assert.equal(form.querySelector("button").className.split(" ").includes("conversion-sheen"), true);
+  assert.equal(form.querySelector("button").className.split(" ").includes("conversion-sheen"), false);
+  assert.equal(card.querySelector(".quiz-email-capture__button").className.split(" ").includes("conversion-sheen"), true);
 });
 
 test("the costliest habit is named by the free endpoint, and its fix stays locked", async () => {
@@ -741,34 +746,37 @@ test("fewer costly answers than report habits names the rest as weakest spots, n
   assert.equal(await metaFor(THREE_COSTS.slice(0, 1)), "Scored 0 of 3 points. It's the one habit the report fixes.");
 });
 
-test("a locked section's unlock starts the report checkout once, under its own placement", async () => {
-  const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
-  await settle();
-  const form = page.app.querySelector("form[data-report-checkout]");
-  const buttons = page.app.querySelectorAll("button.quiz-unlock-link");
-  assert.equal(buttons[2].textContent, "Unlock · $2.99");
+test("a locked section's button focuses the email box under the list, and after a send its sent line", async () => {
+  const { page, form, email, adult } = await freeCapture(SENT_OK);
+  const end = page.app.children.find((c) => c.classList.contains("quiz-email-capture"));
+  const endEmail = end.querySelectorAll("input").find((i) => i.getAttribute("name") === "email");
+  const buttons = page.app.querySelectorAll("button.quiz-unlock-link").filter((b) => b.textContent === "Send it to me free");
+  assert.equal(buttons.length, 5);
   buttons[2].dispatch("click");
-  buttons[4].dispatch("click");
-  const checkouts = named(page.events, "begin_checkout");
-  assert.equal(checkouts.length, 1);
-  assert.equal(checkouts[0].params.placement, "quiz-locked");
-  assert.equal(Object.fromEntries(form.querySelectorAll("input").map((i) => [i.name, i.value])).placement, "quiz-locked");
-  checkouts[0].params.event_callback();
-  assert.equal(form.submitCalls, 1);
+  assert.equal(page.document.activeElement, endEmail);
+  assert.equal(named(page.events, "begin_checkout").length, 0);
+
+  email.value = "reader@example.com";
+  adult.checked = true;
+  submitForm(form);
+  await settle();
+  const endStatus = end.querySelector(".quiz-email-capture__status");
+  assert.equal(end.querySelector("form"), null);
+  assert.equal(endStatus.textContent, "Check your inbox. Tap the confirm link and your full report opens.");
+  buttons[0].dispatch("click");
+  assert.equal(page.document.activeElement, endStatus);
 });
 
-test("back from Stripe out of the page cache re-arms the unlock buttons", async () => {
+test("back from Stripe out of the page cache re-arms the paid link", async () => {
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, fetchImpl: freeFetch([]) });
   await settle();
   const form = page.app.querySelector("form[data-report-checkout]");
-  const unlock = page.app.querySelectorAll("button.quiz-unlock-link")[0];
-  unlock.dispatch("click");
+  submitForm(form);
   page.pageshow({ persisted: false });
-  unlock.dispatch("click");
+  assert.equal(submitForm(form).prevented, true);
   assert.equal(named(page.events, "begin_checkout").length, 1);
   page.pageshow({ persisted: true });
-  const submit = form.dispatch("submit", { preventDefault() { this.prevented = true; } });
-  assert.equal(submit.prevented, true);
+  assert.equal(submitForm(form).prevented, true);
   const checkouts = named(page.events, "begin_checkout");
   assert.equal(checkouts.length, 2);
   assert.equal(checkouts[1].params.placement, "quiz-paywall");
@@ -803,7 +811,7 @@ test("without the name (older deploy or a failed call) the dimension stays, and 
   assert.equal(offline.app.querySelector(".quiz-cost__title").textContent, "A habit in Pressure");
   assert.equal(offline.app.querySelector(".quiz-cost__meta").textContent, "Scored 1 of 3 points. It's the one habit the report fixes.");
   assert.equal(offline.app.querySelector(".quiz-strengths").children.length, 0);
-  assert.match(offline.app.textContent, /Unlock my full report · \$2\.99/);
+  assert.match(offline.app.textContent, /Or skip the inbox: unlock it now · \$2\.99/);
 });
 
 const DARE_REPORT = {
@@ -999,7 +1007,7 @@ test("paid render writes server strings as text, applies the stored pronoun, and
   assert.match(page.lede.textContent, /stays open on this device for 30 days/);
   assert.equal(page.app.querySelector(".quiz-share-section .quiz-share-cta__button").textContent, "Share my score");
   assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "paid", archetype: "overthinker" });
-  assert.deepEqual(plain(named(page.events, "unlock_view")[0].params), { product: "report" });
+  assert.deepEqual(plain(named(page.events, "unlock_view")[0].params), { product: "report", access: "paid" });
   assert.equal(named(page.events, "paywall_view").length, 0);
   assert.equal(page.events.some((e) => JSON.stringify(e.params).includes("\"woman\"")), false);
 });
@@ -1554,10 +1562,11 @@ async function freeCapture(reply) {
 const submitForm = (form) => form.dispatch("submit", { preventDefault() { this.prevented = true; } });
 const SENT_OK = jsonResponse(200, { ok: true });
 
-test("the free result shows one email box between the locked list and the share block, and hides the hosted form", async () => {
+test("the free result shows the email box on the score card and again after the locked list, and hides the hosted form", async () => {
   const { page, box, form, email, adult, trap, button, status } = await freeCapture(SENT_OK);
 
-  assert.equal(page.body.querySelectorAll(".quiz-email-capture").length, 1);
+  assert.equal(page.body.querySelectorAll(".quiz-email-capture").length, 2);
+  assert.equal(page.app.querySelector(".quiz-score-card").querySelector(".quiz-email-capture"), box);
   const at = (name) => page.app.children.findIndex((c) => c.classList.contains(name));
   assert.equal(at("quiz-email-capture"), at("quiz-locked-list") + 1);
   assert.equal(at("quiz-share-section"), at("quiz-email-capture") + 1);
@@ -1565,9 +1574,16 @@ test("the free result shows one email box between the locked list and the share 
   assert.equal(page.app.querySelector(".quiz-notice"), null);
 
   assert.equal(box.tagName, "SECTION");
-  assert.equal(box.querySelector(".conversion-kicker").textContent, "Not tonight?");
-  assert.equal(box.querySelector("h2").textContent, "Get your result by email.");
-  assert.equal(box.querySelector(".quiz-email-capture__lede").textContent, "Your score, the habit costing you most, and the unlock link, in your inbox. Plus two short notes from me. Unsubscribe anytime.");
+  assert.equal(box.classList.contains("quiz-email-capture--top"), true);
+  assert.equal(box.querySelector(".conversion-kicker"), null);
+  assert.equal(box.querySelector("h2"), null);
+  assert.equal(box.querySelector(".quiz-email-capture__lede").textContent, "Your full report is free. Where should I send it?");
+  const end = page.app.children[at("quiz-email-capture")];
+  assert.equal(end.classList.contains("quiz-email-capture--top"), false);
+  assert.equal(end.querySelector(".conversion-kicker").textContent, "Free");
+  assert.equal(end.querySelector("h2").textContent, "Get the full report by email.");
+  assert.equal(end.querySelector(".quiz-email-capture__lede").textContent, "Every section above, unlocked, plus two short notes from me. Unsubscribe anytime.");
+  assert.equal(end.querySelector("button").textContent, "Email me my full report");
 
   assert.equal(form.querySelectorAll("input").length, 3);
   assert.equal(email.parent.tagName, "LABEL");
@@ -1583,7 +1599,7 @@ test("the free result shows one email box between the locked list and the share 
     assert.equal(trap.getAttribute(name), value, name);
   }
   assert.equal(trap.classList.contains("quiz-email-capture__hp"), true);
-  assert.equal(button.textContent, "Email me my result");
+  assert.equal(button.textContent, "Email me my full report");
   assert.equal(button.type, "submit");
 
   const fine = box.querySelector(".quiz-email-capture__fine");
@@ -1611,7 +1627,7 @@ test("the paid view keeps the hosted form and gets no email box, even when a ret
   };
   const page = runPage({ pageKind: "quiz-result", session: { kt_answers_v1: ANSWERS }, local: { kt_token_v1: "tok" }, fetchImpl: flaky });
   await settle();
-  assert.equal(page.app.querySelectorAll(".quiz-email-capture").length, 1);
+  assert.equal(page.app.querySelectorAll(".quiz-email-capture").length, 2);
   assert.equal(page.hostedEmail.getAttribute("hidden"), "");
   page.app.querySelector(".quiz-retry").dispatch("click");
   await settle();
@@ -1620,7 +1636,7 @@ test("the paid view keeps the hosted form and gets no email box, even when a ret
   assert.equal(page.hostedEmail.getAttribute("hidden"), null);
 });
 
-test("submitting posts the email, the answers, adult and the empty honeypot, then swaps the form for the success line", async () => {
+test("submitting posts the email, the answers, adult, the variant and the empty honeypot, then settles both boxes", async () => {
   const { page, posts, box, form, email, adult, button, status } = await freeCapture(SENT_OK);
   email.value = "  reader@example.com ";
   adult.checked = true;
@@ -1630,16 +1646,19 @@ test("submitting posts the email, the answers, adult and the empty honeypot, the
   assert.equal(posts.length, 1);
   assert.equal(posts[0].url, "https://api.example/api/kiss-email");
   assert.equal(posts[0].options.method, "POST");
-  assert.deepEqual(JSON.parse(posts[0].options.body), { email: "reader@example.com", answers: ANSWERS, adult: true, website: "" });
+  assert.deepEqual(JSON.parse(posts[0].options.body), { email: "reader@example.com", answers: ANSWERS, adult: true, variant: "email-report", website: "" });
   submitForm(form);
   assert.equal(posts.length, 1, "a second tap while sending posts nothing");
 
   await settle();
   assert.equal(box.querySelector("form"), null);
-  assert.equal(status.textContent, "Check your inbox. Tap the confirm link and your result is on its way.");
+  assert.equal(status.textContent, "Check your inbox. Tap the confirm link and your full report opens.");
   assert.equal(page.document.activeElement, status);
+  const end = page.app.children.find((c) => c.classList.contains("quiz-email-capture"));
+  assert.equal(end.querySelector("form"), null);
+  assert.equal(end.querySelector(".quiz-email-capture__status").textContent, status.textContent);
   assert.deepEqual(plain(named(page.events, "email_capture")), [
-    { name: "email_capture", params: { placement: "result-email", archetype: "overthinker", score_band: "dangerous" } },
+    { name: "email_capture", params: { placement: "result-email-top", variant: "email-report", archetype: "overthinker", score_band: "dangerous" } },
   ]);
   const tracked = JSON.stringify(page.events);
   assert.equal(tracked.includes("reader@example.com"), false);
@@ -1710,6 +1729,31 @@ test("a #a= link from the confirm email restores valid answers, strips the fragm
   assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/result/?checkout=canceled"]]);
   assert.match(page.app.textContent, /You're The Overthinker\./);
   assert.match(page.app.textContent, /Checkout was canceled/);
+});
+
+test("a confirm link with t= stores the unlock, strips the fragment and opens the report as tier lead", async () => {
+  const verifyBodies = [];
+  const leadFetch = (url, options) => {
+    if (url.endsWith("/api/verify")) {
+      verifyBodies.push(JSON.parse(options.body));
+      return Promise.resolve(jsonResponse(200, { ok: true, product: "report", access: "lead", token: "kt1.lead-payload.sig_1", payload: { report: DARE_REPORT } }));
+    }
+    return Promise.resolve(jsonResponse(500, {}));
+  };
+  const page = runPage({ pageKind: "quiz-result", search: "?email=confirmed", hash: `#a=${ANSWERS}&t=kt1.lead-payload.sig_1`, fetchImpl: leadFetch });
+  await settle();
+  assert.equal(page.window.localStorage.getItem("kt_token_v1"), "kt1.lead-payload.sig_1");
+  assert.deepEqual(verifyBodies, [{ token: "kt1.lead-payload.sig_1", answers: ANSWERS }]);
+  assert.deepEqual(page.navigations, [["replaceState", null, "", "/kiss-test/result/"]]);
+  assert.equal(page.app.querySelector(".quiz-score-card"), null);
+  assert.deepEqual(plain(named(page.events, "email_confirmed")), [{ name: "email_confirmed", params: { placement: "result-email" } }]);
+  assert.deepEqual(plain(named(page.events, "result_view")[0].params), { tier: "lead", archetype: "overthinker" });
+  assert.deepEqual(plain(named(page.events, "unlock_view")[0].params), { product: "report", access: "lead" });
+
+  const junk = runPage({ pageKind: "quiz-result", search: "?email=confirmed", hash: `#a=${ANSWERS}&t=<script>`, fetchImpl: freeFetch() });
+  await settle();
+  assert.equal(junk.window.localStorage.getItem("kt_token_v1"), null);
+  assert.match(junk.app.textContent, /You're The Overthinker\./);
 });
 
 test("an invalid #a= is ignored: nothing stored, the address left alone", async () => {

@@ -71,9 +71,11 @@ Request, one of:
   and `metadata.kind` `kiss_ebook` or `kiss_report`.
 - `{ "token": "kt1...", "answers"?: "..." }`: an unlock token issued earlier;
   no Stripe call. Report tokens accept new `answers` (a retake) for 30 days
-  after they were issued. Book tokens never expire.
+  after they were issued. Book tokens never expire. Lead tokens (see
+  `/api/kiss-email`) carry no Stripe session and open the report only.
 
-Response `200 { ok: true, product, token, payload }`:
+Response `200 { ok: true, product, access, token, payload }`, where `access` is
+`lead` for a lead token and `paid` otherwise:
 
 - book: `payload = { downloads: [{ label: "PDF", url, expires }, { label: "EPUB", url, expires }], thanks_url }`.
   URLs are presigned Blob links valid for one hour and regenerated on every
@@ -170,6 +172,7 @@ address was typed. `OPTIONS` answers `204`.
 | `answers` | validated by `src/kiss-score.cjs` (trimmed, lowercased) |
 | `adult` | must be `true` (the 18+ box) |
 | `website` | honeypot; must stay empty |
+| `variant` | optional; `email-report` (paywall v3) signs a lead token into the redirect |
 
 Outcomes, in the order they are checked:
 
@@ -178,16 +181,20 @@ Outcomes, in the order they are checked:
 - `400 bad_email`, `400 adult_required`, `400 bad_request` (answers).
 - `501 report_unavailable` while the engine or the report module is absent.
 - `429 rate_limited` after 5 sends from one IP in 10 minutes (per warm instance).
-- `503 email_unavailable` while any of the three `BREVO_*` variables below is missing.
+- `503 email_unavailable` while any of the three `BREVO_*` variables below is missing,
+  or, for `variant` `email-report`, while `KISS_UNLOCK_SECRET` is.
 - Otherwise one Brevo double opt-in (`POST /v3/contacts/doubleOptinConfirmation`)
   with `includeListIds: [BREVO_KISS_TEST_LIST_ID]`, `templateId:
   BREVO_KISS_TEST_DOI_TEMPLATE_ID`, `redirectionUrl`
-  `{site}/kiss-test/result/?email=confirmed#a={answers}` and text attributes
+  `{site}/kiss-test/result/?email=confirmed#a={answers}` (for `email-report`,
+  `#a={answers}&t={lead token}`: `{ k: "lead", p: "report", t, a, v }`, 30-day
+  TTL from signup, so only the confirm link carries it) and text attributes
   computed server side from the answers (client values are ignored):
   `KT_ARCHETYPE` (archetype name), `KT_SCORE` (`"67"`), `KT_BAND` (band
   label), `KT_COSTLIEST` (the costliest habit's title with they/them
   pronouns; left out when nothing costs points), `KT_ANSWERS`, `KT_SIGNUP`
-  (`YYYY-MM-DD`, UTC) and `KT_SOURCE` `result-email`. Brevo's `201` or `204`
+  (`YYYY-MM-DD`, UTC) and `KT_SOURCE` `result-email` (`result-email-report`
+  for `email-report`). Brevo's `201` or `204`
   answers `200 { ok: true }`; anything else, or a network failure, answers
   `502 email_failed` and logs `brevo_doi_failed` with the provider status and
   error code only. The address and the answers are never logged or stored here.
@@ -203,7 +210,7 @@ availability check returning `{ ok: true, service: "howtokissbetter-functions" }
 |---|---|---|
 | `STRIPE_SECRET_KEY` | checkout, verify | Stripe secret (or restricted) key; needs Checkout Sessions write and read |
 | `STRIPE_WEBHOOK_SECRET` | stripe-webhook | Signing secret of this project's own webhook endpoint |
-| `KISS_UNLOCK_SECRET` | verify | HMAC key for unlock tokens; `openssl rand -hex 32` |
+| `KISS_UNLOCK_SECRET` | verify, kiss-email | HMAC key for unlock tokens; `openssl rand -hex 32` |
 | `KISS_SITE_ORIGIN` | all | Site origin for success, cancel and thanks URLs; default `https://howtokissbetter.com` |
 | `KISS_EXTRA_ORIGINS` | checkout, verify, kiss-feedback | Comma-separated extra allowed origins for QA (for example `http://localhost:8000`); leave unset in production |
 | `KISS_BOOK_PDF_PATH` | verify | Blob pathname of the PDF; default `kiss-perfect-now/kiss-perfect-now.pdf` |
