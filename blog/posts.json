@@ -1421,11 +1421,12 @@
     {
         "title": "How Long Should a Kiss Last? (The Honest Answer)",
         "description": "Everyone wants a number. The real answer is more interesting. Here's what research says about kiss duration, Gottman's 6-second rule, and how to know when a kiss should end.",
-        "seo_title": "How Long Should a Kiss Last? The 6-Second Rule, Explained",
-        "seo_description": "The 6-second rule, why the number everyone cites is incomplete, how long different kisses should run, and how to know when a kiss should end.",
+        "seo_title": "How Long Should a Kiss Last? From First Kiss to Make-Out",
+        "seo_description": "Six seconds is the famous number, but it only covers everyday kisses. How long a first kiss and a make-out session should last, and the cue to stop.",
         "slug": "how-long-should-a-kiss-last",
         "date": "March 13, 2026",
         "category": "Relationships",
+        "category_slug": "relationships",
         "tags": [
             "how long should a kiss last",
             "kiss duration",
@@ -1434,8 +1435,7 @@
             "ideal kiss length",
             "how long to kiss someone",
             "kissing tips"
-        ],
-        "category_slug": "relationships"
+        ]
     },
     {
         "title": "What Makes a Good Kisser (The Honest Answer)",
