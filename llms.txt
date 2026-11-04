@@ -17,7 +17,7 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (111 posts)
+- /blog/ — Full article index (112 posts)
 
 ## Techniques (20 articles)
 
@@ -115,10 +115,11 @@ The neuroscience, chemistry, and psychology behind kissing.
 - /blog/why-we-close-our-eyes-when-kissing/ — Why Do We Close Our Eyes When We Kiss?
 - /blog/science-of-kissing/ — The Science of Kissing: What Actually Happens When Your Lips Touch
 
-## Special Situations (12 articles)
+## Special Situations (13 articles)
 
 Height differences, cars, public kisses, friends, and other real-world scenarios.
 
+- /blog/mistletoe-kiss/ — Mistletoe Kiss: Rules, Meaning and How to Do It Right
 - /blog/how-to-kiss-someone-with-a-mustache/ — How to Kiss Someone With a Mustache (Without the Tickle)
 - /blog/new-years-kiss/ — New Year's Kiss: What It Means and How to Get One
 - /blog/how-to-kiss-with-a-tongue-piercing/ — How Long After a Tongue Piercing Can You Kiss? And How To
