@@ -1179,6 +1179,7 @@
         "slug": "how-to-give-a-hickey",
         "date": "May 01, 2026",
         "category": "Techniques",
+        "category_slug": "techniques",
         "tags": [
             "how to give a hickey",
             "hickey",
@@ -1188,8 +1189,7 @@
             "hickey without leaving a mark",
             "how to give someone a hickey",
             "neck kissing"
-        ],
-        "category_slug": "techniques"
+        ]
     },
     {
         "title": "How to Kiss Your Crush (Without Letting Your Brain Ruin It)",
