@@ -108,6 +108,9 @@ BUY_SURFACE_OVERRIDES: set[str] = set()
 # its quiz-article-quarter name so GA4 reads stay continuous. Moving it doubled the neck post's
 # reach (to 49%) and tripled its card starts per session (to 4.4%, 10-07 to 10-20), so on
 # 2026-10-21 it went to the five posts with 40+ sessions and card reach of 18 to 39% (14 days).
+# Those five went from 2.0% to 5.65% starts per session (10-21 to 11-03, control 3.59%), so on
+# 2026-11-04 it went to the six posts with 40+ sessions, card reach under 40% in that window and
+# the card still at the quarter mark.
 EARLY_HOOK_SLUGS: set[str] = {
     "how-to-kiss-someones-neck",
     "how-to-give-a-hickey",
@@ -115,6 +118,12 @@ EARLY_HOOK_SLUGS: set[str] = {
     "how-to-tell-someone-theyre-a-bad-kisser",
     "why-do-we-tilt-our-heads-when-we-kiss",
     "why-kissing-feels-awkward",
+    "how-to-kiss-slowly",
+    "average-age-of-first-kiss",
+    "too-much-saliva-when-kissing",
+    "what-does-it-mean-when-someone-holds-your-face",
+    "how-to-breathe-while-kissing",
+    "what-does-a-lingering-kiss-mean",
 }
 
 QUIZ_FINAL_EYEBROW = "Before you go"
