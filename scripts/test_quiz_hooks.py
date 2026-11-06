@@ -83,6 +83,13 @@ class QuizHookTests(unittest.TestCase):
         self.assertIn("caught him doing?", markup)
         self.assertNotIn("caught them doing?", markup)
 
+    def test_decoding_posts_get_the_reading_them_card(self):
+        for slug in build_blog.DECODING_HOOK_SLUGS:
+            markup = build_blog.render_article_quiz_hook(self.offer(slug))
+            self.assertIn("reading them", markup, slug)
+            self.assertIn("&amp;q=q1&amp;a=a", markup, slug)
+            self.assertNotIn("You already have the person", markup, slug)
+
     def test_every_post_gets_the_kiss_test_with_a_known_hook(self):
         self.assertEqual(build_blog.BUY_SURFACE_OVERRIDES, set())
         self.assertEqual({offer["surface"] for offer in self.catalog.values()}, {"quiz"})

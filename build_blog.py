@@ -482,18 +482,54 @@ QUIZ_HOOK_OVERRIDES: dict[str, dict[str, str]] = {
         "bar_copy": "Instinct test, 60 seconds",
         "bar_label": "Take it",
     },
-    "what-does-a-kiss-on-the-cheek-mean": {
+    "types-of-kisses-and-what-they-mean": {
         "question_id": "q1",
-        "eyebrow": "Whatever that cheek kiss meant",
-        "title": "The next one might not be on the cheek. Ready?",
-        "final_title": "The next one might not be on the cheek. Ready?",
-        "copy": "Ten questions, scored. An archetype, an honest number, and the habit to fix before it matters.",
-        "label": "Take it",
-        "bar_title": "Ready for the one after the cheek?",
+        "eyebrow": "Every kiss has a type. So do you.",
+        "title": "Which kind of kisser are you?",
+        "final_title": "Which kind of kisser are you?",
+        "copy": "Ten questions, scored. One of seven kisser types, an honest number, and the habit costing you most.",
+        "label": "Find out",
+        "bar_title": "Which kind of kisser are you?",
         "bar_copy": "Kiss Test, 60 seconds",
-        "bar_label": "Take it",
+        "bar_label": "Find out",
+    },
+    "why-some-people-dont-like-kissing": {
+        "question_id": "q1",
+        "eyebrow": "Still working out your pattern?",
+        "title": "See what your instincts actually do.",
+        "final_title": "See what your instincts actually do.",
+        "copy": "Ten questions about what you do, not what you're supposed to feel. Nobody sees your answers but you.",
+        "label": "Take the test",
+        "bar_title": "What do your instincts actually do?",
+        "bar_copy": "Kiss Test, 60 seconds",
+        "bar_label": "Find out",
     },
 }
+
+# Readers on these posts are decoding one kiss someone gave them, often with no partner, so "You
+# already have the person" and its "caught them doing" question miss: the relationship card started
+# 4.3% of views against 6.6 to 9.4% for the other clusters (10-09 to 11-05). The chemistry card's
+# "You're reading them" says what they're doing. The lingering and holds-your-face posts stay out
+# until the 880f824 early-card read closes on 2026-11-18.
+DECODING_HOOK_SLUGS = (
+    "searing-kiss-meaning",
+    "signs-the-kiss-meant-something-to-him",
+    "what-does-a-collarbone-kiss-mean",
+    "what-does-a-forehead-kiss-mean",
+    "what-does-a-hand-kiss-mean",
+    "what-does-a-kiss-on-the-back-mean",
+    "what-does-a-kiss-on-the-cheek-mean",
+    "what-does-a-kiss-on-the-head-mean",
+    "what-does-a-kiss-on-the-lips-mean",
+    "what-does-a-kiss-on-the-nose-mean",
+    "what-does-a-kiss-on-the-palm-mean",
+    "what-does-a-kiss-on-the-shoulder-mean",
+    "what-does-a-peck-on-the-lips-mean",
+    "what-does-it-mean-when-someone-bites-your-lip",
+    "what-does-it-mean-when-someone-gives-you-a-hickey",
+    "youre-a-good-kisser-meaning",
+)
+QUIZ_HOOK_OVERRIDES.update({slug: QUIZ_HOOKS["chemistry"] for slug in DECODING_HOOK_SLUGS})
 
 CLUSTER_KEYWORDS: dict[str, tuple[str, ...]] = {
     "boundaries": (
