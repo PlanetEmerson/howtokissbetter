@@ -183,7 +183,7 @@ def build_hub(posts: list[dict]) -> None:
     head = template[: template.index("<title>")]
     styles = template[template.index("    <!-- Favicon -->") : template.index("    <style>")]
     cards = "\n".join(card(post, heading="h2") for post in posts)
-    page = f"""{head.replace('    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2523241663582064" crossorigin="anonymous"></script>\n', '')}<title>{html.escape(title)}</title>
+    page = f"""{head.replace('    <script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.scriptwrapper.com/tags/74242bd7-d0fe-4231-a2e6-180f1d7f8bbf.js"></script>\n', '')}<title>{html.escape(title)}</title>
     <meta name="description" content="{html.escape(description)}">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
     <link rel="canonical" href="{SITE_URL}/es/">

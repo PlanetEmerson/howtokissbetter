@@ -27,9 +27,8 @@ CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VER
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
 QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261023a">'
 QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261023a" defer></script>'
-ADSENSE_TAG = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2523241663582064" crossorigin="anonymous"></script>'
-ADSENSE_META = '<meta name="google-adsense-account" content="ca-pub-2523241663582064">'
-ADS_TXT = "google.com, pub-2523241663582064, DIRECT, f08c47fec0942fa0"
+JOURNEY_TAG = '<script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.scriptwrapper.com/tags/74242bd7-d0fe-4231-a2e6-180f1d7f8bbf.js"></script>'
+JOURNEY_ADS_TXT_LINE = "journeymv.com, 74242bd7-d0fe-4231-a2e6-180f1d7f8bbf, DIRECT, 1363c924529b3998"
 AUTHOR_ID = "https://howtokissbetter.com/about/#cj-mckenna"
 NON_PUBLIC_DIRS = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
@@ -1328,7 +1327,7 @@ def validate_site_safety(validation: Validation) -> None:
         path
         for path in ROOT.rglob("*")
         if path.is_file()
-        and not NON_PUBLIC_DIRS.intersection(path.parts)
+        and not NON_PUBLIC_DIRS.intersection(path.relative_to(ROOT).parts)
         and path.suffix.lower() in {".html", ".js", ".css", ".json", ".py", ".xml", ".txt", ".md"}
     ]
     for path in public_files:
@@ -1340,20 +1339,28 @@ def validate_site_safety(validation: Validation) -> None:
 
 
 def validate_ads(validation: Validation) -> None:
-    """Ads earn on article pages only (English and Spanish), so the quiz, results, book, checkout, hubs and homepage stay ad-free."""
+    """Journey by Mediavine runs on the article pages (English and Spanish), the homepage, where Journey
+    verifies the site, and /privacy/, where its script writes Mediavine's required notice. The quiz,
+    results, book, checkout and hubs stay ad-free. Journey is exclusive, so no AdSense code may remain."""
     es = ROOT / "es"
-    articles = set(BLOG.glob("*/index.html")) | set(es.glob("*/index.html")) | {BLOG / "_template.html", es / "_template.html"}
+    ad_pages = set(BLOG.glob("*/index.html")) | set(es.glob("*/index.html")) | {
+        BLOG / "_template.html", es / "_template.html", ROOT / "index.html", ROOT / "privacy" / "index.html"}
     for path in sorted(ROOT.rglob("*.html")):
-        if NON_PUBLIC_DIRS.intersection(path.parts):
+        if NON_PUBLIC_DIRS.intersection(path.relative_to(ROOT).parts):
             continue
         text = path.read_text()
         label = str(path.relative_to(ROOT))
-        if path in articles:
-            validation.equal(text.count(ADSENSE_TAG), 1, f"{label} AdSense tag count")
+        validation.require("adsbygoogle" not in text and "google-adsense-account" not in text,
+                           f"{label} still carries AdSense code")
+        if path in ad_pages:
+            head = text.split("</head>", 1)[0]
+            validation.equal(head.count(JOURNEY_TAG), 1, f"{label} Journey tag count in <head>")
+            validation.equal(text.count("scriptwrapper.com"), 1, f"{label} Journey script loads")
         else:
-            validation.require("adsbygoogle" not in text, f"{label} loads ads outside the article pages")
-    validation.require(ADSENSE_META in (ROOT / "index.html").read_text(), "homepage lost the AdSense site verification meta")
-    validation.equal((ROOT / "ads.txt").read_text().strip(), ADS_TXT, "ads.txt seller line")
+            validation.require("scriptwrapper.com" not in text, f"{label} loads ads outside the ad pages")
+    ads_txt = (ROOT / "ads.txt").read_text()
+    validation.require(JOURNEY_ADS_TXT_LINE in ads_txt, "ads.txt lost the Journey seller line")
+    validation.require("pub-2523241663582064" not in ads_txt, "ads.txt still lists the retired AdSense account")
 
 
 def validate_override_failures(validation: Validation) -> None:
