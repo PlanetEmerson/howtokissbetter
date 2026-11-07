@@ -201,6 +201,15 @@
         });
     }
 
+    // Height of Journey's mobile adhesion ad, so fixed bottom bars sit on top of it instead of
+    // under it. Its outer container is a tall see-through box, so measure the ad wrapper itself.
+    // A hidden bar drops back to 0 so its slide-out transform takes it fully off screen.
+    function adhesionLift() {
+        var adhesion = document.getElementById("adhesion_mobile_wrapper");
+        var box = adhesion && adhesion.getBoundingClientRect();
+        return box && box.height && box.top < window.innerHeight ? Math.round(window.innerHeight - box.top) : 0;
+    }
+
     function setupMobileBuyBar() {
         var bar = document.querySelector(".mobile-buy-bar");
         var articleHeader = document.querySelector("article header");
@@ -226,6 +235,7 @@
             );
             var visible = mobileViewport && introPassed && !footerNear && !otherOfferInView;
 
+            bar.style.bottom = (visible ? adhesionLift() : 0) + "px";
             bar.classList.toggle("is-visible", visible);
             bar.setAttribute("aria-hidden", visible ? "false" : "true");
             if (link) {
@@ -240,6 +250,8 @@
         updateBar();
         window.addEventListener("scroll", updateBar, { passive: true });
         window.addEventListener("resize", updateBar);
+        // The adhesion ad loads, resizes and closes without a scroll event.
+        window.setInterval(updateBar, 1000);
     }
 
     function requestedOfferKey() {
@@ -370,6 +382,7 @@
             var previewOpen = Boolean(document.querySelector("[data-preview-viewer][open]"));
             var visible = mobileViewport && heroPassed && !footerNear && !previewOpen;
 
+            bar.style.bottom = (visible ? adhesionLift() : 0) + "px";
             bar.classList.toggle("is-visible", visible);
             document.body.classList.toggle("has-home-sticky", visible);
             bar.setAttribute("aria-hidden", visible ? "false" : "true");
@@ -383,6 +396,7 @@
         updateStickyBar();
         window.addEventListener("scroll", updateStickyBar, { passive: true });
         window.addEventListener("resize", updateStickyBar);
+        window.setInterval(updateStickyBar, 1000);
         var preview = document.querySelector("[data-preview-viewer]");
         if (preview) {
             preview.addEventListener("close", updateStickyBar);

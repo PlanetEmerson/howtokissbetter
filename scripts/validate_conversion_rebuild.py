@@ -29,6 +29,10 @@ QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261023a">'
 QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261023a" defer></script>'
 JOURNEY_TAG = '<script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.scriptwrapper.com/tags/74242bd7-d0fe-4231-a2e6-180f1d7f8bbf.js"></script>'
 JOURNEY_ADS_TXT_LINE = "journeymv.com, 74242bd7-d0fe-4231-a2e6-180f1d7f8bbf, DIRECT, 1363c924529b3998"
+CONSENT_DEFAULT = ("gtag('consent', 'default', {ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', "
+                   "ad_personalization: 'denied', wait_for_update: 500, region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', "
+                   "'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', "
+                   "'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH', 'GF', 'GP', 'MQ', 'RE', 'YT', 'MF', 'AX']});")
 AUTHOR_ID = "https://howtokissbetter.com/about/#cj-mckenna"
 NON_PUBLIC_DIRS = {".git", ".claude", ".codex", ".venv", "_private", "node_modules", "tmp"}
 FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922">'
@@ -1341,10 +1345,12 @@ def validate_site_safety(validation: Validation) -> None:
 def validate_ads(validation: Validation) -> None:
     """Journey by Mediavine runs on the article pages (English and Spanish), the homepage, where Journey
     verifies the site, and /privacy/, where its script writes Mediavine's required notice. The quiz,
-    results, book, checkout and hubs stay ad-free. Journey is exclusive, so no AdSense code may remain."""
+    results, book, checkout and hubs stay ad-free. Journey is exclusive, so no AdSense code may remain.
+    Ad pages set GA's EEA consent default before GA starts; only Journey's consent prompt lifts it, so no
+    other page may carry it. Articles keep the sidebar and stop ids that Journey's dashboard selectors name."""
     es = ROOT / "es"
-    ad_pages = set(BLOG.glob("*/index.html")) | set(es.glob("*/index.html")) | {
-        BLOG / "_template.html", es / "_template.html", ROOT / "index.html", ROOT / "privacy" / "index.html"}
+    articles = set(BLOG.glob("*/index.html")) | set(es.glob("*/index.html")) | {BLOG / "_template.html", es / "_template.html"}
+    ad_pages = articles | {ROOT / "index.html", ROOT / "privacy" / "index.html"}
     for path in sorted(ROOT.rglob("*.html")):
         if NON_PUBLIC_DIRS.intersection(path.relative_to(ROOT).parts):
             continue
@@ -1356,8 +1362,17 @@ def validate_ads(validation: Validation) -> None:
             head = text.split("</head>", 1)[0]
             validation.equal(head.count(JOURNEY_TAG), 1, f"{label} Journey tag count in <head>")
             validation.equal(text.count("scriptwrapper.com"), 1, f"{label} Journey script loads")
+            validation.equal(head.count(CONSENT_DEFAULT), 1, f"{label} GA consent default count in <head>")
+            config = re.search(r"gtag\(['\"]config['\"]", head)
+            validation.require(bool(config) and -1 < head.find(CONSENT_DEFAULT) < config.start(),
+                               f"{label} sets the GA consent default before GA's config")
         else:
             validation.require("scriptwrapper.com" not in text, f"{label} loads ads outside the ad pages")
+            validation.require(not re.search(r"gtag\(\s*['\"]consent['\"]", text),
+                               f"{label} sets a GA consent default with no prompt to lift it")
+        if path in articles:
+            for landmark in ('id="journey-sidebar"', 'id="keep-reading"'):
+                validation.equal(text.count(landmark), 1, f"{label} Journey landmark {landmark}")
     ads_txt = (ROOT / "ads.txt").read_text()
     validation.require(JOURNEY_ADS_TXT_LINE in ads_txt, "ads.txt lost the Journey seller line")
     validation.require("pub-2523241663582064" not in ads_txt, "ads.txt still lists the retired AdSense account")

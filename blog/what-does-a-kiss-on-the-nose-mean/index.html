@@ -6,6 +6,8 @@
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
+      // EEA, UK and Swiss readers start with storage denied until Journey's consent prompt updates it
+      gtag('consent', 'default', {ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500, region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH', 'GF', 'GP', 'MQ', 'RE', 'YT', 'MF', 'AX']});
       if (window.location.hostname === 'howtokissbetter.com' || window.location.hostname === 'www.howtokissbetter.com') {
         var analyticsScript = document.createElement('script');
         analyticsScript.async = true;
@@ -77,11 +79,10 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .toc { position: sticky; top: 100px; }
+        /* The contents list scrolls with the page: Journey's sticky sidebar ad needs a static sidebar */
         .toc a { transition: color 0.2s; }
         .toc a:hover { color: #D4AF37; }
         .toc a.active { color: #D4AF37; font-weight: 600; }
-        @media (max-width: 1024px) { .toc { position: static; } }
 
         /* Article styles */
         .article-content h2 {
@@ -233,7 +234,7 @@
     <!-- ARTICLE -->
     <article class="py-8 px-6">
         <div class="max-w-6xl mx-auto">
-            <div class="grid lg:grid-cols-[1fr_280px] gap-12">
+            <div class="grid lg:grid-cols-[1fr_300px] gap-12">
                 <div class="max-w-3xl">
 
             <!-- Article Header -->
@@ -502,7 +503,7 @@
 </div><!-- end max-w-3xl -->
 
                 <!-- TOC Sidebar -->
-                <aside class="hidden lg:block">
+                <aside class="hidden lg:block" id="journey-sidebar">
                     <div class="toc">
                         <p class="text-gold font-sans text-xs font-semibold tracking-widest uppercase mb-4">Contents</p>
                         <ul class="space-y-2 text-sm text-gray-400">
@@ -526,7 +527,7 @@
     </article>
 
     <!-- Related Posts -->
-    <section class="py-16 px-6 bg-wine/10">
+    <section class="py-16 px-6 bg-wine/10" id="keep-reading">
         <div class="max-w-6xl mx-auto">
             <h2 class="font-serif text-3xl text-cream mb-2 text-center">Keep Reading</h2>
             <p class="text-gray-400 text-center mb-10">Six more pieces, chosen to follow the thread you're on.</p>

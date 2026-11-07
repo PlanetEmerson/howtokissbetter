@@ -180,10 +180,12 @@ def build_hub(posts: list[dict]) -> None:
         "hasPart": [{"@type": "BlogPosting", "headline": post["title"], "url": f"{SITE_URL}/es/{post['slug']}/"} for post in posts],
     }
     template = TEMPLATE.read_text()
-    head = template[: template.index("<title>")]
+    # The hub carries no ads, so it drops Journey's tag and the consent default only Journey's prompt can lift.
+    head = "".join(line for line in template[: template.index("<title>")].splitlines(keepends=True)
+                   if "scriptwrapper.com" not in line and "consent" not in line)
     styles = template[template.index("    <!-- Favicon -->") : template.index("    <style>")]
     cards = "\n".join(card(post, heading="h2") for post in posts)
-    page = f"""{head.replace('    <script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.scriptwrapper.com/tags/74242bd7-d0fe-4231-a2e6-180f1d7f8bbf.js"></script>\n', '')}<title>{html.escape(title)}</title>
+    page = f"""{head}<title>{html.escape(title)}</title>
     <meta name="description" content="{html.escape(description)}">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
     <link rel="canonical" href="{SITE_URL}/es/">
