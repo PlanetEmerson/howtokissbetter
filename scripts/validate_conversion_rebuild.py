@@ -42,7 +42,7 @@ GUARANTEE_BADGE = '<p class="kiss-guarantee" data-guarantee>'
 GUARANTEE_SENTENCE = "Thirty days to decide. If it is not for you, one email to me gets every cent back. No form, no interrogation."
 PROCESS_LINE = "Pay on Stripe's page. PDF and EPUB on the next screen, plus an email with a link that stays yours."
 RETIRED_REFUND_COPY = ("make it " + "right", "Not " + "satisfied")
-BOOK_CREDS = ("183 pages", "16 chapters", "80+ free guides", "Thousands of readers a month", "Kindle and paperback")
+BOOK_CREDS = ("183 Kindle pages", "16 chapters", "80+ free guides", "Thousands of readers a month", "Kindle and paperback")
 AMAZON_KINDLE_URL = "https://www.amazon.com/dp/B0GP72Y5W4"
 AMAZON_PAPERBACK_URL = "https://www.amazon.com/dp/B0GP775T2D"
 AMAZON_SELLER_LINE = "Sold and delivered by Amazon."
@@ -144,6 +144,7 @@ BOOK_PLACEMENTS = {
     "book-after-faq",
     "book-final",
     "book-mobile-sticky",
+    "book-store-kindle-us",
 }
 HOME_PLACEMENTS = {"home-nav", "home-book-facts"}
 HOME_SURFACES = Counter({"home-hero": 1, "home-book-facts": 1, "home-final": 1, "home-mobile-sticky": 1})
@@ -816,6 +817,8 @@ def validate_book(validation: Validation) -> Path:
     validation.require('data-book-sticky' in page_html, "book mobile sticky purchase control is missing")
     validation.equal(page_html.count("data-hero-checkout"), 1, "book hero button marker count")
     validation.equal(page_html.count('<ul class="kiss-creds">'), 1, "book credentials strip count")
+    stores = re.findall(r'data-offer-placement="(book-store-(?:kindle|paperback)-[a-z]{2})"', page_html)
+    validation.equal((len(stores), len(set(stores))), (27, 27), "book store links, one placement each")
     for item in BOOK_CREDS:
         validation.require(f"<li>{item}</li>" in page_html, f"book credentials strip is missing {item}")
     validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the 80+ free guides claim outruns blog/posts.json")
