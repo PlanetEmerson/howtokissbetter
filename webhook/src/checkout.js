@@ -134,6 +134,9 @@ export function createCheckoutHandler({ env, fetchImpl = fetch, loadScore = load
     if (!cancel || !product || !fields) {
       return redirect(withQuery(back, "checkout=invalid"));
     }
+    if (product.retail_url) {
+      return redirect(product.retail_url);
+    }
 
     if (product.key === "report") {
       const engine = await loadScore();

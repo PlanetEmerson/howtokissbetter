@@ -39,12 +39,13 @@ FEEDBACK_CSS_TAG = '<link rel="stylesheet" href="/assets/feedback.css?v=20260922
 FEEDBACK_ACTION = f"{CHECKOUT_API}/api/kiss-feedback"
 FEEDBACK_SENT = "Got it. Thank you."
 GUARANTEE_BADGE = '<p class="kiss-guarantee" data-guarantee>'
-GUARANTEE_LINE = '<span class="kiss-guarantee--line"><strong>30-day guarantee.</strong> Not worth it? One email, full refund.</span>'
-GUARANTEE_KEEP = '<span class="kiss-guarantee__keep">Keep it anyway. I can\'t take it back.</span>'
 GUARANTEE_SENTENCE = "Thirty days to decide. If it is not for you, one email to me gets every cent back. No form, no interrogation."
 PROCESS_LINE = "Pay on Stripe's page. PDF and EPUB on the next screen, plus an email with a link that stays yours."
 RETIRED_REFUND_COPY = ("make it " + "right", "Not " + "satisfied")
-BOOK_CREDS = ("183 pages", "16 chapters", "80+ free guides", "Thousands of readers a month", "Secure checkout by Stripe", "30-day guarantee")
+BOOK_CREDS = ("183 pages", "16 chapters", "80+ free guides", "Thousands of readers a month", "Kindle and paperback")
+AMAZON_KINDLE_URL = "https://www.amazon.com/dp/B0GP72Y5W4"
+AMAZON_PAPERBACK_URL = "https://www.amazon.com/dp/B0GP775T2D"
+AMAZON_SELLER_LINE = "Sold and delivered by Amazon."
 RETURN_POLICY_FIELDS = (
     '"@type": "MerchantReturnPolicy"',
     '"applicableCountry": "US"',
@@ -386,6 +387,13 @@ def validate_checkout_form(
     validation.equal(block.count('<button type="submit"'), 1, f"{label} submit button count")
     validation.require(f"· ${BOOK_PRICE}</button>" in block, f"{label} button label is missing the price")
     validation.require("payhip.com" not in block and "data-payhip-checkout" not in block, f"{label} form still routes through Payhip")
+
+
+def validate_amazon_buttons(validation: Validation, label: str, page_html: str, placements: set[str]) -> None:
+    """The ebook is in KDP Select, so it may only be sold on Amazon: book buttons leave the site."""
+    validation.equal(checkout_forms(page_html), [], f"{label} book checkout forms")
+    links = re.findall(rf'<a href="{re.escape(AMAZON_KINDLE_URL)}"[^>]*>', page_html)
+    validation.equal(sorted(re.search(r'data-offer-placement="([^"]+)"', tag).group(1) for tag in links), sorted(placements), f"{label} Amazon button placements")
 
 
 def expected_surface(post: dict[str, object]) -> str:
@@ -739,7 +747,6 @@ def validate_quiz_hooks(validation: Validation, catalog: dict[str, dict[str, obj
             validation.require("—" not in value and "$" not in value, f"{slug} quiz hook override {field} breaks the copy rules")
     for name in ("QUIZ_FINAL_EYEBROW", "QUIZ_FINAL_COPY", "QUIZ_FINAL_LABEL", "QUIZ_META_SUFFIX", "QUIZ_BOOK_LINK_LABEL"):
         validation.require("—" not in getattr(build_blog, name), f"{name} contains an em dash")
-    validation.require(f"${BOOK_PRICE}" in build_blog.QUIZ_BOOK_LINK_LABEL, "quiz final book link label is missing the book price")
     validation.equal(build_blog.QUIZ_URL, QUIZ_URL, "builder quiz URL")
     validation.equal(build_blog.BUY_SURFACE_OVERRIDES, BUY_PINNED, "buy-rail pinned posts")
     for archetype in QUIZ_HOOK_ARCHETYPES:
@@ -807,42 +814,31 @@ def validate_book(validation: Validation) -> Path:
     validation.equal(page_html.count('data-pathway="'), 6, "book pathway control count")
     validation.require('data-preview-viewer' in page_html, "book preview dialog is missing")
     validation.require('data-book-sticky' in page_html, "book mobile sticky purchase control is missing")
-    validation.require('<button type="submit" class="conversion-button conversion-sheen" data-hero-checkout>' in page_html, "book hero checkout button is missing")
-    validation.equal(page_html.count(GUARANTEE_BADGE), 3, "book guarantee badge count")
-    validation.equal(page_html.count(GUARANTEE_KEEP), 1, "book guarantee keep line count")
+    validation.equal(page_html.count("data-hero-checkout"), 1, "book hero button marker count")
     validation.equal(page_html.count('<ul class="kiss-creds">'), 1, "book credentials strip count")
     for item in BOOK_CREDS:
         validation.require(f"<li>{item}</li>" in page_html, f"book credentials strip is missing {item}")
     validation.require(len(json.loads((BLOG / "posts.json").read_text())) >= 80, "the 80+ free guides claim outruns blog/posts.json")
-    validation.require(PROCESS_LINE in page_html, "book hero is missing the checkout process line")
-    validation.require(f"{GUARANTEE_SENTENCE} You keep the files; I can't take them back." in page_html, "book FAQ is missing the guarantee sentence")
-    # Co-typed as Product so the book qualifies for merchant listings.
-    validation.require('"@type": ["Book", "Product"]' in page_html, "book schema is not co-typed Book and Product")
-    for needle in RETURN_POLICY_FIELDS + SHIPPING_DETAILS_FIELDS:
-        validation.require(needle in page_html, f"book schema offer is missing {needle}")
-    validation.require('"returnMethod"' not in page_html, "book schema return policy names a return method")
+    # The page no longer sells anything itself, so it must not claim a merchant offer.
+    validation.require('"@type": "Book"' in page_html and '"offers"' not in page_html, "book schema still carries a merchant offer")
+    validation.require(f'"sameAs": ["{AMAZON_KINDLE_URL}", "{AMAZON_PAPERBACK_URL}"]' in page_html, "book schema is missing the Amazon editions")
+    validation.require(f'<a href="{AMAZON_PAPERBACK_URL}"' in page_html, "book page is missing the paperback link")
     validate_no_retired_refund_copy(validation, "book page", page_html)
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/book/">' in page_html, "book canonical URL changed")
     validation.require('"numberOfPages": 183' in page_html, "book page schema is missing 183 pages")
-    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "book page schema has the wrong price")
-    validation.require('"url": "https://howtokissbetter.com/book/"' in page_html, "book page schema offer URL is wrong")
+    validation.require('"url": "https://howtokissbetter.com/book/"' in page_html, "book page schema URL is wrong")
     validation.require(RETIRED_PRICE not in page_html, f"book page contains the retired {RETIRED_PRICE} price")
     validation.require(not mentions_payhip(page_html), "book page still mentions Payhip")
     validation.require("Hollywood's kissing coach" not in page_html, "book page contains an unsupported authority claim")
     validation.require("star rating" not in page_html.lower(), "book page contains an unsupported rating claim")
     validation.require("countdown" not in page_html.lower(), "book page contains fake urgency")
-    validation.require("Secure checkout by Stripe." in page_html, "book page is missing the Stripe disclosure")
-    validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "book page is missing the seller disclosure")
+    validation.require(AMAZON_SELLER_LINE in page_html, "book page is missing the Amazon seller line")
+    validation.require("For adults 18 and over." in page_html, "book page is missing the 18+ line")
     validation.require(CONVERSION_CSS_TAG in page_html, "book stylesheet is missing or stale")
     validation.require(PREVIEW_JS_TAG in page_html, "book preview script is missing")
     validation.require(CONVERSION_JS_TAG in page_html, "book conversion script is missing or stale")
 
-    forms = checkout_forms(page_html)
-    validation.equal({form_placement(block) for block in forms}, BOOK_PLACEMENTS, "book checkout placement set")
-    validation.equal(len(forms), len(BOOK_PLACEMENTS), "book checkout form count")
-    for block in forms:
-        placement = form_placement(block)
-        validate_checkout_form(validation, f"book {placement}", block, src="book", placement=placement, entry="book", cancel="/book/")
+    validate_amazon_buttons(validation, "book page", page_html, BOOK_PLACEMENTS)
 
     hero_media = [ROOT / f"assets/images/book/cover-hero-{width}.{extension}" for width in (480, 768, 1080) for extension in ("avif", "webp")]
     for asset in hero_media:
@@ -907,7 +903,7 @@ def validate_home(validation: Validation) -> Path:
         ('class="home-share"', 1, "homepage share loop count"),
     ):
         validation.equal(page_html.count(needle), count, label)
-    validation.require(page_html.count(GUARANTEE_BADGE) >= 2, "homepage guarantee badge count is below two")
+    validation.require(page_html.count(GUARANTEE_BADGE) >= 1, "homepage guarantee badge is missing")
 
     surfaces = Counter()
     for tag in re.findall(r"<(?:div|section|aside)\b[^>]*\bjs-offer\b[^>]*>", page_html):
@@ -934,23 +930,15 @@ def validate_home(validation: Validation) -> Path:
     validation.equal(len(mini_tags), len(HOME_ARCHETYPES), "homepage archetype image count")
     validation.equal(sum('loading="lazy"' in tag for tag in mini_tags), 4, "homepage archetype lazy-load split")
 
-    validation.require("Secure checkout by Stripe" in page_html, "homepage is missing the Stripe disclosure")
-    validation.require("Sold by Blynk Studio, the studio behind How to Kiss Better." in page_html, "homepage is missing the seller disclosure")
+    validation.require(AMAZON_SELLER_LINE in page_html, "homepage is missing the Amazon seller line")
     validation.require('<link rel="canonical" href="https://howtokissbetter.com/">' in page_html, "homepage canonical URL changed")
-    validation.require(f'"price": "{BOOK_PRICE}"' in page_html, "homepage schema has the wrong price")
-    validation.require("PDF and EPUB" in page_html, "homepage is missing both delivery formats")
-    validation.require(PROCESS_LINE in page_html, "homepage book block is missing the process line")
+    validation.require('"offers"' not in page_html, "homepage book schema still carries a merchant offer")
     validate_no_retired_refund_copy(validation, "homepage", page_html)
     validation.require(CONVERSION_CSS_TAG in page_html, "homepage conversion stylesheet is missing or stale")
     validation.require(HOME_CSS_TAG in page_html, "homepage stylesheet is missing or stale")
     validation.require(CONVERSION_JS_TAG in page_html, "homepage conversion script is missing or stale")
 
-    forms = checkout_forms(page_html)
-    validation.equal({form_placement(block) for block in forms}, HOME_PLACEMENTS, "homepage checkout placement set")
-    validation.equal(len(forms), len(HOME_PLACEMENTS), "homepage checkout form count")
-    for block in forms:
-        placement = form_placement(block)
-        validate_checkout_form(validation, f"homepage {placement}", block, src="homepage", placement=placement, entry="home", cancel="/")
+    validate_amazon_buttons(validation, "homepage", page_html, HOME_PLACEMENTS)
 
     minis = [ROOT / f"assets/images/kiss-test/archetypes/{archetype}-mw-mini.webp" for archetype in HOME_ARCHETYPES]
     for asset in minis:
@@ -1074,7 +1062,6 @@ def validate_quiz_pages(validation: Validation) -> None:
     validation.require(f'action="{FEEDBACK_ACTION}" hidden>' in result_html and "<p hidden data-feedback-sent>" in result_html, "result page feedback markup must start hidden")
     validation.require(FEEDBACK_CSS_TAG not in (ROOT / "kiss-test/index.html").read_text(), "kiss test page loads the feedback stylesheet it does not use")
     validation.equal(result_html.count(GUARANTEE_BADGE), 1, "result page guarantee badge count")
-    validation.equal(result_html.count(GUARANTEE_LINE), 1, "result page guarantee line count")
     validation.require(f"{GUARANTEE_SENTENCE} You keep the report; I can't take it back." in result_html, "result page footer is missing the guarantee sentence")
 
 
@@ -1204,7 +1191,7 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
     confirmed = ROOT / "free-chapter-confirmed/index.html"
     confirmed_html = confirmed.read_text()
     validation.require(RETIRED_PRICE not in confirmed_html, f"confirmed page contains the retired {RETIRED_PRICE} price")
-    validation.require(f"See the full ${BOOK_PRICE} book" in confirmed_html, "confirmed page book link label is stale")
+    validation.require("See the full book" in confirmed_html, "confirmed page book link label is stale")
     validation.require(CONVERSION_CSS_TAG in confirmed_html and CONVERSION_JS_TAG in confirmed_html, "confirmed page assets are stale")
 
     template_html = (BLOG / "_template.html").read_text()
@@ -1303,6 +1290,16 @@ def validate_tracking_contract(validation: Validation) -> None:
 
 
 def validate_site_safety(validation: Validation) -> None:
+    # KDP Select: selling the ebook here would breach enrollment, wherever the form appears.
+    for path in ROOT.rglob("*.html"):
+        if not NON_PUBLIC_DIRS.intersection(path.relative_to(ROOT).parts):
+            page_html = path.read_text(errors="ignore")
+            unmarked = [
+                block
+                for block in FORM_BLOCK.findall(page_html)
+                if "/api/checkout" in block.split(">", 1)[0] and 'value="book"' in block
+            ]
+            validation.equal(checkout_forms(page_html) + unmarked, [], f"{path.relative_to(ROOT)} ebook checkout forms")
     sitemap = (ROOT / "sitemap.xml").read_text()
     validation.require("/book/?" not in sitemap and "offer_key=" not in sitemap, "query-string book variants entered the sitemap")
     validation.equal(sitemap.count("https://howtokissbetter.com/book/"), 1, "canonical book sitemap entry count")

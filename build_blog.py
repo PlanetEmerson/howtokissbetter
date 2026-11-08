@@ -130,7 +130,7 @@ QUIZ_FINAL_EYEBROW = "Before you go"
 QUIZ_FINAL_COPY = "Ten questions, one honest number, and the habit costing you most. Free result."
 QUIZ_FINAL_LABEL = "Take the Kiss Test"
 QUIZ_META_SUFFIX = "10 questions · free result"
-QUIZ_BOOK_LINK_LABEL = f"Or skip straight to the full playbook: Kiss Perfect Now, ${BOOK_PRICE}"
+QUIZ_BOOK_LINK_LABEL = "Or skip straight to the full playbook: Kiss Perfect Now, on Amazon"
 # Static hook cards render the engine's pronoun tokens with this set; the quiz swaps them after the pronoun tap.
 QUIZ_DEFAULT_PRONOUN = "them"
 

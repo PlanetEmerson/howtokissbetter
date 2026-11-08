@@ -12,6 +12,9 @@ export const PRODUCTS = {
     success_path: "/book/thanks/",
     statement_suffix: "KISSBOOK",
     payment_description: "Kiss Perfect Now ebook (howtokissbetter.com)",
+    // Enrolled in KDP Select, which bars selling the ebook anywhere but Amazon.
+    // The rest of this entry still serves copies bought here earlier.
+    retail_url: "https://www.amazon.com/dp/B0GP72Y5W4",
   },
   report: {
     key: "report",

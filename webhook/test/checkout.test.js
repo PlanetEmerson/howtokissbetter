@@ -16,6 +16,17 @@ const BOOK_FIELDS = {
   ga_cid: "123456789.987654321",
   ga_sid: "1758150000",
 };
+const REPORT_FIELDS = {
+  product: "report",
+  src: "how-to-kiss-someones-neck",
+  placement: "buy-mobile-bar",
+  entry: "bar",
+  cancel: "/blog/how-to-kiss-someones-neck/",
+  ga_cid: "123456789.987654321",
+  ga_sid: "1758150000",
+  answers: "abcdabcdab",
+  v: "1",
+};
 const SUBMIT_MESSAGE =
   "One-time payment. You confirm you are 18 or older. 30-day guarantee: not worth it? Email contact@howtokissbetter.com for a full refund. You keep it either way.";
 const EXCLUDED_FORM = {
@@ -61,7 +72,7 @@ function decodedForm(call) {
 test("rejects methods other than POST and OPTIONS", async () => {
   const { handler, calls } = handlerWith();
 
-  const response = await handler(request(BOOK_FIELDS, { method: "GET" }));
+  const response = await handler(request(REPORT_FIELDS, { method: "GET" }));
 
   assert.equal(response.status, 405);
   assert.deepEqual(await response.json(), { ok: false, error: "method_not_allowed" });
@@ -71,12 +82,12 @@ test("rejects methods other than POST and OPTIONS", async () => {
 test("answers preflight with CORS headers only for allowlisted origins", async () => {
   const { handler } = handlerWith();
 
-  const allowed = await handler(request(BOOK_FIELDS, { method: "OPTIONS", headers: { origin: "https://www.howtokissbetter.com" } }));
+  const allowed = await handler(request(REPORT_FIELDS, { method: "OPTIONS", headers: { origin: "https://www.howtokissbetter.com" } }));
   assert.equal(allowed.status, 204);
   assert.equal(allowed.headers.get("access-control-allow-origin"), "https://www.howtokissbetter.com");
   assert.equal(allowed.headers.get("cache-control"), "no-store");
 
-  const denied = await handler(request(BOOK_FIELDS, { method: "OPTIONS", headers: { origin: "https://evil.example" } }));
+  const denied = await handler(request(REPORT_FIELDS, { method: "OPTIONS", headers: { origin: "https://evil.example" } }));
   assert.equal(denied.status, 204);
   assert.equal(denied.headers.get("access-control-allow-origin"), null);
 });
@@ -92,7 +103,7 @@ test("refuses posts that do not come from the site", async () => {
   ];
 
   for (const headers of headerSets) {
-    const response = await handler(request(BOOK_FIELDS, { headers }));
+    const response = await handler(request(REPORT_FIELDS, { headers }));
     assert.equal(response.status, 403, JSON.stringify(headers));
     assert.deepEqual(await response.json(), { ok: false, error: "bad_origin" });
   }
@@ -102,7 +113,7 @@ test("refuses posts that do not come from the site", async () => {
 test("accepts a referer from the site when the Origin header is missing", async () => {
   const { handler, calls } = handlerWith();
 
-  const response = await handler(request(BOOK_FIELDS, { headers: { referer: "https://www.howtokissbetter.com/blog/x/" } }));
+  const response = await handler(request(REPORT_FIELDS, { headers: { referer: "https://www.howtokissbetter.com/blog/x/" } }));
 
   assert.equal(response.status, 303);
   assert.equal(response.headers.get("location"), SESSION_URL);
@@ -113,7 +124,7 @@ test("KISS_EXTRA_ORIGINS adds QA origins to the allowlist", async () => {
   const env = { ...ENV, KISS_EXTRA_ORIGINS: "http://localhost:8000, http://127.0.0.1:8000" };
   const { handler } = handlerWith({ env });
 
-  const response = await handler(request(BOOK_FIELDS, { headers: { origin: "http://127.0.0.1:8000" } }));
+  const response = await handler(request(REPORT_FIELDS, { headers: { origin: "http://127.0.0.1:8000" } }));
 
   assert.equal(response.status, 303);
   assert.equal(response.headers.get("location"), SESSION_URL);
@@ -122,7 +133,7 @@ test("KISS_EXTRA_ORIGINS adds QA origins to the allowlist", async () => {
 test("rejects an oversized body before validation", async () => {
   const { handler, calls } = handlerWith();
 
-  const response = await handler(request(BOOK_FIELDS, { bodyText: null }));
+  const response = await handler(request(REPORT_FIELDS, { bodyText: null }));
 
   assert.equal(response.status, 413);
   assert.equal(calls.length, 0);
@@ -131,7 +142,7 @@ test("rejects an oversized body before validation", async () => {
 test("reports missing configuration as JSON instead of redirecting", async () => {
   const { handler, calls } = handlerWith({ env: {} });
 
-  const response = await handler(request(BOOK_FIELDS));
+  const response = await handler(request(REPORT_FIELDS));
 
   assert.equal(response.status, 500);
   assert.deepEqual(await response.json(), { ok: false, error: "server_config" });
@@ -153,26 +164,36 @@ test("redirects invalid fields back to the cancel path", async () => {
   ];
 
   for (const overrides of invalid) {
-    const response = await handler(request({ ...BOOK_FIELDS, ...overrides }));
+    const response = await handler(request({ ...REPORT_FIELDS, ...overrides }));
     assert.equal(response.status, 303, JSON.stringify(overrides));
     assert.equal(response.headers.get("location"), "https://howtokissbetter.com/blog/how-to-kiss-someones-neck/?checkout=invalid");
   }
 
   for (const cancel of ["//evil.example/", "/a\\b", "/post/#top", "blog/", `/${"a".repeat(200)}`]) {
-    const response = await handler(request({ ...BOOK_FIELDS, cancel }));
+    const response = await handler(request({ ...REPORT_FIELDS, cancel }));
     assert.equal(response.status, 303, cancel);
     assert.equal(response.headers.get("location"), "https://howtokissbetter.com/?checkout=invalid");
   }
 
-  const withQuery = await handler(request({ ...BOOK_FIELDS, product: "x", cancel: "/kiss-test/result/?from=neck" }));
+  const withQuery = await handler(request({ ...REPORT_FIELDS, product: "x", cancel: "/kiss-test/result/?from=neck" }));
   assert.equal(withQuery.headers.get("location"), "https://howtokissbetter.com/kiss-test/result/?from=neck&checkout=invalid");
   assert.equal(calls.length, 0);
 });
 
-test("creates a branded book session with the exact form contract and redirects to it", async () => {
+test("sends book checkouts to Amazon and never opens a Stripe session", async () => {
   const { handler, calls } = handlerWith();
 
   const response = await handler(request(BOOK_FIELDS));
+
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("location"), "https://www.amazon.com/dp/B0GP72Y5W4");
+  assert.equal(calls.length, 0);
+});
+
+test("creates a branded session with the exact form contract and redirects to it", async () => {
+  const { handler, calls } = handlerWith();
+
+  const response = await handler(request(REPORT_FIELDS));
 
   assert.equal(response.status, 303);
   assert.equal(response.headers.get("location"), SESSION_URL);
@@ -191,7 +212,7 @@ test("creates a branded book session with the exact form contract and redirects 
   assert.ok(call.options.body.includes("session_id%3D%7BCHECKOUT_SESSION_ID%7D"));
 
   const { client_reference_id, ...form } = decodedForm(call);
-  assert.match(client_reference_id, /^hkb_book_how-to-kiss-someones-neck_[a-f0-9]{8}$/);
+  assert.match(client_reference_id, /^hkb_report_how-to-kiss-someones-neck_[a-f0-9]{8}$/);
   assert.deepEqual(form, {
     mode: "payment",
     submit_type: "pay",
@@ -199,23 +220,24 @@ test("creates a branded book session with the exact form contract and redirects 
     customer_creation: "if_required",
     "line_items[0][quantity]": "1",
     "line_items[0][price_data][currency]": "usd",
-    "line_items[0][price_data][unit_amount]": "999",
-    "line_items[0][price_data][product_data][name]": "Kiss Perfect Now (PDF + EPUB)",
-    "line_items[0][price_data][product_data][description]": "The 183-page kissing playbook. Instant download after payment.",
-    "line_items[0][price_data][product_data][images][0]": "https://howtokissbetter.com/assets/images/book/cover-stripe.jpg",
-    success_url: "https://howtokissbetter.com/book/thanks/?session_id={CHECKOUT_SESSION_ID}",
+    "line_items[0][price_data][unit_amount]": "299",
+    "line_items[0][price_data][product_data][name]": "Kiss Test: your full report",
+    "line_items[0][price_data][product_data][description]": "Where every point went, the three habits costing you most with the fixes, and your 7-day plan.",
+    success_url: "https://howtokissbetter.com/kiss-test/result/?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: "https://howtokissbetter.com/blog/how-to-kiss-someones-neck/?checkout=canceled",
-    "metadata[kind]": "kiss_ebook",
+    "metadata[kind]": "kiss_report",
     "metadata[site]": "howtokissbetter",
-    "metadata[product]": "book",
+    "metadata[product]": "report",
     "metadata[src]": "how-to-kiss-someones-neck",
     "metadata[placement]": "buy-mobile-bar",
     "metadata[entry]": "bar",
     "metadata[ga_cid]": "123456789.987654321",
     "metadata[ga_sid]": "1758150000",
-    "payment_intent_data[description]": "Kiss Perfect Now ebook (howtokissbetter.com)",
-    "payment_intent_data[statement_descriptor_suffix]": "KISSBOOK",
-    "payment_intent_data[metadata][kind]": "kiss_ebook",
+    "metadata[answers]": "abcdabcdab",
+    "metadata[v]": "1",
+    "payment_intent_data[description]": "Kiss Test full report (howtokissbetter.com)",
+    "payment_intent_data[statement_descriptor_suffix]": "KISSTEST",
+    "payment_intent_data[metadata][kind]": "kiss_report",
     "payment_intent_data[metadata][site]": "howtokissbetter",
     "custom_text[submit][message]": SUBMIT_MESSAGE,
     ...EXCLUDED_FORM,
@@ -235,15 +257,15 @@ test("creates a branded book session with the exact form contract and redirects 
 test("defaults src to direct and omits empty attribution fields", async () => {
   const { handler, calls } = handlerWith({ env: { ...ENV, KISS_SITE_ORIGIN: "https://preview.howtokissbetter.com" } });
 
-  const response = await handler(request({ product: "book" }));
+  const response = await handler(request({ product: "report", answers: "abcdabcdab", v: "1" }));
 
   assert.equal(response.status, 303);
   const { client_reference_id, ...form } = decodedForm(calls[0]);
-  assert.match(client_reference_id, /^hkb_book_direct_[a-f0-9]{8}$/);
+  assert.match(client_reference_id, /^hkb_report_direct_[a-f0-9]{8}$/);
   assert.equal(form["metadata[src]"], "direct");
-  assert.equal(form.success_url, "https://preview.howtokissbetter.com/book/thanks/?session_id={CHECKOUT_SESSION_ID}");
+  assert.equal(form.success_url, "https://preview.howtokissbetter.com/kiss-test/result/?session_id={CHECKOUT_SESSION_ID}");
   assert.equal(form.cancel_url, "https://preview.howtokissbetter.com/?checkout=canceled");
-  for (const key of ["metadata[placement]", "metadata[entry]", "metadata[ga_cid]", "metadata[ga_sid]", "metadata[answers]", "metadata[v]"]) {
+  for (const key of ["metadata[placement]", "metadata[entry]", "metadata[ga_cid]", "metadata[ga_sid]"]) {
     assert.equal(key in form, false, key);
   }
 });
@@ -327,7 +349,7 @@ test("sends the visitor back with checkout=failed when Stripe does not return a 
 
   for (const respond of failures) {
     const { handler } = handlerWith({ respond });
-    const response = await handler(request(BOOK_FIELDS));
+    const response = await handler(request(REPORT_FIELDS));
     assert.equal(response.status, 303);
     assert.equal(response.headers.get("location"), "https://howtokissbetter.com/blog/how-to-kiss-someones-neck/?checkout=failed");
   }

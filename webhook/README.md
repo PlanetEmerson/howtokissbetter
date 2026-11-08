@@ -20,7 +20,7 @@ must start with one. Otherwise `403 {"ok":false,"error":"bad_origin"}`.
 
 | Field | Rule | Notes |
 |---|---|---|
-| `product` | `book` or `report` | required |
+| `product` | `report`, or `book`, which redirects to the Kindle page because KDP Select bars selling the ebook here | required |
 | `src` | `^[a-z0-9-]{0,100}$` | post slug; empty means `direct` |
 | `placement` | `^[a-z0-9-]{0,40}$` | optional; omitted from metadata when empty |
 | `entry` | `^[a-z0-9-]{0,20}$` | optional; omitted from metadata when empty |
