@@ -91,7 +91,7 @@
     ];
     var UNLOCK_LIST = [
         "Where every point went, across 8 dimensions",
-        "The 3 habits costing you the most, and the fix for each, pulled from the book",
+        "The 3 habits costing you the most, and the fix for each",
         "What {he}'s actually noticing (from your answers)",
         "The one move for {archetype}",
         "Your 7-day fix",
