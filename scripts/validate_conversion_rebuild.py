@@ -25,8 +25,8 @@ CONVERSION_CSS_TAG = f'<link rel="stylesheet" href="/assets/conversion.css?v={CO
 HOME_CSS_TAG = f'<link rel="stylesheet" href="/assets/home.css?v={HOME_ASSET_VERSION}">'
 CONVERSION_JS_TAG = f'<script src="/assets/conversion.js?v={CONVERSION_ASSET_VERSION}" defer></script>'
 PREVIEW_JS_TAG = '<script src="/assets/book-preview.js?v=20260814" defer></script>'
-QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261023a">'
-QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261023a" defer></script>'
+QUIZ_CSS_TAG = '<link rel="stylesheet" href="/assets/quiz.css?v=20261118a">'
+QUIZ_JS_TAG = '<script src="/assets/quiz.js?v=20261118a" defer></script>'
 JOURNEY_TAG = '<script type="text/javascript" async="async" data-noptimize="1" data-cfasync="false" src="//scripts.scriptwrapper.com/tags/74242bd7-d0fe-4231-a2e6-180f1d7f8bbf.js"></script>'
 JOURNEY_ADS_TXT_LINE = "journeymv.com, 74242bd7-d0fe-4231-a2e6-180f1d7f8bbf, DIRECT, 1363c924529b3998"
 CONSENT_DEFAULT = ("gtag('consent', 'default', {ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', "
