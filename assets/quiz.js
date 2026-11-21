@@ -73,6 +73,12 @@
     var TOP_CAPTURE = {
         placement: "result-email-top",
         lede: "Your full report is free. Where should I send it?",
+        // A real reader's words from the result page's feedback form (2026-11-20), sent with quote consent.
+        // Never add one that wasn't sent that way.
+        quote: {
+            text: "It\u2019s helping my nerves a lot, and gave me a new idea that I am gonna try.",
+            by: "A Kiss Test reader, on the full report"
+        },
         button: "Email me my full report"
     };
     var END_CAPTURE = {
@@ -1532,6 +1538,12 @@
             section.appendChild(el("h2", "quiz-section-title", copy.title));
         }
         section.appendChild(el("p", "quiz-email-capture__lede", copy.lede));
+        if (copy.quote) {
+            var quote = el("figure", "quiz-email-capture__quote");
+            quote.appendChild(el("blockquote", null, "\u201c" + copy.quote.text + "\u201d"));
+            quote.appendChild(el("figcaption", null, copy.quote.by));
+            section.appendChild(quote);
+        }
         var form = el("form", "quiz-email-capture__form");
         var field = el("label", "quiz-email-capture__field");
         field.appendChild(el("span", null, "Your email"));
