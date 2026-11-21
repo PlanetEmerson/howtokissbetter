@@ -1216,6 +1216,10 @@ def validate_secondary_pages(validation: Validation) -> list[Path]:
     validate_head_icons(validation, "about page", about_html)
     validate_share_image(validation, "about page", about_html)
     validation.require(CONVERSION_JS_TAG in about_html, "about page script is stale")
+    stats_html = (ROOT / "kissing-statistics/index.html").read_text()
+    validate_head_icons(validation, "kissing statistics page", stats_html)
+    validate_share_image(validation, "kissing statistics page", stats_html)
+    validation.require(CONVERSION_JS_TAG in stats_html, "kissing statistics page script is stale")
     validation.require(f'"@id": "{AUTHOR_ID}"' in about_html, "about page lost the author Person @id")
     validation.require('<a href="/about/"' in template_html and f'"@id": "{AUTHOR_ID}"' in template_html, "article template lost the author link or @id")
 
