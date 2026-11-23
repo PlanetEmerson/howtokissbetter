@@ -280,6 +280,14 @@ def main() -> None:
     if related.returncode:
         report.error("Keep Reading matches build_blog.py", (related.stderr or related.stdout).strip())
 
+    # Same for the quiz cards: an in-body edit can move where the builder places a card
+    # (feb8151, 2026-11-17), and the next build to touch that post then fails the bot gate.
+    conversions = subprocess.run(
+        [sys.executable, "build_blog.py", "--rebuild-conversions", "--check"], cwd=ROOT, capture_output=True, text=True
+    )
+    if conversions.returncode:
+        report.error("Conversion surfaces match build_blog.py", (conversions.stderr or conversions.stdout).strip())
+
     print(f"SEO check: {len(pages)} pages, {len(indexable)} indexable, {len(post_paths)} posts, {len(locs)} sitemap URLs")
     for check, details in sorted(report.warnings.items()):
         print(f"WARN  {check}: {len(details)}")

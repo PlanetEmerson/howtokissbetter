@@ -1545,17 +1545,28 @@ def apply_conversion_to_article_page(page_html: str, offer: dict[str, Any]) -> s
     return page_html
 
 
-def rebuild_conversion_surfaces() -> None:
-    """Regenerate conversion markup for every article in the manifest."""
+def rebuild_conversion_surfaces(check: bool = False) -> None:
+    """Regenerate conversion markup for every article in the manifest; with check, only report drift."""
     catalog = build_offer_catalog()
     if len(catalog) != len(read_posts()):
         raise ValueError("Conversion catalog route count does not match posts.json")
 
+    changed = []
     for route, offer in catalog.items():
         page_path = ROOT_DIR / route.lstrip("/") / "index.html"
         if not page_path.exists():
             raise FileNotFoundError(f"Missing generated article page: {page_path}")
-        page_path.write_text(apply_conversion_to_article_page(page_path.read_text(), offer))
+        page_html = page_path.read_text()
+        new_html = apply_conversion_to_article_page(page_html, offer)
+        if new_html != page_html:
+            changed.append(route)
+            if not check:
+                page_path.write_text(new_html)
+    if check:
+        if changed:
+            raise SystemExit(f"Conversion surfaces differ from build_blog.py on: {', '.join(changed)}")
+        print(f"Conversion surfaces: 0 of {len(catalog)} article routes differ")
+        return
     quiz_count = sum(1 for offer in catalog.values() if offer["surface"] == "quiz")
     print(
         f"Rebuilt conversion surfaces for {len(catalog)} article routes "
@@ -2196,7 +2207,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rebuild-all", action="store_true", help="DESTRUCTIVE: rebuild every post that has a post.json (needs --allow-destructive)")
     parser.add_argument("--allow-destructive", action="store_true", help="Confirm --rebuild-all after reading why it is refused")
     parser.add_argument("--rebuild-related", action="store_true", help="Re-pick the Keep Reading posts on every article")
-    parser.add_argument("--check", action="store_true", help="With --rebuild-related: fail on drift instead of writing")
+    parser.add_argument("--check", action="store_true", help="With --rebuild-related or --rebuild-conversions: fail on drift instead of writing")
     parser.add_argument("--rebuild-conversions", action="store_true", help="Regenerate clustered offers for every article route")
     return parser.parse_args()
 
@@ -2235,7 +2246,7 @@ def main() -> None:
         return
 
     if args.rebuild_conversions:
-        rebuild_conversion_surfaces()
+        rebuild_conversion_surfaces(check=args.check)
         return
 
     if args.rebuild_listings:
