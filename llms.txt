@@ -17,12 +17,13 @@ How to Kiss Better is an educational resource dedicated to the art and science o
 ## Start Here
 
 - /blog/how-to-kiss/ — How to Kiss Better: The Complete Guide (pillar covering every fundamental)
-- /blog/ — Full article index (119 posts)
+- /blog/ — Full article index (120 posts)
 
-## Techniques (20 articles)
+## Techniques (21 articles)
 
 French kissing, making out, hands, rhythm, breathing, neck kisses, and the full skill stack.
 
+- /blog/chaste-kiss-meaning/ — Chaste Kiss Meaning: What It Is and What It Really Says
 - /blog/what-is-a-make-out-session/ — Make Out Session: What It Is and What Actually Happens
 - /blog/searing-kiss-meaning/ — Searing Kiss Meaning (and Hungry, Bold and Soft Kisses)
 - /blog/french-kiss-vs-normal-kiss/ — French Kiss vs Normal Kiss: What's the Real Difference?
